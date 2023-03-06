@@ -41,25 +41,25 @@ int SolveSubProblem(All_Values& Values, All_Lists& Lists)
 	SP_model.add(SP_constriant1_sum1 <= Values.stock_length); 
 
 	// solve SP
-	printf("\n	Continue to solve the SP-MP-%d\n", Values.current_iter);
-	printf("\n\n####################### SP-MP-%d CPLEX SOLVING START #######################\n", Values.current_iter);
+	printf("\n	Continue to solve the SP-MP-%d\n", Values.iter);
+	printf("\n\n####################### SP-MP-%d CPLEX SOLVING START #######################\n", Values.iter);
 	IloCplex SP_cplex(SP_env);
 	SP_cplex.extract(SP_model);
 	SP_cplex.exportModel("SubProblem.lp");
 	int SP_solve = SP_cplex.solve(); // 求解子问题
-	printf("####################### SP-MP-%d CPLEX SOLVING END #########################\n", Values.current_iter);
+	printf("####################### SP-MP-%d CPLEX SOLVING END #########################\n", Values.iter);
 	
 	// print everything
 	if (SP_solve == 0)
 	{
-		printf("\n	The SP-MP-%d is NOT FEASIBLE\n", Values.current_iter);
+		printf("\n	The SP-MP-%d is NOT FEASIBLE\n", Values.iter);
 	}
 	else
 	{
-		printf("\n	The SP-MP-%d is FEASIBLE\n", Values.current_iter);
+		printf("\n	The SP-MP-%d is FEASIBLE\n", Values.iter);
 	}
 
-	printf("\n	The OBJ of SP-MP-%d is %f\n\n", Values.current_iter, SP_cplex.getValue(SP_obj));
+	printf("\n	The OBJ of SP-MP-%d is %f\n\n", Values.iter, SP_cplex.getValue(SP_obj));
 
 	for (int k = 0; k < ITEM_TYPES_NUM; k++)
 	{
@@ -93,7 +93,7 @@ int SolveSubProblem(All_Values& Values, All_Lists& Lists)
 		}
 
 		// add new col to the matrix of MP
-		Lists.node_all_cols_list.push_back(New_Column); 
+		Lists.all_cols_list.push_back(New_Column); 
 		Lists.new_col = New_Column;
 
 		SP_solve_flag = 0;

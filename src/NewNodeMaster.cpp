@@ -15,14 +15,15 @@ int SolveNewNodeFirstMasterProblem(
 	IloNumVarArray& Vars_MP_1)
 {
 	int ITEM_TYPES_NUM = Values.item_types_num;
+	Node current_node = all_nodes_list.back();
 
-	//int node_final_cols_num = Lists.node_all_cols_list.size();
+	//int node_final_cols_num = Lists.all_cols_list.size();
 	//for (int col = 0; col < node_final_cols_num; col++)
 	//{
 	//	printf("\n	Column %d\n", col + 1);
 	//	for (int row = 0; row < ITEM_TYPES_NUM; row++)
 	//	{
-	//		printf("	Column %d Row %d coeff = %f \n", col + 1, col + 1, Lists.node_all_cols_list[col][row]);
+	//		printf("	Column %d Row %d coeff = %f \n", col + 1, col + 1, Lists.all_cols_list[col][row]);
 	//	}
 	//}
 
@@ -32,7 +33,7 @@ int SolveNewNodeFirstMasterProblem(
 	// set cons bound
 	for (int i = 0; i < ITEM_TYPES_NUM; i++)
 	{
-		con_min.add(IloNum(Lists.all_item_types_list[i].demand)); // cons > demand
+		con_min.add(IloNum(all_item_types_list[i].demand)); // cons > demand
 		con_max.add(IloNum(IloInfinity)); // 
 	}
 
@@ -41,10 +42,10 @@ int SolveNewNodeFirstMasterProblem(
 	Model_MP_1.add(Cons_MP_1); // add cons to the model
 
 	// num of cols
-	int all_cols_num = Lists.node_all_cols_list.size(); 
+	int all_cols_num = current_node.all_cols_list.size();
 	printf("\n	Current number of columns is %d \n", all_cols_num);
 
-	int int_solns_num = Lists.node_int_cols_list.size();
+	int int_solns_num = current_node.int_cols_list.size();
 	for (int k =0; k < int_solns_num; k++)
 	{
 		// set matrix of master problem
@@ -55,7 +56,7 @@ int SolveNewNodeFirstMasterProblem(
 
 			for (int row = 0; row < ITEM_TYPES_NUM; row++) // set rows in this col
 			{
-				float row_coeff = Lists.node_all_cols_list[col][row];
+				float row_coeff = current_node.all_cols_list[col][row];
 				CplexCol += Cons_MP_1[row](row_coeff); // set coeff
 			}
 
@@ -65,9 +66,9 @@ int SolveNewNodeFirstMasterProblem(
 
 			// Case 1: The var of this col has already been solved as an int-soln in PN solns
 			// Then set the var to be the val of the corresponding PN int-soln.
-			if (col == Lists.node_int_cols_list[k])
+			if (col == current_node.int_cols_list[k])
 			{
-				float int_var_val = Lists.node_int_solns_list[k];
+				float int_var_val = current_node.int_solns_list[k];
 				 
 				//  var = int_var_val
 				var_min = int_var_val;
@@ -79,14 +80,14 @@ int SolveNewNodeFirstMasterProblem(
 
 			// Case 2: 
 			// The var of this col has not been solved as an int-soln in PN solns
-			if (col != Lists.node_int_cols_list[k])
+			if (col != current_node.int_cols_list[k])
 			{
 				// Case 2.1 : 
 				// The var of this col is the non-int branch var of PN
 				// Then branch the var to be an integer
 				if (col == Values.branch_var_index)
 				{
-					float branch_var_val = Lists.node_all_solns_list[col];
+					float branch_var_val = current_node.all_solns_list[col];
 					float final_val = 0;
 
 					// Case 2.1.1
@@ -162,13 +163,13 @@ int SolveNewNodeFirstMasterProblem(
 		}
 
 		printf("\n	DUAL PRICES: \n\n");
-		Lists.dual_prices_list.clear();
+		current_node.dual_prices_list.clear();
 
 		for (int row = 0; row < ITEM_TYPES_NUM; row++)
 		{
 			float dual_price = MP_cplex.getDual(Cons_MP_1[row]); // 主问题各个约束的对偶值
 			printf("	dual_r_%d = %f\n", row + 1, dual_price);
-			Lists.dual_prices_list.push_back(dual_price);
+			current_node.dual_prices_list.push_back(dual_price);
 		}
 		return feasible_flag;
 	}

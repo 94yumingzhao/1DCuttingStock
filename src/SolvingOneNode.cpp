@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists)
+vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists,Node root_node)
 {
 	// 启发式生成初始主问题的系数矩阵
 	// 假设一种子管只在一根母管上切
@@ -18,7 +18,7 @@ vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists)
 			if (row == col)
 			{
 				int primal_value = 0;
-				primal_value = Values.stock_length / Lists.all_item_types_list[row].length; // 一类子管放在一根母管上切最多能切的数量
+				primal_value = Values.stock_length / all_item_types_list[row].length; // 一类子管放在一根母管上切最多能切的数量
 				primal_column.push_back(primal_value);
 				// printf("col-%d row-%d value-%d\n", col + 1, row + 1, primal_value);
 			}
@@ -36,14 +36,14 @@ vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists)
 }
 
 // 求解一个节点的函数
-int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists)
+int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node this_node)
 {
-	if (Values.node_index == 1) // 根节点
+	if (this_node.index == 1) // 根节点
 	{
 		clock_t start, finish;
 		start = clock();
 		
-		printf("\n	Solving root node NODE_%d\n", Values.node_index);
+		printf("\n	Solving root node NODE_%d\n", this_node.index);
 		// 列生成求解根节点
 		
 		ColumnGenerationRootNode(Values, Lists); 
@@ -77,6 +77,8 @@ int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists)
 		//ColumnGenerationNewNode(branch_flag,Values, Lists); 
 	}
 	ColumnGenerationNewNode(branch_flag, Values, Lists);
+
+	
 	return 0;
 }
 

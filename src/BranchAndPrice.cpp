@@ -12,13 +12,13 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists)
 	{
 		Values.nodes_num = Values.nodes_num + 1;
 		Node new_node;
-		new_node.branch_val = Values.branch_var_val;
+		new_node.branch_var_val = Values.branch_var_val;
 		new_node.branch_floor_val = floor(Values.branch_var_val);
 		new_node.branch_value_ceil = ceil(Values.branch_var_val);
-		new_node.node_index = Values.node_index;
+		new_node.index = Values.node_index;
 
-		printf("\n	The next node is NODE_%d\n", new_node.node_index + 1);
-		Lists.all_nodes_list.push_back(new_node);
+		printf("\n	The next node is NODE_%d\n", new_node.index + 1);
+		Lists.all_nodes_list.push_back(new_node); // add new node to the list
 	}
 	else
 	{
@@ -32,14 +32,14 @@ int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists)
 {
 	float soln_val = 0.0;
 	int integerity_flag = 1; // if current solns are all integers or not，0 --> no，1 --> yes
-	Lists.node_int_cols_list.clear(); // clear after a CG loop of one Node finished.
+	Lists.int_cols_list.clear(); // clear after a CG loop of one Node finished.
 
 	// find int-solns of this Node 
-	int solns_num = Lists.node_all_solns_list.size();
+	int solns_num = Lists.all_solns_list.size();
 	printf("\n	Current NODE has %d columns\n", solns_num);
 	for (int col = 0; col < solns_num; col++)
 	{
-		soln_val = Lists.node_all_solns_list[col]; // soln val
+		soln_val = Lists.all_solns_list[col]; // soln val
 
 		// Case 1；
 		// if this soln is not int
@@ -59,8 +59,8 @@ int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists)
 		else
 		{
 			Values.int_var_index = col; // 当前整数变量对应的列
-			Lists.node_int_cols_list.push_back(col);
-			Lists.node_int_solns_list.push_back(soln_val);
+			Lists.int_cols_list.push_back(col);
+			Lists.int_solns_list.push_back(soln_val);
 		}
 	}
 
@@ -71,7 +71,7 @@ int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists)
 		printf("\n	Current Solutions are ALL Integers !!!\n");
 	}
 
-	Lists.node_all_solns_list.clear(); // 当前节点求解结果清空，为后面节点求解做准备
+	Lists.all_solns_list.clear(); // 当前节点求解结果清空，为后面节点求解做准备
 	return integerity_flag;
 }
 

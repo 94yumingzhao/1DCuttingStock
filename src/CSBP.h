@@ -1,5 +1,12 @@
-// 2022-11-17
-// 2023-02-23 恢复
+// 2022-03-06 开始处理节点选择
+
+// CG -- column generation
+// MP -- master  problem
+// SP  -- sub problem
+// LB  -- lower bound
+// UB -- upper bound
+// PN -- parent node
+// CN -- children node
 
 #include<vector>
 #include<queue>
@@ -16,10 +23,12 @@
 
 using namespace std;
 
-#define RC_EPS 1.0e-6 // 一个接近0的很小的数，用于跟子问题目标函数的值，即削减费用的值做对比
+#define RC_EPS 1.0e-6 // a num that is very close to 0
 
 
-// 一类子管
+
+
+// item type
 struct ItemTypeProperties
 {
 	int type = -1;
@@ -27,14 +36,14 @@ struct ItemTypeProperties
 	int demand = -1;
 };
 
-// 一类母管
+// stock type
 struct StockTypeProperties
 {
 	int type = -1;
 	int count = 0;
 };
 
-// 单个子管
+// item
 struct ItemProperties
 {
 	int type = -1;
@@ -48,7 +57,7 @@ struct ItemProperties
 	int material_cutting_loss = -1;
 };
 
-// 单个母管
+// stock
 struct StockProperties
 {
 	int type = 0;
@@ -73,31 +82,40 @@ struct Node
 	// this node info
 	int index;
 	float lower_bound;
-	float branch_val;
+	float branch_var_val;
 	float branch_floor_val;
 	float branch_value_ceil;
 
-	vector<float> node_final_soln_values_list;
+	// Lists used for one Node
+	vector<float> all_solns_list; // all solns of this Node
+	vector<float> int_solns_list; // all int-solns of this Node
+	vector<float> int_cols_list;  // col indexes of all int-solns of this Node
+
+	// Lists used for a CG iter of one Node
+	int iter;
+	vector<vector<float>> all_cols_list; // model matrix in current CG iter
+	vector<float> dual_prices_list; // dual prices of MP cons in current CG iter
+	vector<float> new_col; // one new col from SP in current CG iter
+	vector<vector<float>> new_cols_list; // new cols from SP in current CG iter
 };
 
 struct All_Values
 {
 	int Root = 0;
-	int stocks_num; // 总计可用母管数量
-	int item_types_num; // 子管种类数量
-	int stock_length; // 母管长度
+	int stocks_num; // 
+	int item_types_num; // 
+	int stock_length; // 
 
-	int node_index;
 	float branch_var_val;
 	int branch_var_index;
+
 	int nodes_num = 1;
 	int current_branch_flag;
 
 	float current_optimal_bound;
 
 	int int_var_index;
-
-	int current_iter;
+	
 };
 
 struct All_Lists
@@ -105,17 +123,6 @@ struct All_Lists
 	vector<ItemProperties> all_items_list; // all items
 	vector<ItemTypeProperties> all_item_types_list; // all item types
 	vector<Node> all_nodes_list; // all Nodes
-
-	// Lists used for one Node
-	vector<float> node_all_solns_list; // all solns of this Node
-	vector<float> node_int_solns_list; // all int-solns of this Node
-	vector<float> node_int_cols_list;  // col index of all int-solns of this Node
-
-	// Lists used for a CG iter of one Node
-	vector<vector<float>> node_all_cols_list; // model matrix in current CG iter
-	vector<float> dual_prices_list; // dual prices of the cons of MP in current CG iter
-	vector<float> new_col; // one new col from SP in current CG iter
-	vector<vector<float>> new_cols_list; // new cols from SP in current CG iter
 };
 
 void SplitString(const string& s, vector<string>& v, const string& c);
@@ -124,15 +131,15 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
 vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists);
 
-int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists);
+int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists,Node this_node);
 
-int BranchAndPrice(All_Values& Values, All_Lists& Lists);
+int BranchAndPrice(All_Values& Values, All_Lists& Lists,Node this_node);
 
-int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists);
+int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists,Node this_node);
 
-float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists);
+float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node root_node);
 
-float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists);
+float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node this_node);
 
 int SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -141,7 +148,8 @@ int SolveRootNodeFirstMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
-	IloNumVarArray& Vars_List_MP);
+	IloNumVarArray& Vars_List_MP,
+	Node root_node);
 
 int SolveNewNodeFirstMasterProblem(
 	int branch_flag,
@@ -151,9 +159,10 @@ int SolveNewNodeFirstMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
-	IloNumVarArray& Vars_List_MP);
+	IloNumVarArray& Vars_List_MP,
+	Node this_node);
 
-int SolveSubProblem(All_Values& Values, All_Lists& Lists);
+int SolveSubProblem(All_Values& Values, All_Lists& Lists,Node this_node);
 
 int SolveUpdateMasterProblem(
 	All_Values& Values,
@@ -162,7 +171,8 @@ int SolveUpdateMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
-	IloNumVarArray& Vars_List_MP);
+	IloNumVarArray& Vars_List_MP,
+	Node this_node);
 
 float SolveFinalMasterProblem(
 	All_Values& Values,
@@ -171,7 +181,8 @@ float SolveFinalMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
-	IloNumVarArray& Vars_List_MP);
+	IloNumVarArray& Vars_List_MP,
+	Node this_node);
 
 
 

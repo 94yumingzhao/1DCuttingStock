@@ -1,21 +1,19 @@
 // 2023-03-01
 
-
 #include "CSBP.h"
 using namespace std;
 
 // CG to solve the root node
-float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists)
+float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node root_node)
 {
 	IloEnv Env_MP; // Init environment
 	IloModel Model_MP(Env_MP); // Init model
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init obj
-	
-	Values.current_iter = 0; // root node index == 0
 
-	float node_bound = Values.current_optimal_bound; // Init root node bound 
+	root_node.iter = 0; // root node index == 0
+	root_node.lower_bound = Values.current_optimal_bound; // Init root node bound 
 
 	int feasible_flag;
 
@@ -27,7 +25,8 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists)
 		Model_MP,
 		Obj_MP,
 		Cons_MP,
-		Vars_MP);
+		Vars_MP,
+		root_node);
 
 	// 初始主问题不可行，则返回负数的下界，在主流程中进行判断，
 	// 如果得到的下界<0,则该问题没有可行解
@@ -44,29 +43,34 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists)
 		Env_MP.removeAllProperties();
 		Env_MP.end();
 
-		Lists.dual_prices_list.clear();
-		Lists.new_col.clear();
+		root_node.dual_prices_list.clear();
+		root_node.new_col.clear();
 
-		//Lists.node_all_cols_list.clear();
+		//Lists.all_cols_list.clear();
 
 		return node_bound;
 	}
 	else
 	{
-		// column generation loop
+		// Column Generation loop
 		while (1)
 		{
-			Values.current_iter++; // update loop iteration index
+			root_node.iter++; // update CG loop iteration index
 
 			int SP_solve_flag = SolveSubProblem(Values, Lists); // solve the SP of MP
 
-			if (SP_solve_flag == 1) // SP have no better reduced cost
+			// Case 1:
+			// No better reduced cost is get from SP anymore
+			if (SP_solve_flag == 1) 
 			{
-				break; // get optimal solns, break CG loop 
+				break; // break CG loop and here the Node get final solns
 			}
-			if (SP_solve_flag == 0) // SP have better reduced cost
+			// Case 2:
+			// Better reduced cost is get from SP
+			if (SP_solve_flag == 0)
 			{
-				// add new col to MP, and solve this new updated MP.
+				// continue CG loop and update MP with the new col from SP
+				// solve the new updated MP
 				SolveUpdateMasterProblem(
 					Values,
 					Lists,
@@ -74,12 +78,13 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists)
 					Model_MP,
 					Obj_MP,
 					Cons_MP,
-					Vars_MP);
+					Vars_MP,
+					root_node);
 			}
 		}
 
-		// solve the last MP to get optimal integer solns and optimal lower bound
-		node_bound = SolveFinalMasterProblem(
+		// solve the last MP to get optimal int-solns and optimal lower bound of the Node
+		root_node.lower_bound = SolveFinalMasterProblem(
 			Values,
 			Lists,
 			Env_MP,
@@ -98,11 +103,10 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists)
 		Env_MP.removeAllProperties();
 		Env_MP.end();
 
-		Lists.dual_prices_list.clear();
-		Lists.new_col.clear();
+		root_node.dual_prices_list.clear();
+		root_node.new_col.clear();
 
-		//Lists.node_all_cols_list.clear();
-
+		//Lists.all_cols_list.clear();
 		return node_bound;
 	}
 }

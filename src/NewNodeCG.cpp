@@ -11,7 +11,7 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 	IloRangeArray Cons_MP_1(Env_MP_1); // Init cons
 	IloObjective Obj_MP_1 = IloAdd(Model_MP_1, IloMinimize(Env_MP_1)); // Init and set obj
 
-	Values.current_iter = 0; // The firsth MP index ==0
+	Values.iter = 0; // The firsth MP index ==0
 
 	float node_bound = Values.current_optimal_bound;
 	int feasible_flag;
@@ -46,7 +46,7 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 		Lists.dual_prices_list.clear();
 		Lists.new_col.clear();
 
-		//Lists.node_all_cols_list.clear();
+		//Lists.all_cols_list.clear();
 
 		return node_bound;
 	}
@@ -54,7 +54,7 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 	{
 		while (1) // 列生成循环求解
 		{
-			Values.current_iter++;
+			Values.iter++;
 
 			int SP_solve_flag = SolveSubProblem(Values, Lists); // 求解当前主问题对应的子问题
 
@@ -97,7 +97,7 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 		Lists.dual_prices_list.clear();
 		Lists.new_col.clear();
 
-		//Lists.node_all_cols_list.clear();
+		//Lists.all_cols_list.clear();
 
 		return node_bound;
 	}

@@ -28,20 +28,21 @@ int main()
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
 	Values.stock_length = get<2>(fileTxt); // length of a stock
 
-	Lists.node_all_cols_list = Heuristic(Values, Lists); // primal heuristic to build the first model
-	Values.node_index = 1; // node index
+	Node root_node; // Init root node
+	root_node.all_cols_list = Heuristic(Values, Lists); // primal heuristic to build the first model
+	root_node.index = 1; // node index
 
 	int branch_flag = 2; // flag of branching, 0 -- left , 1 -- right, 2 -- root 
 	int node_solve_flag; // if there is feasible solns in a node, 0 -- yes , 1 -- no 
 	int integerity_flag; //  if there is non-int-solns in a node, 0 -- yes, 1 -- no
 
-	SolveNode(branch_flag, Values, Lists); // solve the root node with CG loop
-	integerity_flag = BranchAndPrice(Values, Lists); // find the non-int branch var
+	SolveNode(branch_flag, Values, Lists,root_node); // solve the root node with CG loop
+	integerity_flag = BranchAndPrice(Values, Lists,root_node); // find the non-int branch var
 
 	printf("\n	//////////// BRANCHING //////////////\n");
 
 	// Case 0:
-	// non-int solns exist in the root node after CG loop
+	// If non-int solns exist in the root node after CG loop
 	if (integerity_flag == 0) 
 	{
 		printf("\n	//////////// BRANCHING PROCEDURE START //////////////\n");
@@ -56,9 +57,9 @@ int main()
 			branch_flag = 0; // LEFT			
 			if (branch_flag == 0)
 			{
-				Values.node_index = Values.node_index + 1; // index++
-				SolveNode(branch_flag, Values, Lists); // solve the left branch node with CG	loop
-				integerity_flag = BranchAndPrice(Values, Lists); // judge integerity and find the branch var
+				Node this_node;
+				SolveNode(branch_flag, Values, Lists,this_node); // solve the left branch node with CG	loop
+				integerity_flag = BranchAndPrice(Values, Lists,this_node); // judge integerity and find the branch var
 
 				// Case 1.1:
 				// all solns are integer in this new node
@@ -74,9 +75,9 @@ int main()
 			branch_flag = 1; // RIGHT
 			if (branch_flag == 1)
 			{
-				Values.node_index = Values.node_index + 1; // index++
-				node_solve_flag = SolveNode(branch_flag, Values, Lists); // solve the right branch node with CG loop
-				integerity_flag = BranchAndPrice(Values, Lists); // judge integerity and find the branch var
+				Node this_node;
+				node_solve_flag = SolveNode(branch_flag, Values, Lists,this_node); // solve the right branch node with CG loop
+				integerity_flag = BranchAndPrice(Values, Lists,this_node); // judge integerity and find the branch var
 
 				if (integerity_flag == 1)
 				{

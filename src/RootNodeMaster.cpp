@@ -11,7 +11,8 @@ int SolveRootNodeFirstMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
-	IloNumVarArray& Vars_MP)
+	IloNumVarArray& Vars_MP,
+	Node root_node)
 {
 	int ITEM_TYPES_NUM = Values.item_types_num;
 
@@ -35,7 +36,7 @@ int SolveRootNodeFirstMasterProblem(
 
 		for (int row = 0; row < ITEM_TYPES_NUM; row++) 
 		{
-			float row_coeff = Lists.node_all_cols_list[row][col];
+			float row_coeff = root_node.all_cols_list[row][col];
 			column1 += Cons_MP[row](row_coeff); 
 		}
 
@@ -78,9 +79,9 @@ int SolveRootNodeFirstMasterProblem(
 
 		for (int k = 0; k < ITEM_TYPES_NUM; k++)
 		{
-			float MP_dual_price = MP_cplex.getDual(Cons_MP[k]); // 主问题各个约束的对偶值
-			printf("	dual_r_%d = %f\n", k + 1, MP_dual_price);
-			Lists.dual_prices_list.push_back(MP_dual_price);
+			float dual_val = MP_cplex.getDual(Cons_MP[k]); // 主问题各个约束的对偶值
+			printf("	dual_r_%d = %f\n", k + 1, dual_val);
+			root_node.dual_prices_list.push_back(dual_val);
 		}
 		return feasible_flag;
 	}

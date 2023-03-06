@@ -32,17 +32,17 @@ int SolveUpdateMasterProblem(
 	CplexCol.end();
 	
 	// solve the new updated MP
-	printf("\n	Continue to solve the new MP-%d", Values.current_iter + 1);
-	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", Values.current_iter+1);
+	printf("\n	Continue to solve the new MP-%d", Values.iter + 1);
+	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", Values.iter+1);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("updateMasterProblem.lp");
 	MP_cplex.solve(); // 求解当前主问题
-	printf("####################### MP-%d CPLEX SOLVING END #########################\n", Values.current_iter+1);
-	printf("\n	The OBJ of update MP-%d is %f\n\n", Values.current_iter+1,MP_cplex.getValue(Obj_MP));
+	printf("####################### MP-%d CPLEX SOLVING END #########################\n", Values.iter+1);
+	printf("\n	The OBJ of update MP-%d is %f\n\n", Values.iter+1,MP_cplex.getValue(Obj_MP));
 
 	// print solns of the updated MP
-	int cols_num = Lists.node_all_cols_list.size();
+	int cols_num = Lists.all_cols_list.size();
 	for (int k = 0; k < cols_num; k++)
 	{
 		float soln_val = MP_cplex.getValue(Vars_MP[k]);
@@ -75,22 +75,22 @@ float SolveFinalMasterProblem(
 
 	// solve th final MP of the CG loop of this Node
 	printf("\n	Continue to solve Final MP");
-	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", Values.current_iter);
+	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", Values.iter);
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("FinalMasterProblem.lp");
 	MP_cplex.solve(); // 求解当前主问题
-	printf("####################### MP-%d CPLEX SOLVING END #########################\n", Values.current_iter);
+	printf("####################### MP-%d CPLEX SOLVING END #########################\n", Values.iter);
 
 	printf("\n	The OBJ of Final-MP is %f\n\n" ,  MP_cplex.getValue(Obj_MP));
 
 	// print and store all solns of this Node, including the 0-solns
-	int cols_num = Lists.node_all_cols_list.size();
+	int cols_num = Lists.all_cols_list.size();
 	for (int col = 0; col < cols_num; col++)
 	{
 		float soln_val = MP_cplex.getValue(Vars_MP[col]);
 		printf("	var_x_%d = %f\n", col + 1, soln_val);
-		Lists.node_all_solns_list.push_back(soln_val);
+		Lists.all_solns_list.push_back(soln_val);
 	}
 
 	float node_bound = MP_cplex.getValue(Obj_MP);
@@ -100,7 +100,7 @@ float SolveFinalMasterProblem(
 		printf("\n	Column %d\n",col+1);
 		for (int row = 0; row < ITEM_TYPES_NUM; row++)
 		{
-			printf("	Column %d Row %d coeff = %f \n",col+1,col+1, Lists.node_all_cols_list[col][row]);
+			printf("	Column %d Row %d coeff = %f \n",col+1,col+1, Lists.all_cols_list[col][row]);
 		}
 	}*/
 
