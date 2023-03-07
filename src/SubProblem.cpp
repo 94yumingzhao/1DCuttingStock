@@ -1,5 +1,5 @@
-// 2023-03-01
-// 求解子问题
+﻿// 2023-03-01
+// Solve Sub Problem
 
 #include "CSBP.h"
 using namespace std;
@@ -46,7 +46,7 @@ int SolveSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node)
 	IloCplex Cplex_SP(Env_SP);
 	Cplex_SP.extract(Model_SP);
 	Cplex_SP.exportModel("SubProblem.lp");
-	int Solve_SP = Cplex_SP.solve(); // 求解子问题
+	IloBool Solve_SP = Cplex_SP.solve(); // solve sub problem
 	printf("####################### SP-MP-%d CPLEX SOLVING END #########################\n", this_node.iter);
 	
 	// print everything

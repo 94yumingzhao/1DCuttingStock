@@ -1,10 +1,10 @@
-// 2022-11-17
+﻿// 2022-11-17
 
 #include "CSBP.h"
 using namespace std;
 
 // function to 
-vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists,Node& root_node)
+void Heuristic(All_Values& Values, All_Lists& Lists,Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
 	vector<vector<float>> primal_matrix; 
@@ -16,7 +16,7 @@ vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists,Node& root_
 		{
 			if (row == col)
 			{
-				int primal_val = 0;
+				float primal_val = 0;
 				primal_val = Values.stock_length / Lists.all_item_types_list[row].length; 
 				primal_col.push_back(primal_val);
 			}
@@ -25,14 +25,13 @@ vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists,Node& root_
 				primal_col.push_back(0);
 			}
 		}
-		primal_matrix.push_back(primal_col); // 列加矩阵
+		primal_matrix.push_back(primal_col); 
 	}
-	printf("\n");
-	return primal_matrix;
+	root_node.model_matrix = primal_matrix;
 }
 
 // function to solve a node with CG loop
-int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node)
+void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node)
 {
 	if (this_node.index == 1) // root node
 	{	
@@ -60,7 +59,6 @@ int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_
 		ColumnGenerationNewNode(branch_flag, Values, Lists, this_node);
 	}
 
-	return 0;
 }
 
 

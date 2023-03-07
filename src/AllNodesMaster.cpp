@@ -1,4 +1,4 @@
-// 2022-11-17
+﻿// 2022-11-17
 #include "CSBP.h"
 using namespace std;
 
@@ -41,12 +41,12 @@ int SolveUpdateMasterProblem(
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("updateMasterProblem.lp");
-	int feasible_flag = MP_cplex.solve(); // solve MP
+	IloBool MP_flag = MP_cplex.solve(); // solve MP
 	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter+1);
 	printf("\n	The OBJ of update MP-%d is %f\n\n", this_node.iter+1,MP_cplex.getValue(Obj_MP));
 
 	// print fsb-solns of the updated MP
-	int solns_num = this_node.model_matrix.size();
+	size_t solns_num = this_node.model_matrix.size();
 	for (int col = 0; col < solns_num; col++)
 	{
 		float soln_val = MP_cplex.getValue(Vars_MP[col]);
@@ -66,7 +66,7 @@ int SolveUpdateMasterProblem(
 		printf("	dual_r_%d = %f\n", row + 1, dual_val);
 		this_node.dual_prices_list.push_back(dual_val);
 	}
-	return feasible_flag;
+	return MP_flag;
 }
 
 int SolveFinalMasterProblem(
@@ -87,13 +87,13 @@ int SolveFinalMasterProblem(
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("FinalMasterProblem.lp");
-	int feasible_flag = MP_cplex.solve(); // 求解当前主问题
+	IloBool MP_flag = MP_cplex.solve(); // 求解当前主问题
 	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter);
 
 	printf("\n	The OBJ of Final-MP is %f\n\n" ,  MP_cplex.getValue(Obj_MP));
 
 	// store Node fsb-solns (i.e. non-zero solns)  and their col-index 
-	int solns_num = this_node.model_matrix.size();
+	size_t solns_num = this_node.model_matrix.size();
 	for (int col = 0; col < solns_num; col++)
 	{
 		float soln_val = MP_cplex.getValue(Vars_MP[col]);
@@ -115,16 +115,7 @@ int SolveFinalMasterProblem(
 
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 
-	/*for (int col = 0; col < node_final_cols_num; col++)
-	{
-		printf("\n	Column %d\n",col+1);
-		for (int row = 0; row < item_types_num; row++)
-		{
-			printf("	Column %d Row %d coeff = %f \n",col+1,col+1, Lists.model_matrix[col][row]);
-		}
-	}*/
-
-	return feasible_flag;
+	return MP_flag;
 }
 
 

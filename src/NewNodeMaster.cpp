@@ -1,4 +1,4 @@
-// 2023-03-01
+﻿// 2023-03-01
 // 列生成求解新生成节点
 
 #include "CSBP.h"
@@ -45,9 +45,9 @@ int SolveNewNodeFirstMasterProblem(
 	Model_MP.add(Cons_MP); // add cons to the model
 
 	// num of cols
-	int all_cols_num = parent_node.model_matrix.size();
-	int int_solns_num = parent_node.int_cols_list.size();
-	printf("\n	Current number of columns is %d \n", all_cols_num);
+	size_t all_cols_num = parent_node.model_matrix.size();
+	size_t int_solns_num = parent_node.int_cols_list.size();
+	printf("\n	Current number of columns is %zd \n", all_cols_num);
 	for (int k =0; k < int_solns_num; k++)
 	{
 		// set model_matrix of master problem
@@ -139,10 +139,10 @@ int SolveNewNodeFirstMasterProblem(
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("NewNodeProblem.lp"); 
-	int feasible_flag = MP_cplex.solve(); // 求解主问题
+	IloBool MP_flag = MP_cplex.solve(); 
 	printf("##################CPLEX SOLVING END####################\n\n");
 
-	if (feasible_flag == 0)
+	if (MP_flag == 0)
 	{
 		printf("\n	The MP-1 is NOT FEASIBLE\n");
 	}
@@ -153,7 +153,7 @@ int SolveNewNodeFirstMasterProblem(
 
 		for (int col = 0; col < all_cols_num; col++)
 		{
-			float soln_value = MP_cplex.getValue(Vars_MP[col]); // 主问题各个决策变量的值
+			float soln_value = MP_cplex.getValue(Vars_MP[col]); 
 			printf("	var_x_%d = %f\n", col + 1, soln_value);
 		}
 
@@ -162,11 +162,11 @@ int SolveNewNodeFirstMasterProblem(
 
 		for (int row = 0; row < item_types_num; row++)
 		{
-			float dual_price = MP_cplex.getDual(Cons_MP[row]); // 主问题各个约束的对偶值
+			float dual_price = MP_cplex.getDual(Cons_MP[row]); 
 			printf("	dual_r_%d = %f\n", row + 1, dual_price);
 			this_node.dual_prices_list.push_back(dual_price);
 		}
 	}
 
-	return feasible_flag;
+	return MP_flag;
 }

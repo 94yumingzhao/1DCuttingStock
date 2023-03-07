@@ -1,10 +1,9 @@
-// 2022-11-17
+﻿// 2022-11-17
 
 #include "CSBP.h"
 using namespace std;
 
-//+++++++++++文件读取函数+++++++++++++++
-// 拆分字符串的函数
+
 void SplitString(const string& s, vector<string>& v, const string& c)
 {
 	string::size_type pos1, pos2;
@@ -23,22 +22,21 @@ void SplitString(const string& s, vector<string>& v, const string& c)
 	}
 }
 
-// 读取数据的函数
-//启发式读取数据
+
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 {
-	ostringstream s_in, s_out; // IO文件
-	string in_str, out_str; // IO文件名
-	ofstream f_out; // 输出文件
-	string line; // 读数据的一行
-	vector<string> data_inline, data_inline1, data_inline2; // 读取本地行中的数据
+	ostringstream s_in, s_out; 
+	string in_str, out_str; 
+	ofstream f_out; 
+	string line; 
+	vector<string> data_inline, data_inline1, data_inline2; 
 
-	int stocks_num = -1; // 总计可用母管数量
-	int number_of_items = -1; // 子管种类数量
-	int stock_length = -1; // 母管长度
+	int stocks_num = -1; 
+	int number_of_items = -1; 
+	int stock_length = -1; 
 	int item_types_num = -1;
 
-	// CSBB01.txt 对应的接口
+	// CSBB01.txt
 	
 //#pragma region CSBB01
 //	
@@ -95,7 +93,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 //	}
 //#pragma endregion CSBB01
 
-	// binpack.txt 对应的接口
+	// binpack.txt
 
 #pragma region binpack
 
@@ -106,24 +104,23 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 
 	if (fin2)
 	{
-		//都是先读取一行，然后进行字符串分割，读取首个元素
+		
 		getline(fin2, line);
-		SplitString(line, data_inline, "\t"); // 第1行
-		stocks_num = atoi(data_inline[0].c_str()); // 第1行第1位：总计可用母管数量
+		SplitString(line, data_inline, "\t"); 
+		stocks_num = atoi(data_inline[0].c_str()); 
 
 		getline(fin2, line);
-		SplitString(line, data_inline, "\t"); // 第2行
-		number_of_items = atoi(data_inline[0].c_str()); // 第2行第1位：子管数量
+		SplitString(line, data_inline, "\t"); 
+		number_of_items = atoi(data_inline[0].c_str()); 
 
 		getline(fin2, line);
-		SplitString(line, data_inline, "\t"); // 第3行
-		stock_length = atoi(data_inline[0].c_str()); //  第3行第1位：母管长度
+		SplitString(line, data_inline, "\t"); 
+		stock_length = atoi(data_inline[0].c_str()); 
 
 		printf("\n\n	The number of stocks = %d\n", stocks_num);
 		printf("	The number of items = %d\n", number_of_items);
 		printf("	The length of stock = %d\n", stock_length);
 
-		//生成母管对象，并插入到母管列表中
 		for (size_t i = 0; i < stocks_num; i++)
 		{
 			StockProperties this_stock;
@@ -134,25 +131,24 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		int item_index = 1;
 		int item_type_index = 1;
 
-		for (size_t i = 0; i < number_of_items; i++) // 所有子管行
+		for (size_t i = 0; i < number_of_items; i++) 
 		{
 			getline(fin2, line);
 			SplitString(line, data_inline, "\t");
 
 			ItemProperties this_item;
-			this_item.length = atoi(data_inline[0].c_str()); // 子管行第1位：子管长度
-			this_item.demand = 1; // 子管需求
-			this_item.type = item_type_index; // 子管种类
-			this_item.index = item_index; // 子管序号，从1开始
-			this_item.stock_index = -1; // 子管所属母板编号
-			this_item.occupied = 0; // 子管是否被使用
+			this_item.length = atoi(data_inline[0].c_str()); 
+			this_item.demand = 1; 
+			this_item.type = item_type_index; 
+			this_item.index = item_index; 
+			this_item.stock_index = -1; 
+			this_item.occupied = 0; 
 
 			Lists.all_items_list.push_back(this_item);
 			item_index++;
 		}
 
-		int all_items_list_size = Lists.all_items_list.size();
-
+		size_t all_items_list_size = Lists.all_items_list.size();
 		vector<int> temp_item_types_list;;
 		int distance_index = 0;
 		vector<int>::iterator iter;
@@ -181,15 +177,14 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			}
 		}
 
-		int item_types_num = Lists.all_item_types_list.size();
-		printf("	The number of item_type is %d\n", item_types_num);
+		size_t item_types_num = Lists.all_item_types_list.size();
+		printf("	The number of item_type is %zd\n", item_types_num);
 	}
 	
 #pragma endregion binpack
 
-	// 所有子管按照长度与从宽到窄排序 冒泡排序
 	ItemProperties  VP;
-	int all_items_list_size = Lists.all_items_list.size();
+	size_t all_items_list_size = Lists.all_items_list.size();
 
 	for (size_t i = 0; i < all_items_list_size - 1; i++)
 	{

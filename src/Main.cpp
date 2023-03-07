@@ -1,6 +1,6 @@
-// 2022-11-17 branch and price
-// 2022-11-23 实现基本的Branch and Price
-// 2023-02-23 恢复
+﻿// 2022-11-17 branch and price
+// 2022-11-23 Branch and Price
+// 2023-02-23 
 
 // CG -- column generation
 // MP -- master  problem
@@ -28,22 +28,26 @@ int main()
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
 	Values.stock_length = get<2>(fileTxt); // length of a stock
 
-	Node root_node ; // Init root node
-	root_node.model_matrix = Heuristic(Values, Lists,root_node); // primal heuristic
-	root_node.index = 1; // node index
+	Node root_node ; // Init root Node
+	root_node.index = 1; // Node index
 
 	int branch_flag = 2; // flag of branching, 0 -- left , 1 -- right, 2 -- root 
-	int node_solve_flag; // if there is feasible solns in a node, 0 -- yes , 1 -- no 
-	int integerity_flag; //  if there is non-int-solns in a node, 0 -- yes, 1 -- no
+	//int node_solve_flag; // if there is feasible solns in a Node, 0 -- yes , 1 -- no 
+	int continue_flag; //  if there is non-int-solns in a Node, 0 -- yes, 1 -- no
 
-	SolveNode(branch_flag, Values, Lists,root_node); // solve the root node with CG loop
-	integerity_flag = BranchAndPrice(Values, Lists,root_node); // find the non-int branch var of root node
+	// generate root Node matrix
+	Heuristic(Values, Lists,root_node); 
+	
+	// solve root Node with CG loop
+	SolveNode(branch_flag, Values, Lists,root_node);
+
+	// find the branch var of root Node
+	continue_flag = BranchAndPrice(Values, Lists,root_node);
 
 	printf("\n	//////////// BRANCHING //////////////\n");
 
-	// Case 0:
-	// If non-int solns exist in the root node after CG loop
-	if (integerity_flag == 0) 
+	// continue to BP
+	if (continue_flag == 0)
 	{
 		printf("\n	//////////// BRANCHING PROCEDURE START //////////////\n");
 
@@ -52,34 +56,32 @@ int main()
 		// Branch and Price loop
 		while (1)
 		{
-			// Case 1:
-			// First solve the left branch node
+			// First solve the left branch Node
 			branch_flag = 0; // LEFT			
 			if (branch_flag == 0)
 			{
-				Node this_node; // generate the left branch node
-				SolveNode(branch_flag, Values, Lists, this_node); // solve the node with CG	loop
-				integerity_flag = BranchAndPrice(Values, Lists, this_node); // judge node integerity and find the branch var
+				Node this_node; // generate the left branch Node
+				SolveNode(branch_flag, Values, Lists, this_node); // solve the Node with CG	loop
+				continue_flag = BranchAndPrice(Values, Lists, this_node); // judge Node integerity and find the branch var
 
 				// Case 1.1:
-				// all solns are integer in this new node
-				if (integerity_flag == 1)
+				// all solns are integer in this new Node
+				if (continue_flag == 1)
 				{
 					printf("\n	//////////// PROCEDURE STOP //////////////\n");
 					break;
 				}
 			}
 
-			// Case 2:
-			// Then solve the right branch node
+			// Then solve the right branch Node
 			branch_flag = 1; // RIGHT
 			if (branch_flag == 1)
 			{
-				Node this_node; // generate the right branch node
-				node_solve_flag = SolveNode(branch_flag, Values, Lists, this_node); // solve the node with CG loop
-				integerity_flag = BranchAndPrice(Values, Lists, this_node); // judge node integerity and find the branch var
+				Node this_node; // generate the right branch Node
+				SolveNode(branch_flag, Values, Lists, this_node); // solve the Node with CG loop
+				continue_flag = BranchAndPrice(Values, Lists, this_node); // judge Node integerity and find the branch var
 
-				if (integerity_flag == 1)
+				if (continue_flag == 1)
 				{
 					printf("\n	//////////// PROCEDURE STOP //////////////\n");
 					break;

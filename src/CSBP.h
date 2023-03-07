@@ -1,4 +1,4 @@
-// 2022-03-06 ¿ªÊ¼´¦Àí½ÚµãÑ¡Ôñ
+ï»¿// 2022-03-06 
 
 // CG -- column generation
 // MP -- master  problem
@@ -121,13 +121,13 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
-vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists, Node& root_node);
+void Heuristic(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
+void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
 
-float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node);
+void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
+void ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
