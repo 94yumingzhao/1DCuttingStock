@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-int BranchAndPrice(All_Values& Values, All_Lists& Lists)
+int BranchAndPrice(All_Values& Values, All_Lists& Lists,Node this_node)
 {
 	// Jun
 	int integerity_flag = NodeIntergerJudgement(Values, Lists);
@@ -15,7 +15,7 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists)
 		new_node.branch_var_val = Values.branch_var_val;
 		new_node.branch_floor_val = floor(Values.branch_var_val);
 		new_node.branch_value_ceil = ceil(Values.branch_var_val);
-		new_node.index = Values.node_index;
+		new_node.index = this_node.index;
 
 		printf("\n	The next node is NODE_%d\n", new_node.index + 1);
 		Lists.all_nodes_list.push_back(new_node); // add new node to the list
@@ -28,18 +28,18 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists)
 }
 
 // judge if current solns are all integers or not
-int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists)
+int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists,Node this_node)
 {
 	float soln_val = 0.0;
 	int integerity_flag = 1; // if current solns are all integers or not，0 --> no，1 --> yes
-	Lists.int_cols_list.clear(); // clear after a CG loop of one Node finished.
+	this_node.int_cols_list.clear(); // clear after a CG loop of one Node finished.
 
 	// find int-solns of this Node 
-	int solns_num = Lists.all_solns_list.size();
+	int solns_num = this_node.all_solns_list.size();
 	printf("\n	Current NODE has %d columns\n", solns_num);
 	for (int col = 0; col < solns_num; col++)
 	{
-		soln_val = Lists.all_solns_list[col]; // soln val
+		soln_val = this_node.all_solns_list[col]; // soln val
 
 		// Case 1；
 		// if this soln is not int
@@ -59,8 +59,8 @@ int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists)
 		else
 		{
 			Values.int_var_index = col; // 当前整数变量对应的列
-			Lists.int_cols_list.push_back(col);
-			Lists.int_solns_list.push_back(soln_val);
+			this_node.int_cols_list.push_back(col);
+			this_node.int_solns_list.push_back(soln_val);
 		}
 	}
 
@@ -71,7 +71,7 @@ int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists)
 		printf("\n	Current Solutions are ALL Integers !!!\n");
 	}
 
-	Lists.all_solns_list.clear(); // 当前节点求解结果清空，为后面节点求解做准备
+	this_node.all_solns_list.clear(); // 当前节点求解结果清空，为后面节点求解做准备
 	return integerity_flag;
 }
 

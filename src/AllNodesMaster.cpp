@@ -9,7 +9,8 @@ int SolveUpdateMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
-	IloNumVarArray& Vars_MP)
+	IloNumVarArray& Vars_MP,
+	Node this_node)
 {
 	int item_types_num = Values.item_types_num;
 
@@ -20,7 +21,7 @@ int SolveUpdateMasterProblem(
 	// add the new col from SP to the MP of it to create a new updated MP
 	for (int row = 0; row < item_types_num; row++)
 	{
-		CplexCol += Cons_MP[row](Lists.new_col[row]);
+		CplexCol += Cons_MP[row](this_node.new_col[row]);
 	}
 
 	// var >= 0
@@ -32,17 +33,17 @@ int SolveUpdateMasterProblem(
 	CplexCol.end();
 	
 	// solve the new updated MP
-	printf("\n	Continue to solve the new MP-%d", Values.iter + 1);
-	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", Values.iter+1);
+	printf("\n	Continue to solve the new MP-%d", this_node.iter + 1);
+	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", this_node.iter+1);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("updateMasterProblem.lp");
 	MP_cplex.solve(); // 求解当前主问题
-	printf("####################### MP-%d CPLEX SOLVING END #########################\n", Values.iter+1);
-	printf("\n	The OBJ of update MP-%d is %f\n\n", Values.iter+1,MP_cplex.getValue(Obj_MP));
+	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter+1);
+	printf("\n	The OBJ of update MP-%d is %f\n\n", this_node.iter+1,MP_cplex.getValue(Obj_MP));
 
 	// print solns of the updated MP
-	int cols_num = Lists.all_cols_list.size();
+	int cols_num = this_node.all_cols_list.size();
 	for (int k = 0; k < cols_num; k++)
 	{
 		float soln_val = MP_cplex.getValue(Vars_MP[k]);
@@ -50,13 +51,13 @@ int SolveUpdateMasterProblem(
 	}
 
 	// print and store dual price vals of the updated MP
-	Lists.dual_prices_list.clear(); // 清空约束对偶值list
+	this_node.dual_prices_list.clear(); // 清空约束对偶值list
 	printf("\n	DUAL PRICES: \n\n");
 	for (int k = 0; k < item_types_num; k++)
 	{
 		float dual_val = MP_cplex.getDual(Cons_MP[k]); // 对一行约束getDual()求对偶解
 		printf("	dual_r_%d = %f\n", k + 1, dual_val);
-		Lists.dual_prices_list.push_back(dual_val);
+		this_node.dual_prices_list.push_back(dual_val);
 	}
 
 	return 0;
@@ -69,28 +70,29 @@ float SolveFinalMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
-	IloNumVarArray& Vars_MP)
+	IloNumVarArray& Vars_MP,
+	Node this_node)
 {
 	int item_types_num = Values.item_types_num;
 
 	// solve th final MP of the CG loop of this Node
 	printf("\n	Continue to solve Final MP");
-	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", Values.iter);
+	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", this_node.iter);
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("FinalMasterProblem.lp");
 	MP_cplex.solve(); // 求解当前主问题
-	printf("####################### MP-%d CPLEX SOLVING END #########################\n", Values.iter);
+	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter);
 
 	printf("\n	The OBJ of Final-MP is %f\n\n" ,  MP_cplex.getValue(Obj_MP));
 
 	// print and store all solns of this Node, including the 0-solns
-	int cols_num = Lists.all_cols_list.size();
+	int cols_num = this_node.all_cols_list.size();
 	for (int col = 0; col < cols_num; col++)
 	{
 		float soln_val = MP_cplex.getValue(Vars_MP[col]);
 		printf("	var_x_%d = %f\n", col + 1, soln_val);
-		Lists.all_solns_list.push_back(soln_val);
+		this_node.all_solns_list.push_back(soln_val);
 	}
 
 	float node_bound = MP_cplex.getValue(Obj_MP);

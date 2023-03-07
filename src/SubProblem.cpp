@@ -4,7 +4,7 @@
 #include "CSBP.h"
 using namespace std;
 
-int SolveSubProblem(All_Values& Values, All_Lists& Lists)
+int SolveSubProblem(All_Values& Values, All_Lists& Lists,Node this_node)
 {
 	int ITEM_TYPES_NUM = Values.item_types_num;
 
@@ -27,7 +27,7 @@ int SolveSubProblem(All_Values& Values, All_Lists& Lists)
 	IloExpr SP_obj_sum1(SP_env); 
 	for (int k = 0; k < ITEM_TYPES_NUM; k++) 
 	{
-		SP_obj_sum1 += Lists.dual_prices_list[k] * SP_vars_list[k]; 
+		SP_obj_sum1 += this_node.dual_prices_list[k] * SP_vars_list[k];
 	}
 	IloObjective SP_obj = IloMaximize(SP_env, SP_obj_sum1); 
 	SP_model.add(SP_obj); 
@@ -41,25 +41,25 @@ int SolveSubProblem(All_Values& Values, All_Lists& Lists)
 	SP_model.add(SP_constriant1_sum1 <= Values.stock_length); 
 
 	// solve SP
-	printf("\n	Continue to solve the SP-MP-%d\n", Values.iter);
-	printf("\n\n####################### SP-MP-%d CPLEX SOLVING START #######################\n", Values.iter);
+	printf("\n	Continue to solve the SP-MP-%d\n", this_node.iter);
+	printf("\n\n####################### SP-MP-%d CPLEX SOLVING START #######################\n", this_node.iter);
 	IloCplex SP_cplex(SP_env);
 	SP_cplex.extract(SP_model);
 	SP_cplex.exportModel("SubProblem.lp");
 	int SP_solve = SP_cplex.solve(); // 求解子问题
-	printf("####################### SP-MP-%d CPLEX SOLVING END #########################\n", Values.iter);
+	printf("####################### SP-MP-%d CPLEX SOLVING END #########################\n", this_node.iter);
 	
 	// print everything
 	if (SP_solve == 0)
 	{
-		printf("\n	The SP-MP-%d is NOT FEASIBLE\n", Values.iter);
+		printf("\n	The SP-MP-%d is NOT FEASIBLE\n", this_node.iter);
 	}
 	else
 	{
-		printf("\n	The SP-MP-%d is FEASIBLE\n", Values.iter);
+		printf("\n	The SP-MP-%d is FEASIBLE\n", this_node.iter);
 	}
 
-	printf("\n	The OBJ of SP-MP-%d is %f\n\n", Values.iter, SP_cplex.getValue(SP_obj));
+	printf("\n	The OBJ of SP-MP-%d is %f\n\n", this_node.iter, SP_cplex.getValue(SP_obj));
 
 	for (int k = 0; k < ITEM_TYPES_NUM; k++)
 	{
@@ -68,7 +68,7 @@ int SolveSubProblem(All_Values& Values, All_Lists& Lists)
 	}
 
 	// Init the new col for MP
-	Lists.new_col.clear(); // 
+	this_node.new_col.clear(); // 
 	vector<float> New_Column; 
 	int SP_solve_flag = 0;
 
@@ -93,8 +93,8 @@ int SolveSubProblem(All_Values& Values, All_Lists& Lists)
 		}
 
 		// add new col to the matrix of MP
-		Lists.all_cols_list.push_back(New_Column); 
-		Lists.new_col = New_Column;
+		this_node.all_cols_list.push_back(New_Column);
+		this_node.new_col = New_Column;
 
 		SP_solve_flag = 0;
 	}

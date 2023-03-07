@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists)
+float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists,Node this_node)
 {
 	IloEnv Env_MP_1; // int environment
 	IloModel Model_MP_1(Env_MP_1); // int model 
@@ -11,7 +11,7 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 	IloRangeArray Cons_MP_1(Env_MP_1); // Init cons
 	IloObjective Obj_MP_1 = IloAdd(Model_MP_1, IloMinimize(Env_MP_1)); // Init and set obj
 
-	Values.iter = 0; // The firsth MP index ==0
+	this_node.iter = 0; // The firsth MP index ==0
 
 	float node_bound = Values.current_optimal_bound;
 	int feasible_flag;
@@ -25,7 +25,8 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 		Model_MP_1,
 		Obj_MP_1,
 		Cons_MP_1,
-		Vars_MP_1);
+		Vars_MP_1,
+		this_node);
 
 	cout << endl;
 
@@ -43,8 +44,8 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 		Env_MP_1.removeAllProperties();
 		Env_MP_1.end();
 
-		Lists.dual_prices_list.clear();
-		Lists.new_col.clear();
+		this_node.dual_prices_list.clear();
+		this_node.new_col.clear();
 
 		//Lists.all_cols_list.clear();
 
@@ -54,9 +55,9 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 	{
 		while (1) // 列生成循环求解
 		{
-			Values.iter++;
+			this_node.iter++;
 
-			int SP_solve_flag = SolveSubProblem(Values, Lists); // 求解当前主问题对应的子问题
+			int SP_solve_flag = SolveSubProblem(Values, Lists,this_node); // 求解当前主问题对应的子问题
 
 			if (SP_solve_flag == 1) // 求解子问题未得到非负削减费用，子问题所属主问题是最优
 			{
@@ -71,7 +72,8 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 					Model_MP_1,
 					Obj_MP_1,
 					Cons_MP_1,
-					Vars_MP_1); // 继续求解加入新列的更新主问题
+					Vars_MP_1,
+					this_node); // 继续求解加入新列的更新主问题
 			}
 		}
 
@@ -83,7 +85,8 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 			Model_MP_1,
 			Obj_MP_1,
 			Cons_MP_1,
-			Vars_MP_1); // 确定当前下界
+			Vars_MP_1,
+			this_node); // 确定当前下界
 
 		Vars_MP_1.clear();
 		Vars_MP_1.end();
@@ -94,8 +97,8 @@ float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Li
 		Env_MP_1.removeAllProperties();
 		Env_MP_1.end();
 
-		Lists.dual_prices_list.clear();
-		Lists.new_col.clear();
+		this_node.dual_prices_list.clear();
+		this_node.new_col.clear();
 
 		//Lists.all_cols_list.clear();
 
