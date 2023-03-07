@@ -25,9 +25,6 @@ using namespace std;
 
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
-
-
-
 // item type
 struct ItemTypeProperties
 {
@@ -83,39 +80,34 @@ struct Node
 	int index;
 	float lower_bound;
 	float branch_var_val;
+	int branch_var_index;
 	float branch_floor_val;
-	float branch_value_ceil;
+	float branch_ceil_val;
 
-	// Lists used for one Node
-	vector<float> all_solns_list; // all solns of this Node
+	// Lists used for this node
+	vector<float> fsb_solns_list; // feasible (i.e. non-zero) solns of this Node
+	vector<int> fsb_cols_list; // col-index of fsb-solns of this Node
 	vector<float> int_solns_list; // all int-solns of this Node
-	vector<float> int_cols_list;  // col indexes of all int-solns of this Node
+	vector<int> int_cols_list;  // col-index of int-solns of this Node
 
-	// Lists used for a CG iter of one Node
+	// Lists used for a CG iter of this node
 	int iter;
-	vector<vector<float>> all_cols_list; // model matrix in current CG iter
+	vector<vector<float>> model_matrix; // model matrix in current CG iter
 	vector<float> dual_prices_list; // dual prices of MP cons in current CG iter
 	vector<float> new_col; // one new col from SP in current CG iter
 	vector<vector<float>> new_cols_list; // new cols from SP in current CG iter
+
+	// this node flag
+	int this_node_continue;
 };
 
 struct All_Values
 {
-	int Root = 0;
 	int stocks_num; // 
 	int item_types_num; // 
 	int stock_length; // 
 
-	float branch_var_val;
-	int branch_var_index;
-
-	int nodes_num = 1;
-	int current_branch_flag;
-
-	float current_optimal_bound;
-
-	int int_var_index;
-	
+	float current_optimal_bound = 0;	
 };
 
 struct All_Lists
@@ -129,17 +121,13 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
-vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists);
+vector<vector<float>> Heuristic(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-int NodeIntergerJudgement(All_Values& Values, All_Lists& Lists,Node this_node);
+int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int BranchAndPrice(All_Values& Values, All_Lists& Lists,Node this_node);
+float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-int SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists,Node this_node);
-
-float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node root_node);
-
-float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node this_node);
+float ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -149,7 +137,7 @@ int SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node root_node);
+	Node& root_node);
 
 int SolveNewNodeFirstMasterProblem(
 	int branch_flag,
@@ -160,9 +148,10 @@ int SolveNewNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node this_node);
+	Node& this_node,
+	Node& parent_node);
 
-int SolveSubProblem(All_Values& Values, All_Lists& Lists,Node this_node);
+int SolveSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node);
 
 int SolveUpdateMasterProblem(
 	All_Values& Values,
@@ -172,9 +161,9 @@ int SolveUpdateMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node this_node);
+	Node& this_node);
 
-float SolveFinalMasterProblem(
+int SolveFinalMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
@@ -182,7 +171,12 @@ float SolveFinalMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node this_node);
+	Node& this_node);
+
+//int NodeIntergerityJudgement(All_Values& Values, All_Lists& Lists, Node& this_node);
+
+int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node);
+
 
 
 

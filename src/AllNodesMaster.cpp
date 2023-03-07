@@ -10,15 +10,18 @@ int SolveUpdateMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node this_node)
+	Node& this_node)
 {
 	int item_types_num = Values.item_types_num;
+
+	// add new col to the matrix of MP
+	this_node.model_matrix.push_back(this_node.new_col);
 
 	// set the obj coeff of the new col
 	int obj_coeff = 1;
 	IloNumColumn CplexCol = Obj_MP(obj_coeff);
 
-	// add the new col from SP to the MP of it to create a new updated MP
+	// add the new col ro the model of MP 
 	for (int row = 0; row < item_types_num; row++)
 	{
 		CplexCol += Cons_MP[row](this_node.new_col[row]);
@@ -38,32 +41,35 @@ int SolveUpdateMasterProblem(
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("updateMasterProblem.lp");
-	MP_cplex.solve(); // 求解当前主问题
+	int feasible_flag = MP_cplex.solve(); // solve MP
 	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter+1);
 	printf("\n	The OBJ of update MP-%d is %f\n\n", this_node.iter+1,MP_cplex.getValue(Obj_MP));
 
-	// print solns of the updated MP
-	int cols_num = this_node.all_cols_list.size();
-	for (int k = 0; k < cols_num; k++)
+	// print fsb-solns of the updated MP
+	int solns_num = this_node.model_matrix.size();
+	for (int col = 0; col < solns_num; col++)
 	{
-		float soln_val = MP_cplex.getValue(Vars_MP[k]);
-		printf("	var_x_%d = %f\n", k + 1, soln_val);
+		float soln_val = MP_cplex.getValue(Vars_MP[col]);
+		if (soln_val != 0)
+		{
+			printf("	var_x_%d = %f\n", col + 1, soln_val);
+		}
 	}
 
-	// print and store dual price vals of the updated MP
-	this_node.dual_prices_list.clear(); // 清空约束对偶值list
+	// print and store dual-prices of MP cons
+	this_node.dual_prices_list.clear(); 
 	printf("\n	DUAL PRICES: \n\n");
-	for (int k = 0; k < item_types_num; k++)
+
+	for (int row = 0; row < item_types_num; row++)
 	{
-		float dual_val = MP_cplex.getDual(Cons_MP[k]); // 对一行约束getDual()求对偶解
-		printf("	dual_r_%d = %f\n", k + 1, dual_val);
+		float dual_val = MP_cplex.getDual(Cons_MP[row]); // get dual-prices of all cons
+		printf("	dual_r_%d = %f\n", row + 1, dual_val);
 		this_node.dual_prices_list.push_back(dual_val);
 	}
-
-	return 0;
+	return feasible_flag;
 }
 
-float SolveFinalMasterProblem(
+int SolveFinalMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
@@ -71,42 +77,54 @@ float SolveFinalMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node this_node)
+	Node& this_node)
 {
 	int item_types_num = Values.item_types_num;
 
-	// solve th final MP of the CG loop of this Node
+	// solve the final MP of this Node
 	printf("\n	Continue to solve Final MP");
 	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", this_node.iter);
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("FinalMasterProblem.lp");
-	MP_cplex.solve(); // 求解当前主问题
+	int feasible_flag = MP_cplex.solve(); // 求解当前主问题
 	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter);
 
 	printf("\n	The OBJ of Final-MP is %f\n\n" ,  MP_cplex.getValue(Obj_MP));
 
-	// print and store all solns of this Node, including the 0-solns
-	int cols_num = this_node.all_cols_list.size();
-	for (int col = 0; col < cols_num; col++)
+	// store Node fsb-solns (i.e. non-zero solns)  and their col-index 
+	int solns_num = this_node.model_matrix.size();
+	for (int col = 0; col < solns_num; col++)
 	{
 		float soln_val = MP_cplex.getValue(Vars_MP[col]);
-		printf("	var_x_%d = %f\n", col + 1, soln_val);
-		this_node.all_solns_list.push_back(soln_val);
+		if (soln_val != 0)
+		{
+			printf("	var_x_%d = %f\n", col + 1, soln_val);
+			this_node.fsb_solns_list.push_back(soln_val);
+			this_node.fsb_cols_list.push_back(col);
+
+			// And store int-solns and their col-index among these fsb-solns
+			int soln_int_val = int(soln_val);
+			if (soln_int_val == soln_val)
+			{
+				this_node.int_solns_list.push_back(soln_val);
+				this_node.int_cols_list.push_back(col);
+			}
+		}	
 	}
 
-	float node_bound = MP_cplex.getValue(Obj_MP);
+	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 
 	/*for (int col = 0; col < node_final_cols_num; col++)
 	{
 		printf("\n	Column %d\n",col+1);
-		for (int row = 0; row < ITEM_TYPES_NUM; row++)
+		for (int row = 0; row < item_types_num; row++)
 		{
-			printf("	Column %d Row %d coeff = %f \n",col+1,col+1, Lists.all_cols_list[col][row]);
+			printf("	Column %d Row %d coeff = %f \n",col+1,col+1, Lists.model_matrix[col][row]);
 		}
 	}*/
 
-	return node_bound;
+	return feasible_flag;
 }
 
 

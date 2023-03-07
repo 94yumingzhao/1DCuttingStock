@@ -181,8 +181,8 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			}
 		}
 
-		int ITEM_TYPES_NUM = Lists.all_item_types_list.size();
-		printf("	The number of item_type is %d\n", ITEM_TYPES_NUM);
+		int item_types_num = Lists.all_item_types_list.size();
+		printf("	The number of item_type is %d\n", item_types_num);
 	}
 	
 #pragma endregion binpack

@@ -3,9 +3,10 @@
 #include "CSBP.h"
 using namespace std;
 
-// CG to solve the root node
-float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node root_node)
+// solve the root node with CG loop
+float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node& root_node)
 {
+	// Init CPLEX
 	IloEnv Env_MP; // Init environment
 	IloModel Model_MP(Env_MP); // Init model
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
@@ -15,10 +16,8 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node root_no
 	root_node.iter = 0; // root node index == 0
 	root_node.lower_bound = Values.current_optimal_bound; // Init root node bound 
 
-	int feasible_flag;
-
 	// solve the first MP of the root node 
-	feasible_flag = SolveRootNodeFirstMasterProblem(
+	int feasible_flag = SolveRootNodeFirstMasterProblem(
 		Values,
 		Lists,
 		Env_MP,
@@ -28,46 +27,25 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node root_no
 		Vars_MP,
 		root_node);
 
-	// 初始主问题不可行，则返回负数的下界，在主流程中进行判断，
-	// 如果得到的下界<0,则该问题没有可行解
-	// if the lb of the first MP <0, then this MP has no feasible solns.
-	if (feasible_flag == 0)
-	{
-		// 只能结束节点求解
-		Vars_MP.clear();
-		Vars_MP.end();
-		Cons_MP.clear();
-		Cons_MP.end();
-		Model_MP.removeAllProperties();
-		Model_MP.end();
-		Env_MP.removeAllProperties();
-		Env_MP.end();
-
-		root_node.dual_prices_list.clear();
-		root_node.new_col.clear();
-
-		//Lists.all_cols_list.clear();
-
-		return node_bound;
-	}
-	else
+	// if the LB of the first MP >= 0, then the 1st MP has feasible solns.
+	if (feasible_flag == 1)
 	{
 		// Column Generation loop
 		while (1)
 		{
-			root_node.iter++; // update CG loop iteration index
+			root_node.iter++; // CG loop iter index++
 
-			int SP_solve_flag = SolveSubProblem(Values, Lists); // solve the SP of MP
+			int solve_flag = SolveSubProblem(Values, Lists); // solve the SP of MP
 
 			// Case 1:
 			// No better reduced cost is get from SP anymore
-			if (SP_solve_flag == 1) 
+			if (solve_flag == 1)
 			{
 				break; // break CG loop and here the Node get final solns
 			}
 			// Case 2:
 			// Better reduced cost is get from SP
-			if (SP_solve_flag == 0)
+			if (solve_flag == 0)
 			{
 				// continue CG loop and update MP with the new col from SP
 				// solve the new updated MP
@@ -91,7 +69,8 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node root_no
 			Model_MP,
 			Obj_MP,
 			Cons_MP,
-			Vars_MP); 
+			Vars_MP,
+			root_node);
 
 		// clear all CPLEX objects to release memory. 
 		Vars_MP.clear();
@@ -103,10 +82,23 @@ float ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node root_no
 		Env_MP.removeAllProperties();
 		Env_MP.end();
 
-		root_node.dual_prices_list.clear();
-		root_node.new_col.clear();
-
-		//Lists.all_cols_list.clear();
-		return node_bound;
+		return root_node.lower_bound;
 	}
+
+	// if the LB of the first MP <0, then the 1st MP has no feasible solns.
+	if (feasible_flag == 0)
+	{
+		// clear all CPLEX objects to release memory. 
+		Vars_MP.clear();
+		Vars_MP.end();
+		Cons_MP.clear();
+		Cons_MP.end();
+		Model_MP.removeAllProperties();
+		Model_MP.end();
+		Env_MP.removeAllProperties();
+		Env_MP.end();
+
+		return root_node.lower_bound;
+	}
+
 }

@@ -12,14 +12,14 @@ int SolveRootNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
-	Node root_node)
+	Node& root_node)
 {
-	int ITEM_TYPES_NUM = Values.item_types_num;
+	int item_types_num = Values.item_types_num;
 
 	IloNumArray  con_min(Env_MP); // cons LB
 	IloNumArray  con_max(Env_MP); // cons UB
 
-	for (int i = 0; i < ITEM_TYPES_NUM; i++)
+	for (int i = 0; i < item_types_num; i++)
 	{
 		con_min.add(IloNum(Lists.all_item_types_list[i].demand)); // cons > demand
 		con_max.add(IloNum(IloInfinity)); // 
@@ -29,14 +29,14 @@ int SolveRootNodeFirstMasterProblem(
 	Model_MP.add(Cons_MP); 
 
 	// cplex列建模生成初始主问题模型
-	for (int col = 0; col < ITEM_TYPES_NUM; col++) 
+	for (int col = 0; col < item_types_num; col++) 
 	{
 		int obj_coeff_1 = 1;
 		IloNumColumn column1 = Obj_MP(obj_coeff_1); 
 
-		for (int row = 0; row < ITEM_TYPES_NUM; row++) 
+		for (int row = 0; row < item_types_num; row++) 
 		{
-			float row_coeff = root_node.all_cols_list[row][col];
+			float row_coeff = root_node.model_matrix[row][col];
 			column1 += Cons_MP[row](row_coeff); 
 		}
 
@@ -60,7 +60,6 @@ int SolveRootNodeFirstMasterProblem(
 	if (feasible_flag == 0)
 	{
 		printf("\n	The MP-1 is NOT FEASIBLE\n");
-		return feasible_flag;
 	}
 	else
 	{
@@ -69,7 +68,7 @@ int SolveRootNodeFirstMasterProblem(
 		printf("\n	The MP-1 is FEASIBLE\n");
 		printf("\n	The OBJ of MP-1 is %f\n\n", MP_cplex.getValue(Obj_MP));
 
-		for (int i = 0; i < ITEM_TYPES_NUM; i++)
+		for (int i = 0; i < item_types_num; i++)
 		{
 			float soln_val = MP_cplex.getValue(Vars_MP[i]); // 主问题各个决策变量的值
 			printf("	var_x_%d = %f\n", i + 1, soln_val);
@@ -77,13 +76,14 @@ int SolveRootNodeFirstMasterProblem(
 
 		printf("\n	DUAL PRICES: \n\n");
 
-		for (int k = 0; k < ITEM_TYPES_NUM; k++)
+		for (int k = 0; k < item_types_num; k++)
 		{
 			float dual_val = MP_cplex.getDual(Cons_MP[k]); // 主问题各个约束的对偶值
 			printf("	dual_r_%d = %f\n", k + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
 		}
-		return feasible_flag;
 	}
+
+	return feasible_flag;
 }
 
