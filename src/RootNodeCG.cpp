@@ -4,7 +4,7 @@
 using namespace std;
 
 // solve the root node with CG loop
-void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node& root_node)
+void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	// Init CPLEX
 	IloEnv Env_MP; // Init environment
@@ -70,7 +70,7 @@ void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists,Node& root_no
 			Obj_MP,
 			Cons_MP,
 			Vars_MP,
-			root_node);	
+			root_node);
 	}
 
 	// clear all CPLEX objects to release memory. 

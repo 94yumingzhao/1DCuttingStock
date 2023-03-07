@@ -25,19 +25,19 @@ void SplitString(const string& s, vector<string>& v, const string& c)
 
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 {
-	ostringstream s_in, s_out; 
-	string in_str, out_str; 
-	ofstream f_out; 
-	string line; 
-	vector<string> data_inline, data_inline1, data_inline2; 
+	ostringstream s_in, s_out;
+	string in_str, out_str;
+	ofstream f_out;
+	string line;
+	vector<string> data_inline, data_inline1, data_inline2;
 
-	int stocks_num = -1; 
-	int number_of_items = -1; 
-	int stock_length = -1; 
+	int stocks_num = -1;
+	int number_of_items = -1;
+	int stock_length = -1;
 	int item_types_num = -1;
 
 	// CSBB01.txt
-	
+
 //#pragma region CSBB01
 //	
 //	s_in.str("");
@@ -98,24 +98,24 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 #pragma region binpack
 
 	s_in.str("");
-	s_in << "binpack2.txt";
+	s_in << "C:/Users/YMZhao/Desktop/CSBP/data/binpack2.txt";
 	in_str = s_in.str();
 	ifstream fin2(in_str);
 
 	if (fin2)
 	{
-		
-		getline(fin2, line);
-		SplitString(line, data_inline, "\t"); 
-		stocks_num = atoi(data_inline[0].c_str()); 
 
 		getline(fin2, line);
-		SplitString(line, data_inline, "\t"); 
-		number_of_items = atoi(data_inline[0].c_str()); 
+		SplitString(line, data_inline, "\t");
+		stocks_num = atoi(data_inline[0].c_str());
 
 		getline(fin2, line);
-		SplitString(line, data_inline, "\t"); 
-		stock_length = atoi(data_inline[0].c_str()); 
+		SplitString(line, data_inline, "\t");
+		number_of_items = atoi(data_inline[0].c_str());
+
+		getline(fin2, line);
+		SplitString(line, data_inline, "\t");
+		stock_length = atoi(data_inline[0].c_str());
 
 		printf("\n\n	The number of stocks = %d\n", stocks_num);
 		printf("	The number of items = %d\n", number_of_items);
@@ -131,18 +131,18 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		int item_index = 1;
 		int item_type_index = 1;
 
-		for (size_t i = 0; i < number_of_items; i++) 
+		for (size_t i = 0; i < number_of_items; i++)
 		{
 			getline(fin2, line);
 			SplitString(line, data_inline, "\t");
 
 			ItemProperties this_item;
-			this_item.length = atoi(data_inline[0].c_str()); 
-			this_item.demand = 1; 
-			this_item.type = item_type_index; 
-			this_item.index = item_index; 
-			this_item.stock_index = -1; 
-			this_item.occupied = 0; 
+			this_item.length = atoi(data_inline[0].c_str());
+			this_item.demand = 1;
+			this_item.type = item_type_index;
+			this_item.index = item_index;
+			this_item.stock_index = -1;
+			this_item.occupied = 0;
 
 			Lists.all_items_list.push_back(this_item);
 			item_index++;
@@ -180,7 +180,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		size_t item_types_num = Lists.all_item_types_list.size();
 		printf("	The number of item_type is %zd\n", item_types_num);
 	}
-	
+
 #pragma endregion binpack
 
 	ItemProperties  VP;

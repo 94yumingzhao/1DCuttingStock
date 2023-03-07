@@ -37,7 +37,7 @@ struct ItemTypeProperties
 struct StockTypeProperties
 {
 	int type = -1;
-	int count = 0;
+	int count = -1;
 };
 
 // item
@@ -48,7 +48,7 @@ struct ItemProperties
 	int length = -1;
 	int index = -1;
 	int stock_index = -1;
-	int occupied = 0;
+	int occupied = -1;
 
 	int cutting_distance = -1;
 	int material_cutting_loss = -1;
@@ -57,7 +57,7 @@ struct ItemProperties
 // stock
 struct StockProperties
 {
-	int type = 0;
+	int type = -1;
 	int pattern = -1;
 	int length = -1;
 	int index = -1;
@@ -72,17 +72,17 @@ struct StockProperties
 struct Node
 {
 	// parent node info
-	int parent_index;
-	int parent_branch_flag;
-	int parent_branch_val;
+	int parent_index = -1;
+	int parent_branch_flag = -1;
+	int parent_branch_val = -1;
 
 	// this node info
-	int index;
-	float lower_bound;
-	float branch_var_val;
-	int branch_var_index;
-	float branch_floor_val;
-	float branch_ceil_val;
+	int index = -1;
+	float lower_bound = -1;
+	float branch_var_val = -1;
+	int branch_var_index = -1;
+	float branch_floor_val = -1;
+	float branch_ceil_val = -1;
 
 	// Lists used for this node
 	vector<float> fsb_solns_list; // feasible (i.e. non-zero) solns of this Node
@@ -91,23 +91,23 @@ struct Node
 	vector<int> int_cols_list;  // col-index of int-solns of this Node
 
 	// Lists used for a CG iter of this node
-	int iter;
+	int iter = -1;
 	vector<vector<float>> model_matrix; // model matrix in current CG iter
 	vector<float> dual_prices_list; // dual prices of MP cons in current CG iter
 	vector<float> new_col; // one new col from SP in current CG iter
 	vector<vector<float>> new_cols_list; // new cols from SP in current CG iter
 
 	// this node flag
-	int this_node_continue;
+	int this_node_continue = -1;
 };
 
 struct All_Values
 {
-	int stocks_num; // 
-	int item_types_num; // 
-	int stock_length; // 
+	int stocks_num = -1; // 
+	int item_types_num = -1; // 
+	int stock_length = -1; // 
 
-	float current_optimal_bound = 0;	
+	float current_optimal_bound = -1;
 };
 
 struct All_Lists
@@ -127,7 +127,7 @@ void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this
 
 void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
+void ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node,Node &parent_node);
 
 int SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -151,7 +151,7 @@ int SolveNewNodeFirstMasterProblem(
 	Node& this_node,
 	Node& parent_node);
 
-int SolveSubProblem(All_Values& Values, All_Lists& Lists,Node& this_node);
+int SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int SolveUpdateMasterProblem(
 	All_Values& Values,

@@ -15,6 +15,8 @@ using namespace std;
 
 int main()
 {
+	printf("\n	//////////// START //////////////\n\n");
+
 	clock_t start, finish;
 	start = clock();
 
@@ -28,7 +30,7 @@ int main()
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
 	Values.stock_length = get<2>(fileTxt); // length of a stock
 
-	Node root_node ; // Init root Node
+	Node root_node; // Init root Node
 	root_node.index = 1; // Node index
 
 	int branch_flag = 2; // flag of branching, 0 -- left , 1 -- right, 2 -- root 
@@ -36,13 +38,13 @@ int main()
 	int continue_flag; //  if there is non-int-solns in a Node, 0 -- yes, 1 -- no
 
 	// generate root Node matrix
-	Heuristic(Values, Lists,root_node); 
-	
+	Heuristic(Values, Lists, root_node);
+
 	// solve root Node with CG loop
-	SolveNode(branch_flag, Values, Lists,root_node);
+	SolveNode(branch_flag, Values, Lists, root_node);
 
 	// find the branch var of root Node
-	continue_flag = BranchAndPrice(Values, Lists,root_node);
+	continue_flag = BranchAndPrice(Values, Lists, root_node);
 
 	printf("\n	//////////// BRANCHING //////////////\n");
 
@@ -60,9 +62,9 @@ int main()
 			branch_flag = 0; // LEFT			
 			if (branch_flag == 0)
 			{
-				Node this_node; // generate the left branch Node
-				SolveNode(branch_flag, Values, Lists, this_node); // solve the Node with CG	loop
-				continue_flag = BranchAndPrice(Values, Lists, this_node); // judge Node integerity and find the branch var
+				Node new_node; // generate the left branch Node
+				SolveNode(branch_flag, Values, Lists, new_node); // solve the Node with CG	loop
+				continue_flag = BranchAndPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
 
 				// Case 1.1:
 				// all solns are integer in this new Node
@@ -77,9 +79,9 @@ int main()
 			branch_flag = 1; // RIGHT
 			if (branch_flag == 1)
 			{
-				Node this_node; // generate the right branch Node
-				SolveNode(branch_flag, Values, Lists, this_node); // solve the Node with CG loop
-				continue_flag = BranchAndPrice(Values, Lists, this_node); // judge Node integerity and find the branch var
+				Node new_node; // generate the right branch Node
+				SolveNode(branch_flag, Values, Lists, new_node); // solve the Node with CG loop
+				continue_flag = BranchAndPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
 
 				if (continue_flag == 1)
 				{
@@ -89,17 +91,23 @@ int main()
 			}
 
 			cnt++;
-			if (cnt == 4)
+			if (cnt == 6)
 			{
-				printf("\n	//////////// PROCEDURE STOP at 4 Branched Nodes//////////////\n");		
+				printf("\n	//////////// PROCEDURE STOP at 4 Branched Nodes//////////////\n");
 				break;
-			}				
+			}
 		}
+	}
+	else
+	{
+		printf("\n	//////////// PROCEDURE STOP at Root Node//////////////\n");
 	}
 
 	finish = clock();
 	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
 	printf("\n	Process Time = %f seconds\n", duration);
+
+	cout << endl;
 
 	return 0;
 }

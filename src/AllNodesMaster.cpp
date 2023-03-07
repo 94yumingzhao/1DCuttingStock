@@ -28,22 +28,21 @@ int SolveUpdateMasterProblem(
 	}
 
 	// var >= 0
-	float var_min = 0; 
-	float var_max = IloInfinity; 
+	float var_min = 0;
+	float var_max = IloInfinity;
 
 	IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT); // float, not int
 	Vars_MP.add(Var);
 	CplexCol.end();
-	
+
 	// solve the new updated MP
-	printf("\n	Continue to solve the new MP-%d", this_node.iter + 1);
-	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", this_node.iter+1);
+	printf("\n\n####################### Node_%d MP-%d CPLEX SOLVING START #######################\n\n",this_node.index, this_node.iter + 1);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("updateMasterProblem.lp");
 	IloBool MP_flag = MP_cplex.solve(); // solve MP
-	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter+1);
-	printf("\n	The OBJ of update MP-%d is %f\n\n", this_node.iter+1,MP_cplex.getValue(Obj_MP));
+	printf("\n####################### Node_%d MP-%d CPLEX SOLVING END #########################\n", this_node.index, this_node.iter + 1);
+	printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.index, this_node.iter + 1, MP_cplex.getValue(Obj_MP));
 
 	// print fsb-solns of the updated MP
 	size_t solns_num = this_node.model_matrix.size();
@@ -57,7 +56,7 @@ int SolveUpdateMasterProblem(
 	}
 
 	// print and store dual-prices of MP cons
-	this_node.dual_prices_list.clear(); 
+	this_node.dual_prices_list.clear();
 	printf("\n	DUAL PRICES: \n\n");
 
 	for (int row = 0; row < item_types_num; row++)
@@ -82,15 +81,14 @@ int SolveFinalMasterProblem(
 	int item_types_num = Values.item_types_num;
 
 	// solve the final MP of this Node
-	printf("\n	Continue to solve Final MP");
-	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n", this_node.iter);
+	printf("\n\n####################### Node_%d MP-final CPLEX SOLVING START #######################\n\n",this_node.index);
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("FinalMasterProblem.lp");
 	IloBool MP_flag = MP_cplex.solve(); // 求解当前主问题
-	printf("####################### MP-%d CPLEX SOLVING END #########################\n", this_node.iter);
+	printf("\n####################### Node_%d MP-final CPLEX SOLVING END #########################\n", this_node.index);
 
-	printf("\n	The OBJ of Final-MP is %f\n\n" ,  MP_cplex.getValue(Obj_MP));
+	printf("\n	OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
 	// store Node fsb-solns (i.e. non-zero solns)  and their col-index 
 	size_t solns_num = this_node.model_matrix.size();
@@ -110,7 +108,7 @@ int SolveFinalMasterProblem(
 				this_node.int_solns_list.push_back(soln_val);
 				this_node.int_cols_list.push_back(col);
 			}
-		}	
+		}
 	}
 
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
