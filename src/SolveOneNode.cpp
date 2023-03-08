@@ -4,7 +4,7 @@
 using namespace std;
 
 // function to 
-void Heuristic(All_Values& Values, All_Lists& Lists, Node& root_node)
+void InitPrimalMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
 	vector<vector<float>> primal_matrix;
@@ -30,6 +30,34 @@ void Heuristic(All_Values& Values, All_Lists& Lists, Node& root_node)
 	root_node.model_matrix = primal_matrix;
 }
 
+void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
+{
+	this_node.parent_index = parent_node.index;
+	this_node.parent_branch_flag = branch_flag;
+	this_node.parent_branch_val = parent_node.branch_var_val;
+
+	this_node.model_matrix = parent_node.model_matrix;
+	this_node.int_cols_list = parent_node.int_cols_list;
+	this_node.int_solns_list = parent_node.int_solns_list;
+
+	this_node.all_solns_list.clear();
+	this_node.fsb_solns_list.clear();
+	this_node.fsb_cols_list.clear();
+
+	this_node.dual_prices_list.clear();
+	this_node.new_col.clear();
+	this_node.new_cols_list.clear();
+
+	if (branch_flag == 0)
+	{
+		this_node.index = parent_node.index + 1;
+	}
+	if (branch_flag == 1)
+	{
+		this_node.index = parent_node.index + 2;
+	}
+}
+
 // function to solve a node with CG loop
 void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node)
 {
@@ -49,16 +77,7 @@ void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this
 	{
 		Node parent_node = Lists.all_nodes_list.back();
 
-		this_node.model_matrix = parent_node.model_matrix;
-
-		if (branch_flag == 0)
-		{
-			this_node.index = parent_node.index + 1;
-		}
-		if (branch_flag == 1)
-		{
-			this_node.index = parent_node.index + 2;
-		}
+		InitNewNode(branch_flag,this_node, parent_node);
 
 		printf("\n##########################################################\n");
 		printf("##########################################################\n");

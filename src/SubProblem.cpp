@@ -44,7 +44,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 	printf("\n\n####################### Node_%d SP-%d CPLEX SOLVING START #######################\n\n",this_node.index, this_node.iter);
 	IloCplex SP_cplex(Env_SP);
 	SP_cplex.extract(Model_SP);
-	SP_cplex.exportModel("SubProblem.lp");
+	//SP_cplex.exportModel("SubProblem.lp");
 	bool SP_flag = SP_cplex.solve(); // solve sub problem
 	printf("\n####################### Node_%d SP-%d CPLEX SOLVING END #########################\n", this_node.index, this_node.iter);
 
@@ -62,7 +62,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	for (int k = 0; k < item_types_num; k++)
 	{
-		float soln_val = SP_cplex.getValue(Vars_SP[k]);
+		IloNum soln_val = SP_cplex.getValue(Vars_SP[k]);
 		printf("	var_y_%d = %f\n", k + 1, soln_val);
 	}
 

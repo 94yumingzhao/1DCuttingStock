@@ -75,8 +75,8 @@ bool SolveRootNodeFirstMasterProblem(
 
 		for (int col = 0; col < solns_num; col++)
 		{
-			float soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val != 0)
+			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
+			if (soln_val > 0)
 			{
 				fsb_num++;
 				printf("	var_x_%d = %f\n", col + 1, soln_val);

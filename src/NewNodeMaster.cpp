@@ -53,44 +53,28 @@ bool SolveNewNodeFirstMasterProblem(
 		float var_max; // var UB
 		string X_name = "X_" + to_string(col + 1); // var name
 
-		// Case 1: The var of this col has already been solved as an int-soln in PN solns
-		// Then set the var to be the val of the corresponding PN int-soln.
-		//if (col == parent_node.int_cols_list[k])
-		//{
-		//	float int_var_val = parent_node.int_solns_list[k];
-
-		//	//  var = int_var_val
-		//	var_min = int_var_val;
-		//	var_max = int_var_val;
-
-		//	IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
-		//	Vars_MP.add(Var);
-		//	
-		//}
-
-		// Case 2.1 : 
-			// This var is the branch var of PN, and branch the var to be an integer
+		// Case 1 : 
+		// This var is the branch var of PN, and branch the var to be an integer
 		if (col == parent_node.branch_var_index)
 		{
 			float branch_var_val = parent_node.fsb_solns_list[col];
 			float final_val = 0;
 
-			// Case 2.1.1
+			// Case 1.1
 			// left branch of PN, set the var to be its floor-val.
 			if (branch_flag == 0)
 			{
-				final_val = floor(branch_var_val);
+				final_val = parent_node.branch_floor_val;
 				printf("\n	The FLOOR value of var %f  =  %f\n", branch_var_val, final_val);
 			}
 
-			// Case 2.1.2
+			// Case 1.2
 			// right branch of PN, set the var to be its ceil-val
 			if (branch_flag == 1)
 			{
-				final_val = ceil(branch_var_val);
+				final_val = parent_node.branch_ceil_val;
 				printf("\n	The CEIL value of var %f = %f\n", branch_var_val, final_val);
 			}
-
 			//  var = floor-val or ceil-val
 			var_min = final_val;
 			var_max = final_val;
@@ -99,31 +83,44 @@ bool SolveNewNodeFirstMasterProblem(
 			// ATTENTION: thought the var is an integer, it must be set as a FLOAT in code here
 			IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
 			Vars_MP.add(Var);
-			
 		}
 
-		// Case 2.2:
+		// Case 2:
 		// The var of this col is not the branch var of PN
 		if (col != parent_node.branch_var_index)
 		{
-			// var >= 0
-			var_min = 0;
-			var_max = IloInfinity;
+			// Case 2.1
+			if (col == parent_node.int_cols_list[col])
+			{
+				float int_soln_val = parent_node.int_solns_list[col];
 
-			// Init and set var
-			IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
-			Vars_MP.add(Var);
-			
-		}
+				//  var = int-soln
+				var_min = int_soln_val;
+				var_max = int_soln_val;
 
+				// Init and set var
+				IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+				Vars_MP.add(Var);
+			}
+			// Case 2.2
+			if (col != parent_node.int_cols_list[col])
+			{
+				// var >= 0
+				var_min = 0;
+				var_max = IloInfinity;
+
+				// Init and set var
+				IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+				Vars_MP.add(Var);
+			}		
+		}	
 		CplexCol.end(); // end this col
 	}
-
 
 	printf("\n\n################## Node_%d MP-1 CPLEX SOLVING START ##################\n\n",this_node.index);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
-	MP_cplex.exportModel("NewNodeProblem.lp");
+	//MP_cplex.exportModel("NewNodeProblem.lp");
 	bool MP_flag = MP_cplex.solve();
 	printf("\n################## Node_%d MP-1 CPLEX SOLVING END ####################\n\n", this_node.index);
 
@@ -140,8 +137,8 @@ bool SolveNewNodeFirstMasterProblem(
 
 		for (int col = 0; col < all_cols_num; col++)
 		{
-			float soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val != 0)
+			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
+			if (soln_val > 0)
 			{
 				fsb_num++;
 				printf("	var_x_%d = %f\n", col + 1, soln_val);
@@ -171,7 +168,6 @@ bool SolveNewNodeFirstMasterProblem(
 	printf("\n	NUM of all solns: %zd\n",all_cols_num);
 	printf("\n	NUM of fsb solns: %d\n", fsb_num);
 	printf("\n	NUM of int solns: %d\n", int_num);
-
 
 	MP_cplex.end();
 	return MP_flag;

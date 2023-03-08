@@ -42,7 +42,7 @@
     <ClCompile Include="..\src\RootNodeMaster.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\SolvingOneNode.cpp">
+    <ClCompile Include="..\src\SolveOneNode.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\SubProblem.cpp">

@@ -85,6 +85,7 @@ struct Node
 	float branch_ceil_val = -1;
 
 	// Lists used for this node
+	vector<float> all_solns_list; //
 	vector<float> fsb_solns_list; // feasible (i.e. non-zero) solns of this Node
 	vector<int> fsb_cols_list; // col-index of fsb-solns of this Node
 	vector<float> int_solns_list; // all int-solns of this Node
@@ -106,7 +107,6 @@ struct All_Values
 	int stocks_num = -1; // 
 	int item_types_num = -1; // 
 	int stock_length = -1; // 
-
 	float current_optimal_bound = -1;
 };
 
@@ -121,7 +121,7 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
-void Heuristic(All_Values& Values, All_Lists& Lists, Node& root_node);
+void InitPrimalMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
 
 void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
 
@@ -176,6 +176,10 @@ bool SolveFinalMasterProblem(
 //int NodeIntergerityJudgement(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node);
+
+int FindNodeBranchVar(Node& this_node);
+
+void InitNewNode(int branch_flag, Node& this_node, Node& parent_node);
 
 
 

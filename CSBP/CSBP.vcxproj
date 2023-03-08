@@ -27,7 +27,7 @@
     <ClCompile Include="..\src\NewNodeMaster.cpp" />
     <ClCompile Include="..\src\RootNodeCG.cpp" />
     <ClCompile Include="..\src\RootNodeMaster.cpp" />
-    <ClCompile Include="..\src\SolvingOneNode.cpp" />
+    <ClCompile Include="..\src\SolveOneNode.cpp" />
     <ClCompile Include="..\src\SubProblem.cpp" />
   </ItemGroup>
   <ItemGroup>

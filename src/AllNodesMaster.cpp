@@ -40,7 +40,7 @@ bool SolveUpdateMasterProblem(
 	printf("\n\n####################### Node_%d MP-%d CPLEX SOLVING START #######################\n\n",this_node.index, this_node.iter + 1);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
-	MP_cplex.exportModel("updateMasterProblem.lp");
+	//MP_cplex.exportModel("updateMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve(); // solve MP
 	printf("\n####################### Node_%d MP-%d CPLEX SOLVING END #########################\n", this_node.index, this_node.iter + 1);
 	printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.index, this_node.iter + 1, MP_cplex.getValue(Obj_MP));
@@ -48,11 +48,11 @@ bool SolveUpdateMasterProblem(
 	// print fsb-solns of the updated MP
 	int fsb_num = 0;
 	int int_num = 0;
-	size_t solns_num = this_node.model_matrix.size();
-	for (int col = 0; col < solns_num; col++)
+	size_t now_solns_num = this_node.model_matrix.size();
+	for (int col = 0; col < now_solns_num; col++)
 	{
-		float soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val != 0)
+		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
+		if (soln_val > 0)
 		{
 			fsb_num++;
 			printf("	var_x_%d = %f\n", col + 1, soln_val);
@@ -79,7 +79,7 @@ bool SolveUpdateMasterProblem(
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 	printf("\n	Node_%d MP-%d:\n", this_node.index,this_node.iter);
 	printf("\n	Lower Bound:   %f\n", this_node.lower_bound);
-	printf("\n	NUM of all solns: %zd\n", solns_num);
+	printf("\n	NUM of now solns: %zd\n", now_solns_num);
 	printf("\n	NUM of fsb solns: %d\n", fsb_num);
 	printf("\n	NUM of int solns: %d\n", int_num);
 
@@ -109,23 +109,28 @@ bool SolveFinalMasterProblem(
 
 	printf("\n	OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
-	// store Node fsb-solns (i.e. non-zero solns)  and their col-index 
-	size_t solns_num = this_node.model_matrix.size();
-	for (int col = 0; col < solns_num; col++)
+	size_t all_solns_num = this_node.model_matrix.size();
+	for (int col = 0; col < all_solns_num; col++)
 	{
-		float soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val != 0)
+		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
+
+		this_node.all_solns_list.push_back(soln_val); // 1. Node all solns (including zero-solns)
+
+		if (soln_val > 0)
 		{
 			printf("	var_x_%d = %f\n", col + 1, soln_val);
-			this_node.fsb_solns_list.push_back(soln_val);
-			this_node.fsb_cols_list.push_back(col);
 
-			// And store int-solns and their col-index among these fsb-solns
+			this_node.fsb_solns_list.push_back(soln_val); // 2. Node feasible (i.e. non-zero-solns) solns 
+			this_node.fsb_cols_list.push_back(col); 	// 3. Node fsb-solns' index
+
 			int soln_int_val = int(soln_val);
 			if (soln_int_val == soln_val)
 			{
-				this_node.int_solns_list.push_back(soln_val);
-				this_node.int_cols_list.push_back(col);
+				if (soln_int_val > 0)
+				{
+					this_node.int_solns_list.push_back(soln_val); // 4. Node int-solns
+					this_node.int_cols_list.push_back(col); // 5. Node int-solns' index
+				}
 			}
 		}
 	}
@@ -135,10 +140,9 @@ bool SolveFinalMasterProblem(
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 	printf("\n	Node_%d MP-final:\n", this_node.index);
 	printf("\n	Lower Bound:   %f\n", this_node.lower_bound);
-	printf("\n	NUM of all solns: %zd\n", solns_num);
+	printf("\n	NUM of all solns: %zd\n", all_solns_num);
 	printf("\n	NUM of fsb solns: %zd\n", fsb_num);
 	printf("\n	NUM of int solns: %zd\n", int_num);
-
 
 	MP_cplex.end();
 	return MP_flag;

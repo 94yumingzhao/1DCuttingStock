@@ -38,7 +38,7 @@ int main()
 	int continue_flag; //  if there is non-int-solns in a Node, 0 -- yes, 1 -- no
 
 	// generate root Node matrix
-	Heuristic(Values, Lists, root_node);
+	InitPrimalMatrix(Values, Lists, root_node);
 
 	// solve root Node with CG loop
 	SolveNode(branch_flag, Values, Lists, root_node);
@@ -46,12 +46,12 @@ int main()
 	// find the branch var of root Node
 	continue_flag = BranchAndPrice(Values, Lists, root_node);
 
-	printf("\n	//////////// BRANCHING //////////////\n");
+	printf("\n////////////////////////// BRANCHING ////////////////////////////\n");
 
 	// continue to BP
 	if (continue_flag == 0)
 	{
-		printf("\n	//////////// BRANCHING PROCEDURE START //////////////\n");
+		printf("\n//////////////BRANCHING PROCEDURE START //////////////\n");
 
 		int cnt = 0;
 
@@ -91,7 +91,7 @@ int main()
 			}
 
 			cnt++;
-			if (cnt == 6)
+			if (cnt == 2)
 			{
 				printf("\n	//////////// PROCEDURE STOP at 4 Branched Nodes//////////////\n");
 				break;
