@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-int SolveRootNodeFirstMasterProblem(
+bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
@@ -27,34 +27,40 @@ int SolveRootNodeFirstMasterProblem(
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);
 	Model_MP.add(Cons_MP);
 
+	con_min.end();
+	con_max.end();
 
 	for (int col = 0; col < item_types_num; col++)
 	{
 		int obj_coeff_1 = 1;
-		IloNumColumn column1 = Obj_MP(obj_coeff_1);
+		IloNumColumn CplexCol = Obj_MP(obj_coeff_1);
 
 		for (int row = 0; row < item_types_num; row++)
 		{
 			float row_coeff = root_node.model_matrix[row][col];
-			column1 += Cons_MP[row](row_coeff);
+			CplexCol += Cons_MP[row](row_coeff);
 		}
 
 		float var_min = 0;
 		float var_max = IloInfinity;
 
 		string X_name = "X_" + to_string(col + 1);
-		IloNumVar var(column1, var_min, var_max, ILOFLOAT, X_name.c_str());
-		Vars_MP.add(var);
+		IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+		Vars_MP.add(Var);
 
-		column1.end();
+		CplexCol.end();
 	}
 
 	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n",root_node.index);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("initialMasterProblem.lp");
-	IloBool MP_flag = MP_cplex.solve();
+	bool MP_flag = MP_cplex.solve();
 	printf("####################### Node_%d MP-1 CPLEX SOLVING END #########################\n",root_node.index);
+
+	int fsb_num = 0;
+	int int_num = 0;
+	size_t solns_num = root_node.model_matrix.size();
 
 	if (MP_flag == 0)
 	{
@@ -67,10 +73,20 @@ int SolveRootNodeFirstMasterProblem(
 		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
 		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (int i = 0; i < item_types_num; i++)
+		for (int col = 0; col < solns_num; col++)
 		{
-			float soln_val = MP_cplex.getValue(Vars_MP[i]);
-			printf("	var_x_%d = %f\n", i + 1, soln_val);
+			float soln_val = MP_cplex.getValue(Vars_MP[col]);
+			if (soln_val != 0)
+			{
+				fsb_num++;
+				printf("	var_x_%d = %f\n", col + 1, soln_val);
+
+				int soln_int_val = int(soln_val);
+				if (soln_int_val == soln_val)
+				{
+					int_num++;
+				}
+			}
 		}
 
 		printf("\n	DUAL PRICES: \n\n");
@@ -83,6 +99,14 @@ int SolveRootNodeFirstMasterProblem(
 		}
 	}
 
+	root_node.lower_bound = MP_cplex.getValue(Obj_MP);
+	printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
+	printf("\n	Lower Bound:   %f\n", root_node.lower_bound);
+	printf("\n	NUM of all solns: %zd\n", solns_num);
+	printf("\n	NUM of fsb solns: %d\n", fsb_num);
+	printf("\n	NUM of int solns: %d\n", int_num);
+
+	MP_cplex.end();
 	return MP_flag;
 }
 

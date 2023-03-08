@@ -129,7 +129,7 @@ void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_n
 
 void ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node,Node &parent_node);
 
-int SolveRootNodeFirstMasterProblem(
+bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
@@ -139,7 +139,7 @@ int SolveRootNodeFirstMasterProblem(
 	IloNumVarArray& Vars_List_MP,
 	Node& root_node);
 
-int SolveNewNodeFirstMasterProblem(
+bool SolveNewNodeFirstMasterProblem(
 	int branch_flag,
 	All_Values& Values,
 	All_Lists& Lists,
@@ -151,9 +151,9 @@ int SolveNewNodeFirstMasterProblem(
 	Node& this_node,
 	Node& parent_node);
 
-int SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
+bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int SolveUpdateMasterProblem(
+bool SolveUpdateMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
@@ -163,7 +163,7 @@ int SolveUpdateMasterProblem(
 	IloNumVarArray& Vars_List_MP,
 	Node& this_node);
 
-int SolveFinalMasterProblem(
+bool SolveFinalMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,

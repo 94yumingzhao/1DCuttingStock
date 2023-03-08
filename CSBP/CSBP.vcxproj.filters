@@ -65,4 +65,21 @@
       <Filter>数据</Filter>
     </Text>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FinalMasterProblem.lp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="initialMasterProblem.lp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="NewNodeProblem.lp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="SubProblem.lp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="updateMasterProblem.lp">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>

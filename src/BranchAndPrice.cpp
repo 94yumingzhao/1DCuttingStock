@@ -13,14 +13,12 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 	{
 		// update current optimal bound val
 		Values.current_optimal_bound = this_node.lower_bound;
-		printf("\n	current_optimal_bound = %f\n", Values.current_optimal_bound);
+		printf("\n	Optimal Lower Bound:  %f\n", Values.current_optimal_bound);
 
 		// if current solns are all integers or not，0 -- no，1 -- yes
 
 		// find the branch var of this Node
 		size_t cols_num = this_node.model_matrix.size();
-		printf("\n	This Node has %zd columns\n", cols_num);
-
 		float soln_val;
 		size_t solns_num = this_node.fsb_solns_list.size();
 		for (int col = 0; col < solns_num; col++)
@@ -63,12 +61,9 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 			// update current optimal bound val
 			Values.current_optimal_bound = this_node.lower_bound;
 
-			// if current solns are all integers or not，0 -- no，1 -- yes
-
 			// find the branch var of this Node
 			float soln_val;
 			size_t solns_num = this_node.fsb_solns_list.size();
-			printf("\n	This Node has %zd columns\n", solns_num);
 			for (int col = 0; col < solns_num; col++)
 			{
 				soln_val = this_node.fsb_solns_list[col];
@@ -77,7 +72,9 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 				int soln_int_val = int(soln_val);
 				if (soln_int_val != soln_val) // not an integer
 				{
-					printf("\n	Of all vars, var_x_%d = %f is NOT an integer......\n", col + 1, soln_val);
+					printf("\n	Node_%d: var_x_%d = %f is NOT an integer", this_node.index, col + 1, soln_val);
+					printf("\n	So branch on Node_%d var_x_%d\n", this_node.index, col + 1);
+
 					this_node.branch_var_index = col; // set the var-col index to branch
 					this_node.branch_var_val = soln_val; // set the var val to branch
 
@@ -99,6 +96,7 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 		if (this_node.lower_bound >= Values.current_optimal_bound)
 		{
 			// no need to continue branch this Node
+			printf("\n	Node_%d LB = %f < OLB = %f\n", this_node.index,this_node.lower_bound, Values.current_optimal_bound);
 			printf("\n	No need to branch this Node, switch to another Node\n");
 			continue_flag = 2;
 		}

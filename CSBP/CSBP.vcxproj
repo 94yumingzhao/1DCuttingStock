@@ -38,6 +38,13 @@
     <Text Include="..\data\binpack2.txt" />
     <Text Include="..\data\CSBB01.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="FinalMasterProblem.lp" />
+    <None Include="initialMasterProblem.lp" />
+    <None Include="NewNodeProblem.lp" />
+    <None Include="SubProblem.lp" />
+    <None Include="updateMasterProblem.lp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

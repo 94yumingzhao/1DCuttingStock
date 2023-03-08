@@ -11,12 +11,10 @@ void ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lis
 	IloRangeArray Cons_MP(Env_MP); // Init cons
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj
 
-	//Node parent_node = Lists.all_nodes_list.back(); // need branch var -val from parent node
-	float node_lower_bound = Values.current_optimal_bound;
 
 	this_node.iter = 0; // The firsth MP index ==0
 
-	int MP_flag = SolveNewNodeFirstMasterProblem(
+	bool MP_flag = SolveNewNodeFirstMasterProblem(
 		branch_flag,
 		Values,
 		Lists,

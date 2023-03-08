@@ -37,7 +37,7 @@ void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this
 	{
 		printf("\n##########################################################\n");
 		printf("##########################################################\n");
-		printf("####################### NODE_%d ##########################\n", this_node.index);
+		printf("####################### NODE_%d ###########################\n", this_node.index);
 		printf("##########################################################\n");
 		printf("##########################################################\n\n");
 
@@ -62,7 +62,7 @@ void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this
 
 		printf("\n##########################################################\n");
 		printf("##########################################################\n");
-		printf("####################### NODE_%d ##########################\n", this_node.index);
+		printf("####################### NODE_%d ###########################\n", this_node.index);
 		printf("##########################################################\n");
 		printf("##########################################################\n\n");
 
@@ -79,6 +79,7 @@ void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this
 				this_node.index,
 				this_node.index - 2);
 		}
+
 		// solve new node with CG loop
 		ColumnGenerationNewNode(branch_flag, Values, Lists, this_node,parent_node);
 	}
