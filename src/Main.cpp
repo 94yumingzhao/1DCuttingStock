@@ -7,7 +7,7 @@
 // SP  -- sub problem
 // LB  -- lower bound
 // UB -- upper bound
-// PN -- parent node
+// parent node -- parent node
 // CN -- children node
 
 #include "CSBP.h"
@@ -44,7 +44,7 @@ int main()
 	SolveNode(branch_flag, Values, Lists, root_node);
 
 	// find the branch var of root Node
-	continue_flag = BranchAndPrice(Values, Lists, root_node);
+	continue_flag = BranchAndPrice(branch_flag,Values, Lists, root_node);
 
 	printf("\n////////////////////////// BRANCHING ////////////////////////////\n");
 
@@ -58,49 +58,49 @@ int main()
 		// Branch and Price loop
 		while (1)
 		{
-			// First solve the left branch Node
-			branch_flag = 0; // LEFT			
-			if (branch_flag == 0)
-			{
-				Node new_node; // generate the left branch Node
-				SolveNode(branch_flag, Values, Lists, new_node); // solve the Node with CG	loop
-				continue_flag = BranchAndPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
-
-				// Case 1.1:
-				// all solns are integer in this new Node
-				if (continue_flag == 1)
-				{
-					printf("\n	//////////// PROCEDURE STOP //////////////\n");
-					break;
-				}
-			}
-
 			// Then solve the right branch Node
 			branch_flag = 1; // RIGHT
 			if (branch_flag == 1)
 			{
 				Node new_node; // generate the right branch Node
 				SolveNode(branch_flag, Values, Lists, new_node); // solve the Node with CG loop
-				continue_flag = BranchAndPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
+				continue_flag = BranchAndPrice(branch_flag,Values, Lists, new_node); // judge Node integerity and find the branch var
 
 				if (continue_flag == 1)
 				{
-					printf("\n	//////////// PROCEDURE STOP //////////////\n");
+					printf("\n	//////////// PROCEDURE STOP 2//////////////\n");
+					break;
+				}
+			}
+
+			// First solve the left branch Node
+			branch_flag = 0; // LEFT			
+			if (branch_flag == 0)
+			{
+				Node new_node; // generate the left branch Node
+				SolveNode(branch_flag, Values, Lists, new_node); // solve the Node with CG	loop
+				continue_flag = BranchAndPrice(branch_flag,Values, Lists, new_node); // judge Node integerity and find the branch var
+
+				// Case 1.1:
+				// all solns are integer in this new Node
+				if (continue_flag == 1)
+				{
+					printf("\n	//////////// PROCEDURE STOP 1//////////////\n");
 					break;
 				}
 			}
 
 			cnt++;
-			if (cnt == 2)
+			if (cnt == 6)
 			{
-				printf("\n	//////////// PROCEDURE STOP at 4 Branched Nodes//////////////\n");
+				printf("\n	//////////// PROCEDURE STOP 3//////////////\n");
 				break;
 			}
 		}
 	}
 	else
 	{
-		printf("\n	//////////// PROCEDURE STOP at Root Node//////////////\n");
+		printf("\n	//////////// PROCEDURE STOP 4//////////////\n");
 	}
 
 	finish = clock();

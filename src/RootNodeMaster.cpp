@@ -68,43 +68,59 @@ bool SolveRootNodeFirstMasterProblem(
 	}
 	else
 	{
-		MP_flag = 1;
 
 		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
 		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (int col = 0; col < solns_num; col++)
+		int now_solns_num = item_types_num;
+		for (int col = 0; col < now_solns_num; col++)
 		{
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val > 0)
+			if (soln_val > 0) // feasible soln > 0
 			{
 				fsb_num++;
-				printf("	var_x_%d = %f\n", col + 1, soln_val);
-
 				int soln_int_val = int(soln_val);
 				if (soln_int_val == soln_val)
 				{
-					int_num++;
+					// ATTTENTION:  
+					if (soln_int_val >= 1)
+					{
+						int_num++;
+						printf("	var_x_%d = %f int\n", col + 1, soln_val);
+					}
+				}
+				else
+				{
+					printf("	var_x_%d = %f\n", col + 1, soln_val);
 				}
 			}
 		}
 
-		printf("\n	DUAL PRICES: \n\n");
+		printf("\n	BRANCHED VARS: \n\n");
+		size_t branched_num = root_node.branched_vars_list.size();
+		for (int k = 0; k < branched_num; k++)
+		{
+			printf("	var_x_%d = %f branched \n",
+				root_node.branched_idx_list[k], root_node.branched_vars_list[k]);
+		}
 
+
+		printf("\n	DUAL PRICES: \n\n");
 		for (int k = 0; k < item_types_num; k++)
 		{
 			float dual_val = MP_cplex.getDual(Cons_MP[k]);
 			printf("	dual_r_%d = %f\n", k + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
 		}
-	}
 
-	root_node.lower_bound = MP_cplex.getValue(Obj_MP);
-	printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
-	printf("\n	Lower Bound:   %f\n", root_node.lower_bound);
-	printf("\n	NUM of all solns: %zd\n", solns_num);
-	printf("\n	NUM of fsb solns: %d\n", fsb_num);
-	printf("\n	NUM of int solns: %d\n", int_num);
+		root_node.lower_bound = MP_cplex.getValue(Obj_MP);
+		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
+		printf("\n	Lower Bound:   %f\n", root_node.lower_bound);
+		printf("\n	NUM of all solns: %zd\n", solns_num);
+		printf("\n	NUM of fsb solns: %d\n", fsb_num);
+		printf("\n	NUM of int solns: %d\n", int_num);
+		printf("\n	NUM of branched-vars: %zd\n", branched_num);
+	}
 
 	MP_cplex.end();
 	return MP_flag;

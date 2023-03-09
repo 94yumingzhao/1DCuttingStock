@@ -52,17 +52,32 @@ bool SolveUpdateMasterProblem(
 	for (int col = 0; col < now_solns_num; col++)
 	{
 		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0)
+		if (soln_val > 0) // feasible soln > 0
 		{
 			fsb_num++;
-			printf("	var_x_%d = %f\n", col + 1, soln_val);
-
 			int soln_int_val = int(soln_val);
 			if (soln_int_val == soln_val)
 			{
-				int_num++;
+				// ATTTENTION:  
+				if (soln_int_val >= 1)
+				{
+					int_num++;
+					printf("	var_x_%d = %f int\n", col + 1, soln_val);
+				}
 			}
+			else
+			{
+				printf("	var_x_%d = %f\n", col + 1, soln_val);
+			}					
 		}
+	}
+
+	printf("\n	BRANCHED VARS: \n\n");
+	size_t branched_num = this_node.branched_vars_list.size();
+	for (int k = 0; k < branched_num; k++)
+	{
+		printf("	var_x_%d = %f branched \n", 
+			this_node.branched_idx_list[k], this_node.branched_vars_list[k]);
 	}
 
 	// print and store dual-prices of MP cons
@@ -76,12 +91,14 @@ bool SolveUpdateMasterProblem(
 		this_node.dual_prices_list.push_back(dual_val);
 	}
 
+
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
-	printf("\n	Node_%d MP-%d:\n", this_node.index,this_node.iter);
+	printf("\n	Node_%d MP-%d: \n", this_node.index,this_node.iter);
 	printf("\n	Lower Bound:   %f\n", this_node.lower_bound);
 	printf("\n	NUM of now solns: %zd\n", now_solns_num);
-	printf("\n	NUM of fsb solns: %d\n", fsb_num);
-	printf("\n	NUM of int solns: %d\n", int_num);
+	printf("\n	NUM of fsb-solns: %d\n", fsb_num);
+	printf("\n	NUM of int-solns: %d\n", int_num);
+	printf("\n	NUM of branched-vars: %zd\n", branched_num);
 
 	MP_cplex.end();
 	return MP_flag;
@@ -118,31 +135,45 @@ bool SolveFinalMasterProblem(
 
 		if (soln_val > 0)
 		{
-			printf("	var_x_%d = %f\n", col + 1, soln_val);
-
-			this_node.fsb_solns_list.push_back(soln_val); // 2. Node feasible (i.e. non-zero-solns) solns 
-			this_node.fsb_cols_list.push_back(col); 	// 3. Node fsb-solns' index
-
 			int soln_int_val = int(soln_val);
 			if (soln_int_val == soln_val)
 			{
-				if (soln_int_val > 0)
+				if (soln_int_val >= 1) // int-soln that larger than 1
 				{
 					this_node.int_solns_list.push_back(soln_val); // 4. Node int-solns
-					this_node.int_cols_list.push_back(col); // 5. Node int-solns' index
+					this_node.int_idx_list.push_back(col); // 5. Node int-solns' index
+
+					printf("	var_x_%d = %f int\n", col + 1, soln_val);
 				}
 			}
+			else // non-int-solns
+			{
+				printf("	var_x_%d = %f\n", col + 1, soln_val);
+			}
+
+			this_node.fsb_solns_list.push_back(soln_val); // 2. Node feasible (i.e. non-zero-solns) solns 
+			this_node.fsb_idx_list.push_back(col); 	// 3. Node fsb-solns' index
 		}
 	}
 
+
+	printf("\n	BRANCHED VARS: \n\n");
+	size_t branched_num = this_node.branched_vars_list.size();
+	for (int k = 0; k < branched_num; k++)
+	{
+		printf("	var_x_%d = %f branched \n",
+			this_node.branched_idx_list[k], this_node.branched_vars_list[k]);
+	}
+
 	size_t fsb_num= this_node.fsb_solns_list.size();
-	size_t int_num = this_node.int_cols_list.size();
+	size_t int_num = this_node.int_idx_list.size();
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
-	printf("\n	Node_%d MP-final:\n", this_node.index);
-	printf("\n	Lower Bound:   %f\n", this_node.lower_bound);
+	printf("\n	Node_%d MP-final: \n", this_node.index);
+	printf("\n	Lower Bound:  %f\n", this_node.lower_bound);
 	printf("\n	NUM of all solns: %zd\n", all_solns_num);
-	printf("\n	NUM of fsb solns: %zd\n", fsb_num);
-	printf("\n	NUM of int solns: %zd\n", int_num);
+	printf("\n	NUM of fsb-solns: %zd\n", fsb_num);
+	printf("\n	NUM of int-solns: %zd\n", int_num);
+	printf("\n	NUM of branched-vars: %zd\n", branched_num);
 
 	MP_cplex.end();
 	return MP_flag;

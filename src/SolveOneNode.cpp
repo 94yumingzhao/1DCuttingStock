@@ -32,22 +32,6 @@ void InitPrimalMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 
 void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
 {
-	this_node.parent_index = parent_node.index;
-	this_node.parent_branch_flag = branch_flag;
-	this_node.parent_branch_val = parent_node.branch_var_val;
-
-	this_node.model_matrix = parent_node.model_matrix;
-	this_node.int_cols_list = parent_node.int_cols_list;
-	this_node.int_solns_list = parent_node.int_solns_list;
-
-	this_node.all_solns_list.clear();
-	this_node.fsb_solns_list.clear();
-	this_node.fsb_cols_list.clear();
-
-	this_node.dual_prices_list.clear();
-	this_node.new_col.clear();
-	this_node.new_cols_list.clear();
-
 	if (branch_flag == 0)
 	{
 		this_node.index = parent_node.index + 1;
@@ -56,6 +40,26 @@ void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
 	{
 		this_node.index = parent_node.index + 2;
 	}
+
+	this_node.parent_index = parent_node.index;
+	this_node.parent_branch_flag = branch_flag;
+	// this_node.parent_branch_val = parent_node.branching_var_val;
+
+	this_node.model_matrix = parent_node.model_matrix;
+
+	this_node.branched_vars_list = parent_node.branched_vars_list;
+	this_node.branched_idx_list = parent_node.branched_idx_list;
+
+	this_node.all_solns_list.clear();
+	this_node.fsb_solns_list.clear();
+	this_node.fsb_idx_list.clear();
+	this_node.int_idx_list.clear();
+	this_node.int_solns_list.clear();;
+
+	this_node.dual_prices_list.clear();
+	this_node.new_col.clear();
+	this_node.new_cols_list.clear();
+	
 }
 
 // function to solve a node with CG loop
@@ -72,8 +76,7 @@ void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this
 		// solve root node with CG loop
 		ColumnGenerationRootNode(Values, Lists, this_node);
 	}
-
-	else // other nodes
+	if (this_node.index != 1)// other nodes
 	{
 		Node parent_node = Lists.all_nodes_list.back();
 
