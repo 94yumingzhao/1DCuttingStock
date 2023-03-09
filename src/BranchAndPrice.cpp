@@ -1,12 +1,10 @@
 ﻿// 2022-11-17
-
 #include "CSBP.h"
 using namespace std;
 
 // judge the integerity of the Node, and find the branch var
 int BranchAndPrice(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node)
-{
-	
+{	
 	int continue_flag = -1;
 
 	// Root Node 
@@ -62,7 +60,7 @@ int FindNodeBranchVar(int branch_flag, Node& this_node)
 				printf("\n	Node_%d var_x_%d = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
 				printf("\n	Branching on Node_%d var_x_%d\n", this_node.index, col + 1);
 
-				this_node.branching_col_idx = col+1; // set the var-col index to branch
+				this_node.branching_col_idx = col; // set the var-col index to branch
 				this_node.branching_var_val = soln_val; // set the var val to branch	
 				this_node.branching_floor_val = floor(soln_val);
 				this_node.branching_ceil_val = ceil(soln_val);

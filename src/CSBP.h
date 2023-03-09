@@ -23,6 +23,8 @@ using namespace std;
 
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
+
+
 // item type
 struct ItemTypeProperties
 {
@@ -110,6 +112,8 @@ struct All_Values
 	int item_types_num = -1; // number of all item_types demanded
 	int stock_length = -1; // length of a stock
 	float current_optimal_bound = -1; // current optimal lower bound of the TREE
+
+	float Branch_Val = -1;
 };
 
 struct All_Lists

@@ -42,14 +42,36 @@ void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
 	}
 
 	this_node.parent_index = parent_node.index;
+	this_node.branching_col_idx = parent_node.branching_col_idx;
 	this_node.parent_branch_flag = branch_flag;
-	// this_node.parent_branch_val = parent_node.branching_var_val;
 
-	this_node.model_matrix = parent_node.model_matrix;
+	size_t cols_num = parent_node.model_matrix.size();
+	size_t rows_num = parent_node.model_matrix[0].size();
+	size_t branched_num = parent_node.branched_vars_list.size();
 
-	this_node.branched_vars_list = parent_node.branched_vars_list;
-	this_node.branched_idx_list = parent_node.branched_idx_list;
+	// Init model matrix of the new Node
+	for (int col = 0; col < cols_num; col++)
+	{
+		vector<float> temp_col;
+		for (int row = 0; row < rows_num; row++)
+		{
+			float temp_val = parent_node.model_matrix[col][row];
+			temp_col.push_back(temp_val);
+		}
+		this_node.model_matrix.push_back(temp_col);
+	}
 
+	// Init branched-vars list and their col-idx list of the new Node 
+	for (int col = 0; col < branched_num; col++)
+	{
+		float temp_val = parent_node.branched_vars_list[col];
+		int temp_idx = parent_node.branched_idx_list[col];
+
+		this_node.branched_vars_list.push_back(temp_val);
+		this_node.branched_idx_list.push_back(temp_idx);
+	}
+
+	// Clear to init all otther lists
 	this_node.all_solns_list.clear();
 	this_node.fsb_solns_list.clear();
 	this_node.fsb_idx_list.clear();
@@ -59,7 +81,6 @@ void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
 	this_node.dual_prices_list.clear();
 	this_node.new_col.clear();
 	this_node.new_cols_list.clear();
-	
 }
 
 // function to solve a node with CG loop

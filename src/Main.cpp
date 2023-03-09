@@ -7,8 +7,6 @@
 // SP  -- sub problem
 // LB  -- lower bound
 // UB -- upper bound
-// parent node -- parent node
-// CN -- children node
 
 #include "CSBP.h"
 using namespace std;
@@ -85,7 +83,7 @@ int main()
 				// all solns are integer in this new Node
 				if (continue_flag == 1)
 				{
-					printf("\n	//////////// PROCEDURE STOP 1//////////////\n");
+					printf("\n	//////////// PROCEDURE STOP 1 //////////////\n");
 					break;
 				}
 			}
@@ -93,14 +91,14 @@ int main()
 			cnt++;
 			if (cnt == 6)
 			{
-				printf("\n	//////////// PROCEDURE STOP 3//////////////\n");
+				printf("\n	//////////// PROCEDURE STOP 3 //////////////\n");
 				break;
 			}
 		}
 	}
 	else
 	{
-		printf("\n	//////////// PROCEDURE STOP 4//////////////\n");
+		printf("\n	//////////// PROCEDURE STOP 4 //////////////\n");
 	}
 
 	finish = clock();
@@ -108,7 +106,6 @@ int main()
 	printf("\n	Process Time = %f seconds\n", duration);
 
 	cout << endl;
-
 	return 0;
 }
 

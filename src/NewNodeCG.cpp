@@ -3,7 +3,8 @@
 #include "CSBP.h"
 using namespace std;
 
-void ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node)
+void ColumnGenerationNewNode(
+	int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node)
 {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 

@@ -77,7 +77,7 @@ bool SolveUpdateMasterProblem(
 	for (int k = 0; k < branched_num; k++)
 	{
 		printf("	var_x_%d = %f branched \n", 
-			this_node.branched_idx_list[k], this_node.branched_vars_list[k]);
+			this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
 	}
 
 	// print and store dual-prices of MP cons
@@ -162,7 +162,7 @@ bool SolveFinalMasterProblem(
 	for (int k = 0; k < branched_num; k++)
 	{
 		printf("	var_x_%d = %f branched \n",
-			this_node.branched_idx_list[k], this_node.branched_vars_list[k]);
+			this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
 	}
 
 	size_t fsb_num= this_node.fsb_solns_list.size();

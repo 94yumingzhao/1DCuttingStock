@@ -101,7 +101,7 @@ bool SolveRootNodeFirstMasterProblem(
 		for (int k = 0; k < branched_num; k++)
 		{
 			printf("	var_x_%d = %f branched \n",
-				root_node.branched_idx_list[k], root_node.branched_vars_list[k]);
+				root_node.branched_idx_list[k]+1, root_node.branched_vars_list[k]);
 		}
 
 
