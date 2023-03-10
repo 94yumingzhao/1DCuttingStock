@@ -6,12 +6,18 @@ using namespace std;
 // solve the root node with CG loop
 void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
+	printf("\n##########################################################\n");
+	printf("##########################################################\n");
+	printf("####################### ROOT NODE ######################\n");
+	printf("##########################################################\n");
+	printf("##########################################################\n\n");
+
 	// Init CPLEX
 	IloEnv Env_MP; // Init environment
 	IloModel Model_MP(Env_MP); // Init model
+	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init obj
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
-	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init obj
 
 	root_node.iter = 0; // root node index == 0
 	root_node.lower_bound = Values.current_optimal_bound; // Init root node bound 
@@ -74,6 +80,8 @@ void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_n
 	}
 
 	// clear all CPLEX objects to release memory. 
+	Obj_MP.removeAllProperties();
+	Obj_MP.end();
 	Vars_MP.clear();
 	Vars_MP.end();
 	Cons_MP.clear();

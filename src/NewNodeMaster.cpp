@@ -5,7 +5,6 @@
 using namespace std;
 
 bool SolveNewNodeFirstMasterProblem(
-	int branch_flag,
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
@@ -49,8 +48,8 @@ bool SolveNewNodeFirstMasterProblem(
 			CplexCol += Cons_MP[row](row_coeff); // set coeff
 		}
 
-		float var_min; // var LB
-		float var_max; // var UB
+		IloNum var_min; // var LB
+		IloNum var_max; // var UB
 		string X_name = "X_" + to_string(col + 1); // var name
 
 		// Case 1 : 
@@ -58,14 +57,9 @@ bool SolveNewNodeFirstMasterProblem(
 		// Branch this var to be an integer
 		if (col == this_node.branching_col_idx)
 		{
+			int branch_val = this_node.branching_final_val;
 
-			//  var = floor-val or ceil-val
-			var_min = this_node.branching_final_val;
-			var_max = this_node.branching_final_val;
-
-			// Init and set the to-branching-var
-			// ATTENTION: thought the var is an integer, it must be set as a FLOAT in code here
-			IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+			IloNumVar Var(CplexCol, branch_val, branch_val, ILOFLOAT, X_name.c_str()); // Init and set the to-branching-var
 			Vars_MP.add(Var);
 		}
 
@@ -77,22 +71,15 @@ bool SolveNewNodeFirstMasterProblem(
 			size_t branched_num = this_node.branched_vars_list.size();
 			int branched_flag = 0;
 			for (int idx = 0; idx < branched_num; idx++) // loop of all branched-vars in previous Nodes
-			{
-				// var of this col is a branched-var in Parent Node
-				if (col == this_node.branched_idx_list[idx])
+			{			
+				if (col == this_node.branched_idx_list[idx]) // var of this col is a branched-var in Parent Node
 				{
-					Values.Branch_Val = this_node.branched_vars_list[col]; // this var is set to its branched-val
+					int branch_val = this_node.branched_vars_list[col]; // this var is set to its branched-val
 
-					//  var = branched-int-val
-					var_min = Values.Branch_Val;
-					var_max = Values.Branch_Val;
-
-					// Init and set var
-					IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+					IloNumVar Var(CplexCol, branch_val, branch_val, ILOFLOAT, X_name.c_str()); // Init and set var
 					Vars_MP.add(Var);
 					
-					printf("\n	ATTENTION: Branched Node_%d var_x_%d is set to %f", 
-						this_node.parent_index, col + 1, Values.Branch_Val);
+					printf("\n	ATTENTION: Branched Node_%d var_x_%d is set to %d", this_node.parent_index, col + 1, branch_val);
 
 					branched_flag = 1;
 					break;
@@ -102,13 +89,11 @@ bool SolveNewNodeFirstMasterProblem(
 			// Case 2.2
 			// The var of this col is NOT a branched-var in previous Nodes
 			if (branched_flag ==0)
-			{
-				// var >= 0
-				var_min = 0;
+			{ 
+				var_min = 0; // var >= 0
 				var_max = IloInfinity;
 
-				// Init and set var
-				IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
+				IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // Init and set var
 				Vars_MP.add(Var);
 			}		
 		}	
@@ -161,7 +146,7 @@ bool SolveNewNodeFirstMasterProblem(
 		size_t branched_num = this_node.branched_vars_list.size();
 		for (int k = 0; k < branched_num; k++)
 		{
-			printf("	var_x_%d = %f branched \n",
+			printf("	var_x_%d = %d branched \n",
 				this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
 		}
 

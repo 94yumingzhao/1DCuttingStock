@@ -3,14 +3,14 @@
 using namespace std;
 
 // judge the integerity of the Node, and find the branch var
-int BranchAndPrice(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node)
+int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 {	
 	int continue_flag = -1;
 
 	// Root Node 
 	if (this_node.index == 1)
 	{
-		continue_flag = FindNodeBranchVar(branch_flag, this_node);
+		continue_flag = FindNodeBranchVar(Values,this_node);
 
 		// store this Node
 		Lists.all_nodes_list.push_back(this_node);
@@ -26,7 +26,7 @@ int BranchAndPrice(int branch_flag, All_Values& Values, All_Lists& Lists, Node& 
 	// New Node
 	if (this_node.index != 1)
 	{
-		continue_flag =FindNodeBranchVar(branch_flag,this_node);
+		continue_flag =FindNodeBranchVar(Values,this_node);
 
 		// Store this Node
 		Lists.all_nodes_list.push_back(this_node);
@@ -41,7 +41,7 @@ int BranchAndPrice(int branch_flag, All_Values& Values, All_Lists& Lists, Node& 
 	return continue_flag;
 }
 
-int FindNodeBranchVar(int branch_flag, Node& this_node)
+int FindNodeBranchVar(All_Values& Values, Node& this_node)
 {
 	// find the branch var of this Node
 	int continue_flag = 1;
@@ -73,23 +73,31 @@ int FindNodeBranchVar(int branch_flag, Node& this_node)
 					if (ceil_gap > floor_gap)
 					{
 						this_node.branching_final_val = this_node.branching_floor_val;
-						printf("\n	The FLOOR value of %f =  %f\n",
+
+						printf("\n	The FLOOR value of %f =  %d\n",
 							this_node.branching_var_val, this_node.branching_final_val);
 
+						Values.branch_flag = 1; // The next Node is the left branch of this Node
 					}
 					else
 					{
 						this_node.branching_final_val = this_node.branching_ceil_val;
-						printf("\n	The CEIL value of %f = %f\n",
+
+						printf("\n	The CEIL value of %f = %d\n",
 							this_node.branching_var_val, this_node.branching_final_val);
+
+						Values.branch_flag = 0; // The next Node is the right branch of this Node
 
 					}
 				}
 				else
 				{
 					this_node.branching_final_val = this_node.branching_ceil_val;
-					printf("\n	The CEIL value of %f = %f\n",
+
+					printf("\n	The CEIL value of %f = %d\n",
 						this_node.branching_var_val, this_node.branching_final_val);
+
+					Values.branch_flag = 1; // The next Node is the left branch of this Node
 				}
 				
 				continue_flag = 0; // continue BP algorithm

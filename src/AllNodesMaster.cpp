@@ -2,6 +2,7 @@
 #include "CSBP.h"
 using namespace std;
 
+
 bool SolveUpdateMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -28,8 +29,8 @@ bool SolveUpdateMasterProblem(
 	}
 
 	// var >= 0
-	float var_min = 0;
-	float var_max = IloInfinity;
+	IloNum var_min = 0;
+	IloNum var_max = IloInfinity;
 
 	IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT); // float, not int
 	Vars_MP.add(Var);
@@ -76,7 +77,7 @@ bool SolveUpdateMasterProblem(
 	size_t branched_num = this_node.branched_vars_list.size();
 	for (int k = 0; k < branched_num; k++)
 	{
-		printf("	var_x_%d = %f branched \n", 
+		printf("	var_x_%d = %d branched \n", 
 			this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
 	}
 
@@ -161,7 +162,7 @@ bool SolveFinalMasterProblem(
 	size_t branched_num = this_node.branched_vars_list.size();
 	for (int k = 0; k < branched_num; k++)
 	{
-		printf("	var_x_%d = %f branched \n",
+		printf("	var_x_%d = %d branched \n",
 			this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
 	}
 

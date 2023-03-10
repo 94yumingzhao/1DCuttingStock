@@ -82,19 +82,19 @@ struct Node
 	float lower_bound = -1; 
 	float branching_var_val = -1; // soln-val of the to-branching var in Parent Node
 	int branching_col_idx = -1; // column index of the to-branching var in Parent Node
-	float branching_floor_val = -1; // floor integer value of the to-branching var in Parent Node
-	float branching_ceil_val = -1; // ceil interger value of the to-branching var in Parent Node
-	float branching_final_val =-1; // the fixed val of the to-branching var
+	int branching_floor_val = -1; // floor integer value of the to-branching var in Parent Node
+	int branching_ceil_val = -1; // ceil interger value of the to-branching var in Parent Node
+	int branching_final_val =-1; // the fixed val of the to-branching var
 
 	// Lists of one Node
-	vector<float> branched_vars_list; // all branched-vars of previous Nodes on the TREE 
+	vector<int> branched_vars_list; // all branched-vars of previous Nodes on the TREE 
 	vector<int> branched_idx_list; // column indexes of all branched-vars of previous Nodes on the TREE
 	vector<vector<float>>branched_cols_list;
 
 	vector<float> all_solns_list; // final all (include 0) solutions of this Node
 	vector<float> fsb_solns_list; // final feasible (i.e. non-0) solutions of this Node
 	vector<int> fsb_idx_list; // final column indexes of feasible solutions of this Node
-	vector<float> int_solns_list; // final all integer solutions of this Node
+	vector<int> int_solns_list; // final all integer solutions of this Node
 	vector<int> int_idx_list;  // final column indexes of integer solutions of this Node
 
 	// Lists of one Column Generation iter of one Node
@@ -114,6 +114,9 @@ struct All_Values
 	float current_optimal_bound = -1; // current optimal lower bound of the TREE
 
 	float Branch_Val = -1;
+
+	int branch_flag = 2; // flag of branching, 0 -- left , 1 -- right, 2 -- root 
+	int continue_flag = -1; //  if there is non-int-solns in a Node, 0 -- yes, 1 -- no
 };
 
 struct All_Lists
@@ -129,13 +132,13 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
-void InitPrimalMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
+void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
+void SolveOneNode(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void ColumnGenerationNewNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
+void ColumnGenerationNewNode(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
 
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -148,7 +151,6 @@ bool SolveRootNodeFirstMasterProblem(
 	Node& root_node);
 
 bool SolveNewNodeFirstMasterProblem(
-	int branch_flag,
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
@@ -183,11 +185,13 @@ bool SolveFinalMasterProblem(
 
 //int NodeIntergerityJudgement(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int BranchAndPrice(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node);
+int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int FindNodeBranchVar(int branch_flag, Node& this_node);
+int FindNodeBranchVar(All_Values& Values,  Node& this_node);
 
-void InitNewNode(int branch_flag, Node& this_node, Node& parent_node);
+void ChooseNodeToBranch(All_Lists& Lists, Node&node_to_branch);
+
+void InitNewNode(All_Values& Values, Node& new_node, Node& parent_node);
 
 
 

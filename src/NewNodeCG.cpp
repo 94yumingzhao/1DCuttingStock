@@ -4,19 +4,20 @@
 using namespace std;
 
 void ColumnGenerationNewNode(
-	int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node)
+	All_Values& Values, 
+	All_Lists& Lists, 
+	Node& this_node, 
+	Node& parent_node)
 {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
+	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
-	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj
-
 
 	this_node.iter = 0; // The firsth MP index ==0
 
 	bool MP_flag = SolveNewNodeFirstMasterProblem(
-		branch_flag,
 		Values,
 		Lists,
 		Env_MP,
@@ -67,6 +68,8 @@ void ColumnGenerationNewNode(
 	}
 
 
+	Obj_MP.removeAllProperties();
+	Obj_MP.end();
 	Vars_MP.clear();
 	Vars_MP.end();
 	Cons_MP.clear();
@@ -75,6 +78,4 @@ void ColumnGenerationNewNode(
 	Model_MP.end();
 	Env_MP.removeAllProperties();
 	Env_MP.end();
-
-	cout << endl;
 }

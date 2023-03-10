@@ -13,8 +13,8 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 	IloNumVarArray Vars_SP(Env_SP);
 
 	// var >= 0
-	float var_min = 0;
-	float var_max = IloInfinity;
+	IloNum var_min = 0;
+	IloNum var_max = IloInfinity;
 
 	// Init and set vars of SP
 	for (int k = 0; k < item_types_num; k++)

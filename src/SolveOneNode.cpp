@@ -3,47 +3,84 @@
 #include "CSBP.h"
 using namespace std;
 
-// function to 
-void InitPrimalMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
-{
-	int item_types_num = Values.item_types_num;
-	vector<vector<float>> primal_matrix;
 
-	for (int col = 0; col < item_types_num; col++) // cols num == item types num
-	{
-		vector<float> primal_col;
-		for (int row = 0; row < item_types_num; row++) // rows num == item types num
-		{
-			if (row == col)
-			{
-				float primal_val = 0;
-				primal_val = Values.stock_length / Lists.all_item_types_list[row].length;
-				primal_col.push_back(primal_val);
-			}
-			else
-			{
-				primal_col.push_back(0);
-			}
-		}
-		primal_matrix.push_back(primal_col);
+// function to init, set, and solve a new Node with CG loop
+void SolveOneNode(All_Values& Values, All_Lists& Lists, Node& new_node)
+{
+	if (Values.branch_flag == 2) // if root Node
+	{	
+		ColumnGenerationRootNode(Values, Lists, new_node); // solve root node with CG loop
 	}
-	root_node.model_matrix = primal_matrix;
+	else // if other Nodes
+	{	
+		Node node_to_branch; // Init parent Node
+
+		ChooseNodeToBranch(Lists, node_to_branch); // Set parent Node
+
+		InitNewNode(Values, new_node, node_to_branch); // Set new Node from parent Node
+	
+		ColumnGenerationNewNode(Values, Lists, new_node, node_to_branch); // solve new Node with CG loop
+	}
 }
 
-void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
+void ChooseNodeToBranch(All_Lists& Lists, Node& node_to_branch)
 {
-	if (branch_flag == 0)
+	// This version uses the last Node in Node List as the Node-to-branch
+	int pos = Lists.all_nodes_list.size() - 1;
+
+	node_to_branch.index = Lists.all_nodes_list[pos].index;
+	node_to_branch.branching_col_idx = Lists.all_nodes_list[pos].branching_col_idx;
+
+	size_t cols_num = Lists.all_nodes_list[pos].model_matrix.size();
+	size_t rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
+	size_t branched_num = Lists.all_nodes_list[pos].branched_vars_list.size();
+
+	// Init model matrix of the Node-to-branch
+	for (int col = 0; col < cols_num; col++)
 	{
-		this_node.index = parent_node.index + 1;
-	}
-	if (branch_flag == 1)
-	{
-		this_node.index = parent_node.index + 2;
+		vector<float> temp_col;
+		for (int row = 0; row < rows_num; row++)
+		{
+			float temp_val = Lists.all_nodes_list[pos].model_matrix[col][row];
+			temp_col.push_back(temp_val);
+		}
+		node_to_branch.model_matrix.push_back(temp_col);
 	}
 
-	this_node.parent_index = parent_node.index;
-	this_node.branching_col_idx = parent_node.branching_col_idx;
-	this_node.parent_branch_flag = branch_flag;
+	// Init branched-vars list and their col-idx list of the Node-to-branch
+	for (int col = 0; col < branched_num; col++)
+	{
+		float temp_val = Lists.all_nodes_list[pos].branched_vars_list[col];
+		int temp_idx = Lists.all_nodes_list[pos].branched_idx_list[col];
+
+		node_to_branch.branched_vars_list.push_back(temp_val);
+		node_to_branch.branched_idx_list.push_back(temp_idx);
+	}
+}
+
+void InitNewNode(All_Values&Values, Node& new_node, Node& parent_node)
+{
+
+	if (Values.branch_flag == 0)
+	{
+		new_node.index = parent_node.index + 1;
+		printf("\n	NODE_%d is the LEFT branch of NODE_%d	\n",new_node.index, parent_node.index);
+	}
+	if (Values.branch_flag == 1)
+	{
+		new_node.index = parent_node.index + 2;
+		printf("\n	NODE_%d is the RIGHT branch of NODE_%d	\n", new_node.index, parent_node.index);
+	}
+
+	printf("\n##########################################################\n");
+	printf("##########################################################\n");
+	printf("####################### NEW NODE_%d #######################\n", new_node.index);
+	printf("##########################################################\n");
+	printf("##########################################################\n\n");
+
+	new_node.parent_index = parent_node.index;
+	new_node.branching_col_idx = parent_node.branching_col_idx;
+	new_node.parent_branch_flag = Values.branch_flag;
 
 	size_t cols_num = parent_node.model_matrix.size();
 	size_t rows_num = parent_node.model_matrix[0].size();
@@ -58,7 +95,7 @@ void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
 			float temp_val = parent_node.model_matrix[col][row];
 			temp_col.push_back(temp_val);
 		}
-		this_node.model_matrix.push_back(temp_col);
+		new_node.model_matrix.push_back(temp_col);
 	}
 
 	// Init branched-vars list and their col-idx list of the new Node 
@@ -67,65 +104,20 @@ void InitNewNode(int branch_flag, Node& this_node,Node& parent_node)
 		float temp_val = parent_node.branched_vars_list[col];
 		int temp_idx = parent_node.branched_idx_list[col];
 
-		this_node.branched_vars_list.push_back(temp_val);
-		this_node.branched_idx_list.push_back(temp_idx);
+		new_node.branched_vars_list.push_back(temp_val);
+		new_node.branched_idx_list.push_back(temp_idx);
 	}
 
 	// Clear to init all otther lists
-	this_node.all_solns_list.clear();
-	this_node.fsb_solns_list.clear();
-	this_node.fsb_idx_list.clear();
-	this_node.int_idx_list.clear();
-	this_node.int_solns_list.clear();;
+	new_node.all_solns_list.clear();
+	new_node.fsb_solns_list.clear();
+	new_node.fsb_idx_list.clear();
+	new_node.int_idx_list.clear();
+	new_node.int_solns_list.clear();;
 
-	this_node.dual_prices_list.clear();
-	this_node.new_col.clear();
-	this_node.new_cols_list.clear();
-}
-
-// function to solve a node with CG loop
-void SolveNode(int branch_flag, All_Values& Values, All_Lists& Lists, Node& this_node)
-{
-	if (this_node.index == 1) // root node
-	{
-		printf("\n##########################################################\n");
-		printf("##########################################################\n");
-		printf("####################### NODE_%d ###########################\n", this_node.index);
-		printf("##########################################################\n");
-		printf("##########################################################\n\n");
-
-		// solve root node with CG loop
-		ColumnGenerationRootNode(Values, Lists, this_node);
-	}
-	if (this_node.index != 1)// other nodes
-	{
-		Node parent_node = Lists.all_nodes_list.back();
-
-		InitNewNode(branch_flag,this_node, parent_node);
-
-		printf("\n##########################################################\n");
-		printf("##########################################################\n");
-		printf("####################### NODE_%d ###########################\n", this_node.index);
-		printf("##########################################################\n");
-		printf("##########################################################\n\n");
-
-		if (branch_flag == 0) // left branch node
-		{
-			printf("\n	NODE_%d is the LEFT branch of NODE_%d	\n",
-				this_node.index,
-				this_node.index - 1);
-		}
-
-		if (branch_flag == 1) // right branch node
-		{
-			printf("\n	NODE_%d is the RIGHT branch of NODE_%d	\n",
-				this_node.index,
-				this_node.index - 2);
-		}
-
-		// solve new node with CG loop
-		ColumnGenerationNewNode(branch_flag, Values, Lists, this_node,parent_node);
-	}
+	new_node.dual_prices_list.clear();
+	new_node.new_col.clear();
+	new_node.new_cols_list.clear();
 }
 
 

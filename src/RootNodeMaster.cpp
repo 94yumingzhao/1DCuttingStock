@@ -3,6 +3,34 @@
 #include "CSBP.h"
 using namespace std;
 
+// function to init model matrix of root Node
+void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
+{
+	int item_types_num = Values.item_types_num;
+	vector<vector<float>> primal_matrix;
+
+	for (int col = 0; col < item_types_num; col++) // cols num == item types num
+	{
+		vector<float> primal_col;
+		for (int row = 0; row < item_types_num; row++) // rows num == item types num
+		{
+			if (row == col)
+			{
+				float primal_val = 0;
+				primal_val = Values.stock_length / Lists.all_item_types_list[row].length;
+				primal_col.push_back(primal_val);
+			}
+			else
+			{
+				primal_col.push_back(0);
+			}
+		}
+		primal_matrix.push_back(primal_col);
+	}
+	root_node.model_matrix = primal_matrix;
+}
+
+
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -20,8 +48,9 @@ bool SolveRootNodeFirstMasterProblem(
 
 	for (int i = 0; i < item_types_num; i++)
 	{
-		con_min.add(IloNum(Lists.all_item_types_list[i].demand)); // cons > demand
-		con_max.add(IloNum(IloInfinity)); // 
+		// cons > demand
+		con_min.add(IloNum(Lists.all_item_types_list[i].demand)); 
+		con_max.add(IloNum(IloInfinity)); 
 	}
 
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);
@@ -41,8 +70,8 @@ bool SolveRootNodeFirstMasterProblem(
 			CplexCol += Cons_MP[row](row_coeff);
 		}
 
-		float var_min = 0;
-		float var_max = IloInfinity;
+		IloNum var_min = 0;
+		IloNum var_max = IloInfinity;
 
 		string X_name = "X_" + to_string(col + 1);
 		IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
@@ -68,7 +97,6 @@ bool SolveRootNodeFirstMasterProblem(
 	}
 	else
 	{
-
 		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
 		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
@@ -100,7 +128,7 @@ bool SolveRootNodeFirstMasterProblem(
 		size_t branched_num = root_node.branched_vars_list.size();
 		for (int k = 0; k < branched_num; k++)
 		{
-			printf("	var_x_%d = %f branched \n",
+			printf("	var_x_%d = %d branched \n",
 				root_node.branched_idx_list[k]+1, root_node.branched_vars_list[k]);
 		}
 
