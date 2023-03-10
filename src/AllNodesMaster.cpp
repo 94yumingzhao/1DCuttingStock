@@ -94,11 +94,11 @@ bool SolveUpdateMasterProblem(
 
 
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
-	printf("\n	Node_%d MP-%d: \n", this_node.index,this_node.iter);
-	printf("\n	Lower Bound:   %f\n", this_node.lower_bound);
-	printf("\n	NUM of now solns: %zd\n", now_solns_num);
-	printf("\n	NUM of fsb-solns: %d\n", fsb_num);
-	printf("\n	NUM of int-solns: %d\n", int_num);
+	printf("\n	Node_%d MP-%d:\n", this_node.index,this_node.iter);
+	printf("\n	Lower Bound:   %f", this_node.lower_bound);
+	printf("\n	NUM of now solns: %zd", now_solns_num);
+	printf("\n	NUM of fsb-solns: %d", fsb_num);
+	printf("\n	NUM of int-solns: %d", int_num);
 	printf("\n	NUM of branched-vars: %zd\n", branched_num);
 
 	MP_cplex.end();
@@ -169,11 +169,11 @@ bool SolveFinalMasterProblem(
 	size_t fsb_num= this_node.fsb_solns_list.size();
 	size_t int_num = this_node.int_idx_list.size();
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
-	printf("\n	Node_%d MP-final: \n", this_node.index);
-	printf("\n	Lower Bound:  %f\n", this_node.lower_bound);
-	printf("\n	NUM of all solns: %zd\n", all_solns_num);
-	printf("\n	NUM of fsb-solns: %zd\n", fsb_num);
-	printf("\n	NUM of int-solns: %zd\n", int_num);
+	printf("\n	Node_%d MP-final:\n", this_node.index);
+	printf("\n	Lower Bound:  %f", this_node.lower_bound);
+	printf("\n	NUM of all solns: %zd", all_solns_num);
+	printf("\n	NUM of fsb-solns: %zd", fsb_num);
+	printf("\n	NUM of int-solns: %zd", int_num);
 	printf("\n	NUM of branched-vars: %zd\n", branched_num);
 
 	MP_cplex.end();

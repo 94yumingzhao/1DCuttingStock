@@ -143,10 +143,10 @@ bool SolveRootNodeFirstMasterProblem(
 
 		root_node.lower_bound = MP_cplex.getValue(Obj_MP);
 		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
-		printf("\n	Lower Bound:   %f\n", root_node.lower_bound);
-		printf("\n	NUM of all solns: %zd\n", solns_num);
-		printf("\n	NUM of fsb solns: %d\n", fsb_num);
-		printf("\n	NUM of int solns: %d\n", int_num);
+		printf("\n	Lower Bound:   %f", root_node.lower_bound);
+		printf("\n	NUM of all solns: %zd", solns_num);
+		printf("\n	NUM of fsb solns: %d", fsb_num);
+		printf("\n	NUM of int solns: %d", int_num);
 		printf("\n	NUM of branched-vars: %zd\n", branched_num);
 	}
 

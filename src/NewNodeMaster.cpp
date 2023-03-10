@@ -79,7 +79,7 @@ bool SolveNewNodeFirstMasterProblem(
 					IloNumVar Var(CplexCol, branch_val, branch_val, ILOFLOAT, X_name.c_str()); // Init and set var
 					Vars_MP.add(Var);
 					
-					printf("\n	ATTENTION: Branched Node_%d var_x_%d is set to %d", this_node.parent_index, col + 1, branch_val);
+					printf("\n	Branched Node_%d var_x_%d is set to %d", this_node.parent_index, col + 1, this_node.branched_vars_list[col]);
 
 					branched_flag = 1;
 					break;
@@ -162,10 +162,10 @@ bool SolveNewNodeFirstMasterProblem(
 
 		this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 		printf("\n	Node_%d MP-1:\n", this_node.index);
-		printf("\n	Lower Bound:   %f\n", this_node.lower_bound);
-		printf("\n	NUM of all solns: %zd\n", all_cols_num);
-		printf("\n	NUM of fsb solns: %d\n", fsb_num);
-		printf("\n	NUM of int solns: %d\n", int_num);
+		printf("\n	Lower Bound:   %f", this_node.lower_bound);
+		printf("\n	NUM of all solns: %zd", all_cols_num);
+		printf("\n	NUM of fsb solns: %d", fsb_num);
+		printf("\n	NUM of int solns: %d", int_num);
 		printf("\n	NUM of branched-vars: %zd\n", branched_num);
 	}
 

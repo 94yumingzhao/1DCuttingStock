@@ -71,7 +71,7 @@ struct StockProperties
 
 struct Node
 {
-	int index = -1;
+	int index = -1; //
 
 	// Values of the Parent Node of one Node
 	int parent_index = -1;
@@ -82,6 +82,7 @@ struct Node
 	float lower_bound = -1; 
 	float branching_var_val = -1; // soln-val of the to-branching var in Parent Node
 	int branching_col_idx = -1; // column index of the to-branching var in Parent Node
+
 	int branching_floor_val = -1; // floor integer value of the to-branching var in Parent Node
 	int branching_ceil_val = -1; // ceil interger value of the to-branching var in Parent Node
 	int branching_final_val =-1; // the fixed val of the to-branching var
