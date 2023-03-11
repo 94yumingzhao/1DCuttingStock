@@ -10,7 +10,7 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 	// Root Node 
 	if (this_node.index == 1)
 	{
-		continue_flag = FindNodeBranchVar(Values,this_node);
+		continue_flag = FindNodeBranchVar(Values,Lists,this_node);
 
 		// store this Node
 		Lists.all_nodes_list.push_back(this_node);
@@ -26,7 +26,7 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 	// New Node
 	if (this_node.index != 1)
 	{
-		continue_flag =FindNodeBranchVar(Values,this_node);
+		continue_flag =FindNodeBranchVar(Values,Lists, this_node);
 
 		// Store this Node
 		Lists.all_nodes_list.push_back(this_node);
@@ -41,7 +41,7 @@ int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
 	return continue_flag;
 }
 
-int FindNodeBranchVar(All_Values& Values, Node& this_node)
+int FindNodeBranchVar(All_Values& Values, All_Lists& Lists, Node& this_node)
 {
 	// find the branch var of this Node
 	int continue_flag = 1;
@@ -106,8 +106,14 @@ int FindNodeBranchVar(All_Values& Values, Node& this_node)
 		}	
 	}
 
-	this_node.branched_vars_list.push_back(this_node.branching_final_val);
-	this_node.branched_idx_list.push_back(this_node.branching_col_idx);
+	int final_val = this_node.branching_final_val;
+	int col_idx = this_node.branching_col_idx;
+
+	this_node.branched_vars_list.push_back(final_val);
+	this_node.branched_idx_list.push_back(col_idx);
+
+	Lists.Branched_idx_list.push_back(col_idx);
+	Lists.Branched_vars_list.push_back(final_val);
 
 	return continue_flag;
 }

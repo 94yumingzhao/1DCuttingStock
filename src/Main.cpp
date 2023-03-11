@@ -31,12 +31,9 @@ int main()
 	Node root_node; // Init root Node
 	root_node.index = 1; // Node index
 
-
-	
 	InitRootNodeMatrix(Values, Lists, root_node); // generate root Node matrix
 	SolveOneNode(Values, Lists, root_node); // solve root Node with CG loop	
 	Values.continue_flag = BranchAndPrice(Values, Lists, root_node); // find the branch var of root Node
-
 
 	int node_num = 1;
 	int level_num = 1;
@@ -89,6 +86,7 @@ int main()
 			}
 		}
 	}
+
 	else
 	{
 		printf("\n	//////////// PROCEDURE STOP 4 //////////////\n");

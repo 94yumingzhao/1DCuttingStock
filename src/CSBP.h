@@ -90,6 +90,8 @@ struct Node
 	// Lists of one Node
 	vector<int> branched_vars_list; // all branched-vars of previous Nodes on the TREE 
 	vector<int> branched_idx_list; // column indexes of all branched-vars of previous Nodes on the TREE
+	//tuple<int col_idx, int var_val>  branched_var (-1,-1);
+
 	vector<vector<float>>branched_cols_list;
 
 	vector<float> all_solns_list; // final all (include 0) solutions of this Node
@@ -127,6 +129,9 @@ struct All_Lists
 	vector<Node> all_nodes_list; // all Nodes generated on the TREE
 	vector<float> all_branched_vars_list;
 	vector<int> all_branched_idx_list;
+
+	vector<int> Branched_vars_list; // all branched-vars of previous Nodes on the TREE 
+	vector<int> Branched_idx_list; // column indexes of all branched-vars of previous Nodes on the TREE
 };
 
 void SplitString(const string& s, vector<string>& v, const string& c);
@@ -188,7 +193,7 @@ bool SolveFinalMasterProblem(
 
 int BranchAndPrice(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int FindNodeBranchVar(All_Values& Values,  Node& this_node);
+int FindNodeBranchVar(All_Values& Values, All_Lists& Lists,Node& this_node);
 
 void ChooseNodeToBranch(All_Lists& Lists, Node&node_to_branch);
 
