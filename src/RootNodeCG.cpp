@@ -20,7 +20,7 @@ void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_n
 	IloRangeArray Cons_MP(Env_MP); // Init cons
 
 	root_node.iter = 0; // root node index == 0
-	root_node.lower_bound = Values.current_optimal_bound; // Init root node bound 
+	root_node.lower_bound = Values.tree_optimal_bound; // Init root node bound 
 
 	// solve the first MP of the root node 
 	int MP_flag = SolveRootNodeFirstMasterProblem(

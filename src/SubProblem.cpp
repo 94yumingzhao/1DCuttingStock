@@ -68,7 +68,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	// Init the new col for MP
 	this_node.new_col.clear(); // 
-	vector<float> New_Column;
+	vector<double> New_Column;
 	int solve_flag = 0;
 
 	// Case 1:
@@ -81,7 +81,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 		// set the new col for MP
 		for (int k = 0; k < item_types_num; k++)
 		{
-			float var_value = SP_cplex.getValue(Vars_SP[k]);
+			double var_value = SP_cplex.getValue(Vars_SP[k]);
 			New_Column.push_back(var_value);
 		}
 

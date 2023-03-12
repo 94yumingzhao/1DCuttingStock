@@ -7,16 +7,16 @@ using namespace std;
 void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
-	vector<vector<float>> primal_matrix;
+	vector<vector<double>> primal_matrix;
 
 	for (int col = 0; col < item_types_num; col++) // cols num == item types num
 	{
-		vector<float> primal_col;
+		vector<double> primal_col;
 		for (int row = 0; row < item_types_num; row++) // rows num == item types num
 		{
 			if (row == col)
 			{
-				float primal_val = 0;
+				double primal_val = 0;
 				primal_val = Values.stock_length / Lists.all_item_types_list[row].length;
 				primal_col.push_back(primal_val);
 			}
@@ -61,23 +61,22 @@ bool SolveRootNodeFirstMasterProblem(
 
 	for (int col = 0; col < item_types_num; col++)
 	{
-		int obj_coeff_1 = 1;
+		IloNum obj_coeff_1 = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_coeff_1);
 
 		for (int row = 0; row < item_types_num; row++)
 		{
-			float row_coeff = root_node.model_matrix[row][col];
+			IloNum row_coeff = root_node.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_coeff);
 		}
 
 		IloNum var_min = 0;
 		IloNum var_max = IloInfinity;
-
 		string X_name = "X_" + to_string(col + 1);
 		IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
 		Vars_MP.add(Var);
 
-		CplexCol.end();
+		CplexCol.end(); // end this IloNumColumn object
 	}
 
 	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n",root_node.index);
@@ -128,7 +127,7 @@ bool SolveRootNodeFirstMasterProblem(
 		size_t branched_num = root_node.branched_vars_list.size();
 		for (int k = 0; k < branched_num; k++)
 		{
-			printf("	var_x_%d = %d branched \n",
+			printf("	var_x_%d = %f branched \n",
 				root_node.branched_idx_list[k]+1, root_node.branched_vars_list[k]);
 		}
 
@@ -136,18 +135,18 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n	DUAL PRICES: \n\n");
 		for (int k = 0; k < item_types_num; k++)
 		{
-			float dual_val = MP_cplex.getDual(Cons_MP[k]);
+			double dual_val = MP_cplex.getDual(Cons_MP[k]);
 			printf("	dual_r_%d = %f\n", k + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
 		}
 
 		root_node.lower_bound = MP_cplex.getValue(Obj_MP);
 		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
-		printf("\n	Lower Bound:   %f", root_node.lower_bound);
-		printf("\n	NUM of all solns: %zd", solns_num);
-		printf("\n	NUM of fsb solns: %d", fsb_num);
-		printf("\n	NUM of int solns: %d", int_num);
-		printf("\n	NUM of branched-vars: %zd\n", branched_num);
+		printf("\n	Lower Bound = %f", root_node.lower_bound);
+		printf("\n	NUM of all solns = %zd", solns_num);
+		printf("\n	NUM of fsb solns = %d", fsb_num);
+		printf("\n	NUM of int solns = %d", int_num);
+		printf("\n	NUM of branched-vars = %zd\n", branched_num);
 	}
 
 	MP_cplex.end();

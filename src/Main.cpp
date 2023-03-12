@@ -30,56 +30,62 @@ int main()
 
 	Node root_node; // Init root Node
 	root_node.index = 1; // Node index
+	Values.tree_branching_flag = 0; 
 
 	InitRootNodeMatrix(Values, Lists, root_node); // generate root Node matrix
 	SolveOneNode(Values, Lists, root_node); // solve root Node with CG loop	
-	Values.continue_flag = BranchAndPrice(Values, Lists, root_node); // find the branch var of root Node
+	Values.tree_continue_flag = BranchandPrice(Values, Lists, root_node); // find the branch var of root Node
 
 	int node_num = 1;
 	int level_num = 1;
 
 	// continue to BP
-	if (Values.continue_flag == 0)
+	if (Values.tree_continue_flag == 0)
 	{
-		level_num++;
 		printf("\n	//////////// New Level %d //////////// \n", level_num);
 
 		// Branch and Price loop
 		while (1)
 		{
+			level_num++;
 			// First solve the left branch Node		
-			if (Values.branch_flag == 0)
+			if (Values.tree_branching_flag == 1)
 			{
 				node_num++;
 				Node new_node; // generate the left branch Node
 				SolveOneNode(Values, Lists, new_node); // solve the Node with CG	loop
-				Values.continue_flag = BranchAndPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
-
-				// Case 1.1:
-				// all solns are integer in this new Node
-				if (Values.continue_flag == 1)
+				Values.tree_continue_flag = BranchandPrice(Values, Lists, new_node); // judge Node integerity and find the branch var			
+				if (Values.tree_continue_flag == 1) // all solns are integer in this new Node
 				{
-					printf("\n	//////////// PROCEDURE STOP 1 //////////////\n");
-					break;
+					Values.tree_branching_flag = 3; // no need to  branch this Node and switch to another un-branched Node
 				}
 			}
 
 			// Then solve the right branch Node
-			if (Values.branch_flag == 1)
+			if (Values.tree_branching_flag == 2)
 			{
 				node_num++;
 				Node new_node; // generate the right branch Node
 				SolveOneNode(Values, Lists, new_node); // solve the Node with CG loop
-				Values.continue_flag = BranchAndPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
-
-				if (Values.continue_flag == 1)
+				Values.tree_continue_flag = BranchandPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
+				if (Values.tree_continue_flag == 1) // all solns are integer in this new Node
 				{
-					printf("\n	//////////// PROCEDURE STOP 2//////////////\n");
-					break;
+					Values.tree_branching_flag = 3; // no need to  branch this Node and switch to another un-branched Node
+				} 
+			}
+
+			if (Values.tree_branching_flag == 3) // switch to another un-branched Node in BP Tree
+			{
+				Node avail_node; // generate the right branch Node
+				SolveOneNode(Values, Lists, avail_node); // solve the Node with CG loop
+				Values.tree_continue_flag = BranchandPrice(Values, Lists, avail_node); // judge Node integerity and find the branch var
+				if (Values.tree_continue_flag == 1) // all solns are integer in this new Node
+				{
+					Values.tree_branching_flag = 3; // no need to  branch this Node and switch to another un-branched Node
 				}
 			}
 
-			if (level_num == 6)
+			if (node_num > 30)
 			{
 				printf("\n	//////////// PROCEDURE STOP 3 //////////////\n");
 				break;
@@ -95,8 +101,9 @@ int main()
 	finish = clock();
 	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
 	printf("\n	Process Time = %f seconds\n", duration);
-	printf("\n	There are %d Levels and %d Nodes in the TREE\n", level_num, node_num);
+	printf("\n	There are %d Levels and %d Nodes in BP Tree\n", level_num, node_num);
 
+	Lists.all_nodes_list.clear();
 	cout << endl;
 	return 0;
 }

@@ -36,36 +36,32 @@ bool SolveNewNodeFirstMasterProblem(
 	size_t all_cols_num = this_node.model_matrix.size();
 	printf("\n	Current number of columns is %zd \n", all_cols_num);
 
-
-	printf("\n	1 BRANCHED VARS: \n\n");
-	size_t branched_num1 = this_node.branched_vars_list.size();
-	for (int k = 0; k < branched_num1; k++)
+	// set model_matrix of master problem
+	for (int col = 0; col < all_cols_num; col++)
 	{
-		printf("	var_x_%d = %d branched \n",
-			this_node.branched_idx_list[k] + 1, this_node.branched_vars_list[k]);
-	}
+		IloNum obj_coeff_1 = 1;
+		IloNumColumn CplexCol = Obj_MP(obj_coeff_1); // Init a col
 
-	printf("\n	2 BRANCHED VARS: \n\n");
-	size_t branched_num2 = Lists.Branched_vars_list.size();
-	for (int k = 0; k < branched_num2; k++)
-	{
-		printf("	col %d = %d branched \n",
-			Lists.Branched_idx_list[k] + 1, Lists.Branched_vars_list[k]);
+		for (int row = 0; row < item_types_num; row++) // set rows in this col
+		{
+			IloNum row_coeff = this_node.model_matrix[col][row];
+			CplexCol += Cons_MP[row](row_coeff); // set coeff
+		}
 	}
 
 	// set model_matrix of master problem
 	for (int col = 0; col < all_cols_num; col++)
 	{
-		int obj_coeff_1 = 1;
+		IloNum obj_coeff_1 = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_coeff_1); // Init a col
 
 		for (int row = 0; row < item_types_num; row++) // set rows in this col
 		{
-			float row_coeff = this_node.model_matrix[col][row];
+			IloNum row_coeff = this_node.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_coeff); // set coeff
 		}
 
-		
+
 		string X_name = "X_" + to_string(col + 1); // var name
 
 		// Case 1 : 
@@ -73,12 +69,14 @@ bool SolveNewNodeFirstMasterProblem(
 		// Branch this var to be an integer
 		if (col == this_node.branching_col_idx)
 		{
-			int branching_val = this_node.branching_final_val;
+			IloNum branching_val = this_node.branching_final_val;
+			printf("\n	x_var_%d is set as %f, branching", col + 1, branching_val);
+
 			IloNumVar Var(CplexCol, branching_val, branching_val, ILOFLOAT, X_name.c_str()); // Init and set the to-branching-var
 			Vars_MP.add(Var);
-
-			printf("\n	x_var_%d is set as %d, branching", col + 1, branching_val);
+			
 		}
+
 		// Case 2:
 		// var of this col is not the to-branching-var of Parent Node
 		else
@@ -88,50 +86,35 @@ bool SolveNewNodeFirstMasterProblem(
 			int branched_flag = 0;
 
 			for (int idx = 0; idx < branched_num; idx++) // loop of all branched-vars in previous Nodes
-			{			
-				if (col == this_node.branched_idx_list[idx]) // var of this col is a branched-var in Parent Node
+			{
+				int branched_col = this_node.branched_idx_list[idx];
+				if (col == branched_col) // var of this col is a branched-var in Parent Node
 				{
-					// int branched_val = this_node.branched_vars_list[col]; // this var is set to its branched-val
-					int branched_val = Lists.Branched_idx_list[col]; 
-					IloNumVar Var(CplexCol, 0, 1, ILOFLOAT, X_name.c_str()); // Init and set var
-					//IloNumVar Var(CplexCol, branched_val, branched_val, ILOFLOAT, X_name.c_str()); // Init and set var
+					IloNum branched_val = this_node.branched_vars_list[idx];
+					printf("\n	x_var_%d is set as %f, branched", col + 1, branched_val);
+
+					IloNumVar Var(CplexCol, branched_val, branched_val, ILOFLOAT, X_name.c_str()); // Init and set var
 					Vars_MP.add(Var);
-
-					printf("\n	col_%d = idx_%d, x_var_%d is set as %d, branched",  col+1,idx+1,col + 1, branched_val);
-
 					branched_flag = 1;
 					break;
-				}
-				else
-				{
-					continue;
 				}
 			}
 
 			// Case 2.2
 			// The var of this col is NOT a branched-var in previous Nodes
-			if (branched_flag ==0)
-			{ 
-				IloNum var_min; // var LB
-				IloNum var_max; // var UB
-
-				var_min = 0; // var >= 0
-				var_max = IloInfinity;
+			if (branched_flag == 0)
+			{
+				IloNum var_min = 0;
+				IloNum var_max = IloInfinity;
 				IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // Init and set var
 				Vars_MP.add(Var);
-
-				printf("\n	x_var_%d is set as %d", col + 1, 0);
 			}
-			else
-			{
-				continue;
-			}
-		}	
-		//CplexCol.end(); // end this col
+		}
+		CplexCol.end(); // end this col
 	}
 
-	printf("\n\n################## Node_%d MP-1 CPLEX SOLVING START ##################\n\n",this_node.index);
- 	IloCplex MP_cplex(Env_MP);
+	printf("\n\n################## Node_%d MP-1 CPLEX SOLVING START ##################\n\n", this_node.index);
+	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("NewNodeProblem.lp");
 	bool MP_flag = MP_cplex.solve();
@@ -176,8 +159,8 @@ bool SolveNewNodeFirstMasterProblem(
 		size_t branched_num = this_node.branched_vars_list.size();
 		for (int k = 0; k < branched_num; k++)
 		{
-			printf("	var_x_%d = %d branched \n",
-				this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
+			printf("	var_x_%d = %f branched \n",
+				this_node.branched_idx_list[k] + 1, this_node.branched_vars_list[k]);
 		}
 
 		printf("\n	DUAL PRICES: \n\n");
@@ -185,18 +168,18 @@ bool SolveNewNodeFirstMasterProblem(
 
 		for (int row = 0; row < item_types_num; row++)
 		{
-			float dual_price = MP_cplex.getDual(Cons_MP[row]);
+			double dual_price = MP_cplex.getDual(Cons_MP[row]);
 			printf("	dual_r_%d = %f\n", row + 1, dual_price);
 			this_node.dual_prices_list.push_back(dual_price);
 		}
 
 		this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 		printf("\n	Node_%d MP-1:\n", this_node.index);
-		printf("\n	Lower Bound:   %f", this_node.lower_bound);
-		printf("\n	NUM of all solns: %zd", all_cols_num);
-		printf("\n	NUM of fsb solns: %d", fsb_num);
-		printf("\n	NUM of int solns: %d", int_num);
-		printf("\n	NUM of branched-vars: %zd\n", branched_num);
+		printf("\n	Lower Bound = %f", this_node.lower_bound);
+		printf("\n	NUM of all solns = %zd", all_cols_num);
+		printf("\n	NUM of fsb solns = %d", fsb_num);
+		printf("\n	NUM of int solns = %d", int_num);
+		printf("\n	NUM of branched-vars = %zd\n", branched_num);
 	}
 
 	MP_cplex.end();

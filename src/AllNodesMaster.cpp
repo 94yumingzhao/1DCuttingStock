@@ -19,22 +19,23 @@ bool SolveUpdateMasterProblem(
 	this_node.model_matrix.push_back(this_node.new_col);
 
 	// set the obj coeff of the new col
-	int obj_coeff = 1;
+	IloNum obj_coeff = 1;
 	IloNumColumn CplexCol = Obj_MP(obj_coeff);
 
 	// add the new col ro the model of MP 
 	for (int row = 0; row < item_types_num; row++)
 	{
-		CplexCol += Cons_MP[row](this_node.new_col[row]);
+		IloNum row_val= this_node.new_col[row];
+		CplexCol += Cons_MP[row](row_val);
 	}
 
 	// var >= 0
 	IloNum var_min = 0;
 	IloNum var_max = IloInfinity;
-
-	IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT); // float, not int
+	IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT); // double, not int
 	Vars_MP.add(Var);
-	CplexCol.end();
+
+	CplexCol.end(); // end this IloNuumColumn
 	
 
 	// solve the new updated MP
@@ -77,7 +78,7 @@ bool SolveUpdateMasterProblem(
 	size_t branched_num = this_node.branched_vars_list.size();
 	for (int k = 0; k < branched_num; k++)
 	{
-		printf("	var_x_%d = %d branched \n", 
+		printf("	var_x_%d = %f branched \n", 
 			this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
 	}
 
@@ -87,7 +88,7 @@ bool SolveUpdateMasterProblem(
 
 	for (int row = 0; row < item_types_num; row++)
 	{
-		float dual_val = MP_cplex.getDual(Cons_MP[row]); // get dual-prices of all cons
+		double dual_val = MP_cplex.getDual(Cons_MP[row]); // get dual-prices of all cons
 		printf("	dual_r_%d = %f\n", row + 1, dual_val);
 		this_node.dual_prices_list.push_back(dual_val);
 	}
@@ -95,11 +96,11 @@ bool SolveUpdateMasterProblem(
 
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 	printf("\n	Node_%d MP-%d:\n", this_node.index,this_node.iter);
-	printf("\n	Lower Bound:   %f", this_node.lower_bound);
-	printf("\n	NUM of now solns: %zd", now_solns_num);
-	printf("\n	NUM of fsb-solns: %d", fsb_num);
-	printf("\n	NUM of int-solns: %d", int_num);
-	printf("\n	NUM of branched-vars: %zd\n", branched_num);
+	printf("\n	Lower Bound = %f", this_node.lower_bound);
+	printf("\n	NUM of now solns = %zd", now_solns_num);
+	printf("\n	NUM of fsb-solns = %d", fsb_num);
+	printf("\n	NUM of int-solns = %d", int_num);
+	printf("\n	NUM of branched-vars = %zd\n", branched_num);
 
 	MP_cplex.end();
 	return MP_flag;
@@ -162,7 +163,7 @@ bool SolveFinalMasterProblem(
 	size_t branched_num = this_node.branched_vars_list.size();
 	for (int k = 0; k < branched_num; k++)
 	{
-		printf("	var_x_%d = %d branched \n",
+		printf("	var_x_%d = %f branched \n",
 			this_node.branched_idx_list[k]+1, this_node.branched_vars_list[k]);
 	}
 
@@ -170,11 +171,11 @@ bool SolveFinalMasterProblem(
 	size_t int_num = this_node.int_idx_list.size();
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 	printf("\n	Node_%d MP-final:\n", this_node.index);
-	printf("\n	Lower Bound:  %f", this_node.lower_bound);
-	printf("\n	NUM of all solns: %zd", all_solns_num);
-	printf("\n	NUM of fsb-solns: %zd", fsb_num);
-	printf("\n	NUM of int-solns: %zd", int_num);
-	printf("\n	NUM of branched-vars: %zd\n", branched_num);
+	printf("\n	Lower Bound = %f", this_node.lower_bound);
+	printf("\n	NUM of all solns = %zd", all_solns_num);
+	printf("\n	NUM of fsb-solns = %zd", fsb_num);
+	printf("\n	NUM of int-solns = %zd", int_num);
+	printf("\n	NUM of branched-vars = %zd\n", branched_num);
 
 	MP_cplex.end();
 	return MP_flag;
