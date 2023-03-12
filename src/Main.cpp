@@ -30,11 +30,11 @@ int main()
 
 	Node root_node; // Init root Node
 	root_node.index = 1; // Node index
-	Values.tree_branching_flag = 0; 
+	Values.tree_branching_status = 0; 
 
 	InitRootNodeMatrix(Values, Lists, root_node); // generate root Node matrix
 	SolveOneNode(Values, Lists, root_node); // solve root Node with CG loop	
-	Values.tree_continue_flag = BranchandPrice(Values, Lists, root_node); // find the branch var of root Node
+	Values.tree_continue_flag = BranchOrSwitch(Values, Lists, root_node); // find the branch var of root Node
 
 	int node_num = 1;
 	int level_num = 1;
@@ -48,40 +48,63 @@ int main()
 		while (1)
 		{
 			level_num++;
-			// First solve the left branch Node		
-			if (Values.tree_branching_flag == 1)
+			
+			if (Values.tree_branching_status == 1) // solve left Node		
 			{
 				node_num++;
-				Node new_node; // generate the left branch Node
-				SolveOneNode(Values, Lists, new_node); // solve the Node with CG	loop
-				Values.tree_continue_flag = BranchandPrice(Values, Lists, new_node); // judge Node integerity and find the branch var			
-				if (Values.tree_continue_flag == 1) // all solns are integer in this new Node
+				Node new_node; // generate the left Node
+				SolveOneNode(Values, Lists, new_node); // solve the Node with CG	loop (Pricing)
+				Values.tree_continue_flag = BranchOrSwitch(Values, Lists, new_node); // branch this Node or switch to another Node
+				if (Values.tree_continue_flag == 1) // if all solns are integer in this Node
 				{
-					Values.tree_branching_flag = 3; // no need to  branch this Node and switch to another un-branched Node
+					Values.tree_branching_status = 3; // no need to branch this Node 
+
+					// switch to another unbranched Node in tree
+				}
+				else
+				{
+					Values.tree_branching_status = 2; 
+					
+					// continue to sibling right Node
+				}
+			}
+		
+			if (Values.tree_branching_status == 2) 	// solve sibling right Node
+			{
+				node_num++;
+				Node new_node; // generate the right Node
+				SolveOneNode(Values, Lists, new_node); // solve the Node with CG loop  (Pricing)
+				Values.tree_continue_flag = BranchOrSwitch(Values, Lists, new_node); // branch this Node or switch to another Node
+				if (Values.tree_continue_flag == 1) // if all solns are integer in this Node
+				{
+					Values.tree_branching_status = 3; // no need to branch
+					
+					// switch to an unbranched Node in tree
+				} 
+				else
+				{
+					Values.tree_branching_status = 1; 
+					
+					// branch and continue to sub left Node
 				}
 			}
 
-			// Then solve the right branch Node
-			if (Values.tree_branching_flag == 2)
+			if (Values.tree_branching_status == 3) // switch to a previous unbranched Node in BP Tree
 			{
-				node_num++;
-				Node new_node; // generate the right branch Node
-				SolveOneNode(Values, Lists, new_node); // solve the Node with CG loop
-				Values.tree_continue_flag = BranchandPrice(Values, Lists, new_node); // judge Node integerity and find the branch var
-				if (Values.tree_continue_flag == 1) // all solns are integer in this new Node
+				Node avail_node; // switch to a previous unbranched Node
+				SolveOneNode(Values, Lists, avail_node); // solve the Node with CG loop  (Pricing)
+				Values.tree_continue_flag = BranchOrSwitch(Values, Lists, avail_node); // branch this Node or switch to another Node
+				if (Values.tree_continue_flag == 1) // if all solns are integer in this Node
 				{
-					Values.tree_branching_flag = 3; // no need to  branch this Node and switch to another un-branched Node
-				} 
-			}
+					Values.tree_branching_status = 3; // no need to branch
+					
+					// switch to an unbranched Node in tree
+				}
+				else
+				{
+					Values.tree_branching_status = 1;
 
-			if (Values.tree_branching_flag == 3) // switch to another un-branched Node in BP Tree
-			{
-				Node avail_node; // generate the right branch Node
-				SolveOneNode(Values, Lists, avail_node); // solve the Node with CG loop
-				Values.tree_continue_flag = BranchandPrice(Values, Lists, avail_node); // judge Node integerity and find the branch var
-				if (Values.tree_continue_flag == 1) // all solns are integer in this new Node
-				{
-					Values.tree_branching_flag = 3; // no need to  branch this Node and switch to another un-branched Node
+					// continue to sub left Node
 				}
 			}
 

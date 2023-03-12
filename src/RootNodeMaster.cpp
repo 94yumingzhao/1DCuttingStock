@@ -7,27 +7,25 @@ using namespace std;
 void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
-	vector<vector<double>> primal_matrix;
-
-	for (int col = 0; col < item_types_num; col++) // cols num == item types num
+	for (size_t col = 0; col < item_types_num; col++) // cols num == item types num
 	{
-		vector<double> primal_col;
-		for (int row = 0; row < item_types_num; row++) // rows num == item types num
+		vector<int> temp_col;
+		for (size_t row = 0; row < item_types_num; row++) // rows num == item types num
 		{
 			if (row == col)
 			{
-				double primal_val = 0;
-				primal_val = Values.stock_length / Lists.all_item_types_list[row].length;
-				primal_col.push_back(primal_val);
+				int temp_val = 0;
+				temp_val = Values.stock_length / Lists.all_item_types_list[row].length;
+				temp_col.push_back(temp_val);
 			}
 			else
 			{
-				primal_col.push_back(0);
+				temp_col.push_back(0);
 			}
 		}
-		primal_matrix.push_back(primal_col);
+		root_node.model_matrix.push_back(temp_col);
 	}
-	root_node.model_matrix = primal_matrix;
+	cout << endl;
 }
 
 
@@ -41,15 +39,16 @@ bool SolveRootNodeFirstMasterProblem(
 	IloNumVarArray& Vars_MP,
 	Node& root_node)
 {
-	int item_types_num = Values.item_types_num;
-
+	// set model cons
 	IloNumArray  con_min(Env_MP); // cons LB
 	IloNumArray  con_max(Env_MP); // cons UB
 
-	for (int i = 0; i < item_types_num; i++)
+	int item_types_num = Values.item_types_num;
+	for (size_t i = 0; i < item_types_num; i++)
 	{
-		// cons > demand
-		con_min.add(IloNum(Lists.all_item_types_list[i].demand)); 
+		// con >= demand
+		int item_type_demand = Lists.all_item_types_list[i].demand;
+		con_min.add(IloNum(item_type_demand));
 		con_max.add(IloNum(IloInfinity)); 
 	}
 
@@ -59,26 +58,33 @@ bool SolveRootNodeFirstMasterProblem(
 	con_min.end();
 	con_max.end();
 
-	for (int col = 0; col < item_types_num; col++)
+	// set model matrix
+	int cols_num = item_types_num;
+	int rows_num = item_types_num;
+
+	for (size_t col = 0; col < cols_num; col++)
 	{
 		IloNum obj_coeff_1 = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_coeff_1);
 
-		for (int row = 0; row < item_types_num; row++)
+		for (size_t row = 0; row < rows_num; row++)
 		{
 			IloNum row_coeff = root_node.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_coeff);
 		}
 
-		IloNum var_min = 0;
-		IloNum var_max = IloInfinity;
-		string X_name = "X_" + to_string(col + 1);
+		// var >= 0
+		IloNum var_min = 0; // var LB
+		IloNum var_max = IloInfinity; // var UB
+		string X_name = "X_" + to_string(col + 1); // var name
+
 		IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
 		Vars_MP.add(Var);
 
 		CplexCol.end(); // end this IloNumColumn object
 	}
 
+	// solve model
 	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n",root_node.index);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
@@ -88,8 +94,8 @@ bool SolveRootNodeFirstMasterProblem(
 
 	int fsb_num = 0;
 	int int_num = 0;
-	size_t solns_num = root_node.model_matrix.size();
 
+	// judge model feasibility
 	if (MP_flag == 0)
 	{
 		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", root_node.index);
@@ -99,8 +105,7 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
 		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
-		int now_solns_num = item_types_num;
-		for (int col = 0; col < now_solns_num; col++)
+		for (size_t col = 0; col < cols_num; col++)
 		{
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) // feasible soln > 0
@@ -113,40 +118,30 @@ bool SolveRootNodeFirstMasterProblem(
 					if (soln_int_val >= 1)
 					{
 						int_num++;
-						printf("	var_x_%d = %f int\n", col + 1, soln_val);
+						printf("	var_x_%zd = %f int\n", col + 1, soln_val);
 					}
 				}
 				else
 				{
-					printf("	var_x_%d = %f\n", col + 1, soln_val);
+					printf("	var_x_%zd = %f\n", col + 1, soln_val);
 				}
 			}
 		}
 
-		printf("\n	BRANCHED VARS: \n\n");
-		size_t branched_num = root_node.branched_vars_list.size();
-		for (int k = 0; k < branched_num; k++)
-		{
-			printf("	var_x_%d = %f branched \n",
-				root_node.branched_idx_list[k]+1, root_node.branched_vars_list[k]);
-		}
-
-
 		printf("\n	DUAL PRICES: \n\n");
-		for (int k = 0; k < item_types_num; k++)
+		for (size_t k = 0; k < rows_num; k++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[k]);
-			printf("	dual_r_%d = %f\n", k + 1, dual_val);
+			printf("	dual_r_%zd = %f\n", k + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
 		}
 
 		root_node.lower_bound = MP_cplex.getValue(Obj_MP);
 		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
 		printf("\n	Lower Bound = %f", root_node.lower_bound);
-		printf("\n	NUM of all solns = %zd", solns_num);
+		printf("\n	NUM of all solns = %zd", cols_num);
 		printf("\n	NUM of fsb solns = %d", fsb_num);
 		printf("\n	NUM of int solns = %d", int_num);
-		printf("\n	NUM of branched-vars = %zd\n", branched_num);
 	}
 
 	MP_cplex.end();

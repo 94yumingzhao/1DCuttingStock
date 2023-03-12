@@ -3,7 +3,7 @@
 using namespace std;
 
 // judge the integerity of the Node, and find the branch var
-int BranchandPrice(All_Values& Values, All_Lists& Lists, Node& this_node)
+int BranchOrSwitch(All_Values& Values, All_Lists& Lists, Node& this_node)
 {	
 	int node_int_flag = -1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	int node_continue_flag = -1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
@@ -58,10 +58,10 @@ int FindNodeBranchVar(All_Values& Values, All_Lists& Lists, Node& this_node)
 	double soln_val;
 
 	// find the branching var of this Node
-	size_t all_solns_num = this_node.all_solns_list.size();
-	for (int col = 0; col < all_solns_num; col++)
+	size_t all_solns_num = this_node.all_solns_val_list.size();
+	for (size_t col = 0; col < all_solns_num; col++)
 	{
-		soln_val = this_node.all_solns_list[col];
+		soln_val = this_node.all_solns_val_list[col];
 		if (soln_val > 0)
 		{
 			// judge the integerity of the soln
@@ -71,46 +71,47 @@ int FindNodeBranchVar(All_Values& Values, All_Lists& Lists, Node& this_node)
 				printf("\n	Node_%d var_x_%d = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
 				printf("\n	Branching on Node_%d var_x_%d\n", this_node.index, col + 1);
 
-				this_node.branching_col_idx = col; // set the branching var-col index
+				this_node.branching_var_idx = col; // set the branching var-col index
 				this_node.branching_var_val = soln_val; // set the branching var	
-				this_node.branching_floor_val = floor(soln_val);
-				this_node.branching_ceil_val = ceil(soln_val);
+				this_node.branching_var_val_floor = floor(soln_val);
+				this_node.branching_var_val_ceil = ceil(soln_val);
 
+				/*
 				if (soln_int_val >= 1)
 				{
-					double floor_gap = this_node.branching_var_val - this_node.branching_floor_val;
-					double ceil_gap = this_node.branching_ceil_val - this_node.branching_var_val;
+					double floor_gap = this_node.branching_var_val - this_node.branching_var_val_floor;
+					double ceil_gap = this_node.branching_var_val_ceil - this_node.branching_var_val;
 
 					if (ceil_gap > floor_gap)
 					{
-						this_node.branching_final_val = this_node.branching_floor_val;
+						this_node.branching_final_val = this_node.branching_var_val_floor;
 
 						printf("\n	The FLOOR value of %f =  %d\n",
 							this_node.branching_var_val, this_node.branching_final_val);
 
-						Values.tree_branching_flag = 1; // The next Node is the left branch of this Node
+						Values.tree_branching_status = 1; // The next Node is the left branch of this Node
 					}
 					else
 					{
-						this_node.branching_final_val = this_node.branching_ceil_val;
+						this_node.branching_final_val = this_node.branching_var_val_ceil;
 
 						printf("\n	The CEIL value of %f = %d\n",
 							this_node.branching_var_val, this_node.branching_final_val);
 
-						Values.tree_branching_flag = 0; // The next Node is the right branch of this Node
+						Values.tree_branching_status = 0; // The next Node is the right branch of this Node
 
 					}
 				}
 				else
 				{
-					this_node.branching_final_val = this_node.branching_ceil_val;
+					this_node.branching_final_val = this_node.branching_var_val_ceil;
 
 					printf("\n	The CEIL value of %f = %d\n",
 						this_node.branching_var_val, this_node.branching_final_val);
 
-					Values.tree_branching_flag = 1; // The next Node is the left branch of this Node
+					Values.tree_branching_status = 1; // The next Node is the left branch of this Node
 				}
-				
+				*/
 				node_int_flag = 0; // continue BP algorithm
 				break; // break the loop			
 			}
@@ -120,11 +121,8 @@ int FindNodeBranchVar(All_Values& Values, All_Lists& Lists, Node& this_node)
 	if (node_int_flag == 0)
 	{
 		this_node.node_branched_flag = 1;
-		int final_val = this_node.branching_final_val;
-		int col_idx = this_node.branching_col_idx;
-
-		this_node.branched_vars_list.push_back(final_val);
-		this_node.branched_idx_list.push_back(col_idx);
+		int col_idx = this_node.branching_var_idx;
+		this_node.branched_vars_idx_list.push_back(col_idx);
 	}
 	if (node_int_flag == -1)
 	{

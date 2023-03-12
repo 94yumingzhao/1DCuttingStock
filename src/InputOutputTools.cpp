@@ -154,7 +154,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		int distance_index = 0;
 		vector<int>::iterator iter;
 
-		for (int i = 0; i < all_items_list_size; i++)
+		for (size_t i = 0; i < all_items_list_size; i++)
 		{
 			int this_item_length = Lists.all_items_list[i].length;
 

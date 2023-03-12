@@ -71,44 +71,41 @@ struct StockProperties
 
 struct Node
 {
-	int index = -1; //
+	int index = -1; 
+	double lower_bound = -1;
 
 	// Values of the Parent Node of one Node
 	int parent_index = -1;
 	int parent_branching_flag = -1;
-	//int parent_branch_val = -1;
 
-	// Values of one Node
+	// Values of Node status
 	int node_branched_flag=-1;
 	int node_pruned_flag=-1;
 
-	double lower_bound = -1; 
+	// Values of final branching of one Node
+	int branching_var_idx = -1; // column index of the to-branching var in Parent Node
 	double branching_var_val = -1; // soln-val of the to-branching var in Parent Node
-	int branching_col_idx = -1; // column index of the to-branching var in Parent Node
+	int branching_var_val_floor = -1; // floor integer value of the to-branching var in Parent Node
+	int branching_var_val_ceil = -1; // ceil interger value of the to-branching var in Parent Node
+	// int branching_final_val =-1; // the fixed val of the to-branching var
 
-	int branching_floor_val = -1; // floor integer value of the to-branching var in Parent Node
-	int branching_ceil_val = -1; // ceil interger value of the to-branching var in Parent Node
-	int branching_final_val =-1; // the fixed val of the to-branching var
-
-	// Lists of one Node
-	vector<double> branched_vars_list; // all branched-vars of previous Nodes on BP Tree 
-	vector<int> branched_idx_list; // column indexes of all branched-vars of previous Nodes on BP Tree
-	//tuple<int col_idx, int var_val>  branched_var (-1,-1);
-
+	// Lists of final branching of one Node
+	vector<int> branched_vars_idx_list; // column indexes of all branched-vars of previous Nodes on BP Tree
+	vector<double> branched_vars_val_list; // all branched-vars of previous Nodes on BP Tree 
 	vector<vector<double>>branched_cols_list;
 
-	vector<double> all_solns_list; // final all (include 0) solutions of this Node
-	vector<double> fsb_solns_list; // final feasible (i.e. non-0) solutions of this Node
-	vector<int> fsb_idx_list; // final column indexes of feasible solutions of this Node
-	vector<int> int_solns_list; // final all integer solutions of this Node
-	vector<int> int_idx_list;  // final column indexes of integer solutions of this Node
+	vector<double> all_solns_val_list; // final all (include 0) solutions of this Node
+	vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solutions of this Node
+	vector<int> fsb_solns_idx_list; // final column indexes of feasible solutions of this Node
+	vector<int> int_solns_val_list; // final all integer solutions of this Node
+	vector<int> int_solns_idx_list;  // final column indexes of integer solutions of this Node
 
 	// Lists of one Column Generation iter of one Node
 	int iter = -1;
-	vector<vector<double>> model_matrix; // model matrix in this CG iter
+	vector<vector<int>> model_matrix; // model matrix in this CG iter
 	vector<double> dual_prices_list; // dual prices of Master Problem cons in this CG iter
-	vector<double> new_col; // one new col from Sub Problem in this CG iter
-	vector<vector<double>> new_cols_list; // new cols from Sub Problem in this CG iter
+	vector<int> new_col; // one new col from Sub Problem in this CG iter
+	vector<vector<int>> new_cols_list; // new cols from Sub Problem in this CG iter
 
 };
 
@@ -119,7 +116,7 @@ struct All_Values
 	int stock_length = -1; // length of a stock
 
 	double tree_optimal_bound = -1; // current optimal lower bound of BP Tree
-	int tree_branching_flag = -1; // flag of branching, 0 -- root, 1 -- new left, 2 -- new right, 3 -- previoud unbranched Node
+	int tree_branching_status = -1; // flag of branching, 0 -- root, 1 -- new left, 2 -- new right, 3 -- previoud unbranched Node
 	int tree_continue_flag = -1; //  if there is non-int-solns in a Node, 0 -- yes, 1 -- no
 };
 
@@ -187,7 +184,7 @@ bool SolveFinalMasterProblem(
 
 //int NodeIntergerityJudgement(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int BranchandPrice(All_Values& Values, All_Lists& Lists, Node& this_node);
+int BranchOrSwitch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int FindNodeBranchVar(All_Values& Values, All_Lists& Lists,Node& this_node);
 
