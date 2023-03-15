@@ -126,7 +126,7 @@ void InitNewNode(All_Values&Values, All_Lists&Lists,Node& new_node, Node& parent
 		new_node.model_matrix.push_back(temp_col); //6
 	}
 
-	// Init branched-vars list and their col-idx list of the new Node 
+	// Init branched-vars list and their idx list of the new Node 
 	for (size_t col = 0; col < branched_num; col++)
 	{
 		double temp_val = parent_node.branched_vars_val_list[col];
@@ -136,7 +136,7 @@ void InitNewNode(All_Values&Values, All_Lists&Lists,Node& new_node, Node& parent
 		new_node.branched_vars_idx_list.push_back(temp_idx); //8
 	}
 
-	// Clear to init all otther lists
+	// Clear all other lists to init them
 	new_node.all_solns_val_list.clear(); 
 	new_node.fsb_solns_val_list.clear();
 	new_node.fsb_solns_idx_list.clear();

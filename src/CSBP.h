@@ -118,6 +118,9 @@ struct All_Values
 	double tree_optimal_bound = -1; // current optimal lower bound of BP Tree
 	int tree_branching_status = -1; // flag of branching, 0 -- root, 1 -- new left, 2 -- new right, 3 -- previoud unbranched Node
 	int tree_continue_flag = -1; //  if there is non-int-solns in a Node, 0 -- yes, 1 -- no
+
+	int level_num;
+	int node_num;
 };
 
 struct All_Lists
@@ -183,6 +186,8 @@ bool SolveFinalMasterProblem(
 	Node& this_node);
 
 //int NodeIntergerityJudgement(All_Values& Values, All_Lists& Lists, Node& this_node);
+
+int BranchTree(All_Values& Values, All_Lists& Lists);
 
 int BranchOrSwitch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
