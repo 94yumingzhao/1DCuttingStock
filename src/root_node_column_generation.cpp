@@ -3,12 +3,12 @@
 #include "CSBP.h"
 using namespace std;
 
-// solve the root node with CG loop
-void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node)
+// solve the Root node with CG loop
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	printf("\n##########################################################\n");
 	printf("##########################################################\n");
-	printf("####################### ROOT NODE ######################\n");
+	printf("####################### ROOT Node ######################\n");
 	printf("##########################################################\n");
 	printf("##########################################################\n\n");
 
@@ -19,10 +19,10 @@ void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_n
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
 
-	root_node.iter = 0; // root node index == 0
-	root_node.lower_bound = Values.tree_optimal_bound; // Init root node bound 
+	root_node.iter = 0; // Root node index == 0
+	root_node.lower_bound = Values.tree_optimal_bound; // Init Root node bound 
 
-	// solve the first MP of the root node 
+	// solve the first MP of the Root node 
 	int MP_flag = SolveRootNodeFirstMasterProblem(
 		Values,
 		Lists,

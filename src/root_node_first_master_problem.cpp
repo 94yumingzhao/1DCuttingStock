@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-// function to init model matrix of root Node
+// function to init model matrix of Root Node
 void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
@@ -139,7 +139,7 @@ bool SolveRootNodeFirstMasterProblem(
 		root_node.lower_bound = MP_cplex.getValue(Obj_MP);
 		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
 		printf("\n	Lower Bound = %f", root_node.lower_bound);
-		printf("\n	NUM of all solns = %zd", cols_num);
+		printf("\n	NUM of all solns = %d",  cols_num);
 		printf("\n	NUM of fsb solns = %d", fsb_num);
 		printf("\n	NUM of int solns = %d", int_num);
 	}

@@ -77,7 +77,7 @@ bool SolveUpdateMasterProblem(
 	size_t branched_num = this_node.branched_vars_val_list.size();
 	for (size_t k = 0; k < branched_num; k++)
 	{
-		printf("	var_x_%zd = %f branched \n", 
+		printf("	var_x_%d = %f branched \n", 
 			this_node.branched_vars_idx_list[k]+1, this_node.branched_vars_val_list[k]);
 	}
 

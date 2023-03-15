@@ -3,11 +3,10 @@
 #include "CSBP.h"
 using namespace std;
 
-void ColumnGenerationNewNode(
+void NewNodeColumnGeneration(
 	All_Values& Values, 
 	All_Lists& Lists, 
-	Node& this_node, 
-	Node& parent_node)
+	Node& this_node)
 {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
@@ -25,8 +24,7 @@ void ColumnGenerationNewNode(
 		Obj_MP,
 		Cons_MP,
 		Vars_MP,
-		this_node,
-		parent_node);
+		this_node);
 
 	cout << endl;
 
@@ -78,4 +76,6 @@ void ColumnGenerationNewNode(
 	Model_MP.end();
 	Env_MP.removeAllProperties();
 	Env_MP.end();
+
+	cout << endl;
 }

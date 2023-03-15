@@ -26,21 +26,23 @@ int main()
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
 	Values.stock_length = get<2>(fileTxt); // length of a stock
 
-	Node root_node; // Init root Node
+	Node root_node; // Init Root Node
 	root_node.index = 1; // Node index
-	Values.tree_branching_status = 0; 
+	Values.branch_status = 0; 
 
-	InitRootNodeMatrix(Values, Lists, root_node); // generate root Node matrix
-	SolveOneNode(Values, Lists, root_node); // solve root Node with CG loop	
-	Values.tree_continue_flag = BranchOrSwitch(Values, Lists, root_node); // find the branch var of root Node
+	InitRootNodeMatrix(Values, Lists, root_node); // generate Root Node matrix
+	RootNodeColumnGeneration(Values, Lists, root_node);
+	Values.search_flag = BranchOrSearch(Values, Lists, root_node); // find the branch var of Root Node
+	Values.fathom_flag = 0;
 
 	int node_num = 1;
 	int level_num = 1;
 
 	// continue to BP
-	if (Values.tree_continue_flag == 0)
+	if (Values.search_flag == 0)
 	{	
-		BranchTree(Values, Lists); // Branch and Price loop
+		Values.branch_status = 1;
+		BranchAndPriceTree(Values, Lists); // Branch and Price loop
 	}
 
 	finish = clock();

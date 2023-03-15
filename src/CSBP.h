@@ -1,17 +1,20 @@
-﻿// 2022-03-06 
+﻿// 2023-03-06 
+// 
 // CG -- column generation
 // MP -- master  problem
 // SP  -- sub problem
 // LB  -- lower bound
 // UB -- upper bound
 //
-// col -- column
 // var -- variable
+// con -- constraint
 // para -- parameter
+// col -- column
+//
 // fsb -- feasible
-// int --- integer
+// int -- integer
+// soln -- solution
 // val -- value
-
 
 #include<vector>
 #include<queue>
@@ -29,8 +32,6 @@
 using namespace std;
 
 #define RC_EPS 1.0e-6 // a num that is very close to 0
-
-
 
 // item type
 struct ItemTypeProperties
@@ -76,6 +77,7 @@ struct StockProperties
 	int material_area_loss = -1;
 };
 
+
 struct Node
 {
 	int index = -1; 
@@ -90,11 +92,11 @@ struct Node
 	int node_pruned_flag=-1;
 
 	// Values of final branching of one Node
-	int branching_var_idx = -1; // column index of the to-branching var in Parent Node
-	double branching_var_val = -1; // soln-val of the to-branching var in Parent Node
-	int branching_var_val_floor = -1; // floor integer value of the to-branching var in Parent Node
-	int branching_var_val_ceil = -1; // ceil interger value of the to-branching var in Parent Node
-	int branching_var_val_final =-1; // the fixed val of the to-branching var
+	int var_to_branch_idx = -1; // column index of the var-to-branch in Parent Node
+	double var_to_branch_val = -1; // soln-val of the var-to-branch in Parent Node
+	int var_to_branch_val_floor = -1; // floor integer value of the var-to-branch in Parent Node
+	int var_to_branch_val_ceil = -1; // ceil interger value of the var-to-branch in Parent Node
+	int var_to_branch_val_final =-1; // the fixed val of the var-to-branch
 
 	// Lists of final branching of one Node
 	vector<int> branched_vars_idx_list; // column indexes of all branched-vars of previous Nodes on BP Tree
@@ -123,8 +125,20 @@ struct All_Values
 	int stock_length = -1; // length of a stock
 
 	double tree_optimal_bound = -1; // current optimal lower bound of BP Tree
-	int tree_branching_status = -1; // flag of branching, 0 -- root, 1 -- new left, 2 -- new right, 3 -- previoud unbranched Node
-	int tree_continue_flag = -1; //  if there is non-int-solns in a Node, 0 -- yes, 1 -- no
+
+	// flag of the next Node
+	// 1 -- new left Node,
+	// 2 -- new right Node
+	// 3 -- previously generated Node
+	int branch_status = -1;
+
+	// flag of branching or searching
+	// 0 -- contiinue to branch current Node
+	// 1 -- stop at current Node and search for a previously generated Node
+	int search_flag = -1; 
+
+
+	int fathom_flag = -1;
 
 	int level_num;
 	int node_num;
@@ -145,11 +159,9 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
 void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void SolveOneNode(All_Values& Values, All_Lists& Lists, Node& one_node);
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void ColumnGenerationRootNode(All_Values& Values, All_Lists& Lists, Node& root_node);
-
-void ColumnGenerationNewNode(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
+void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -169,8 +181,7 @@ bool SolveNewNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node& this_node,
-	Node& parent_node);
+	Node& this_node);
 
 bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
@@ -196,15 +207,15 @@ bool SolveFinalMasterProblem(
 
 //int NodeIntergerityJudgement(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int BranchTree(All_Values& Values, All_Lists& Lists);
+int BranchAndPriceTree(All_Values& Values, All_Lists& Lists);
 
-int BranchOrSwitch(All_Values& Values, All_Lists& Lists, Node& this_node);
+int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int FindNodeBranchVar(All_Values& Values, All_Lists& Lists,Node& this_node);
+int NodeBranchAndStore(All_Values& Values, All_Lists& Lists,Node& this_node);
 
-void ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node&node_to_branch);
+void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node&new_node);
 
-void InitNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
+void TerminalDisplay(int display_idx, int para_1,int para_2);
 
 
 
