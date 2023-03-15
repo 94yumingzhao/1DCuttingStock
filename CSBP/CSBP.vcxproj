@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\update_master_problem.cpp" />
-    <ClCompile Include="..\src\branching_on_vars.cpp" />
+    <ClCompile Include="..\src\branching_on_var.cpp" />
     <ClCompile Include="..\src\branch_tree_loop.cpp" />
     <ClCompile Include="..\src\read_input_data.cpp" />
     <ClCompile Include="..\src\main.cpp" />

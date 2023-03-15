@@ -21,7 +21,7 @@
     <ClCompile Include="..\src\update_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\branching_on_vars.cpp">
+    <ClCompile Include="..\src\branching_on_var.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\read_input_data.cpp">
