@@ -1,10 +1,17 @@
 ﻿// 2022-03-06 
-
 // CG -- column generation
 // MP -- master  problem
 // SP  -- sub problem
 // LB  -- lower bound
 // UB -- upper bound
+//
+// col -- column
+// var -- variable
+// para -- parameter
+// fsb -- feasible
+// int --- integer
+// val -- value
+
 
 #include<vector>
 #include<queue>
@@ -87,7 +94,7 @@ struct Node
 	double branching_var_val = -1; // soln-val of the to-branching var in Parent Node
 	int branching_var_val_floor = -1; // floor integer value of the to-branching var in Parent Node
 	int branching_var_val_ceil = -1; // ceil interger value of the to-branching var in Parent Node
-	// int branching_final_val =-1; // the fixed val of the to-branching var
+	int branching_var_val_final =-1; // the fixed val of the to-branching var
 
 	// Lists of final branching of one Node
 	vector<int> branched_vars_idx_list; // column indexes of all branched-vars of previous Nodes on BP Tree
@@ -121,6 +128,8 @@ struct All_Values
 
 	int level_num;
 	int node_num;
+
+	int integerity_nodes_num = -1;
 };
 
 struct All_Lists

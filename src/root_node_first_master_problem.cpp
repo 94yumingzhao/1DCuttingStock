@@ -64,13 +64,13 @@ bool SolveRootNodeFirstMasterProblem(
 
 	for (size_t col = 0; col < cols_num; col++)
 	{
-		IloNum obj_coeff_1 = 1;
-		IloNumColumn CplexCol = Obj_MP(obj_coeff_1);
+		IloNum obj_para = 1;
+		IloNumColumn CplexCol = Obj_MP(obj_para);
 
 		for (size_t row = 0; row < rows_num; row++)
 		{
-			IloNum row_coeff = root_node.model_matrix[row][col];
-			CplexCol += Cons_MP[row](row_coeff);
+			IloNum row_para = root_node.model_matrix[row][col];
+			CplexCol += Cons_MP[row](row_para);
 		}
 
 		// var >= 0

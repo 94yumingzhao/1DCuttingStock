@@ -13,8 +13,6 @@ using namespace std;
 
 int main()
 {
-	printf("\n	//////////// START //////////////\n\n");
-
 	clock_t start, finish;
 	start = clock();
 
@@ -41,16 +39,8 @@ int main()
 
 	// continue to BP
 	if (Values.tree_continue_flag == 0)
-	{
-		printf("\n	//////////// New Level %d //////////// \n", level_num);
-
-		// Branch and Price loop
-		BranchTree(Values, Lists);
-	}
-
-	else
-	{
-		printf("\n	//////////// PROCEDURE STOP 4 //////////////\n");
+	{	
+		BranchTree(Values, Lists); // Branch and Price loop
 	}
 
 	finish = clock();

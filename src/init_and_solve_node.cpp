@@ -45,14 +45,16 @@ void ChooseNodeToBranch(All_Values&Values, All_Lists& Lists, Node& node_to_branc
 			}
 		}
 	}
+	node_to_branch.parent_branching_flag = Lists.all_nodes_list[pos].parent_branching_flag;
+	node_to_branch.parent_index = Lists.all_nodes_list[pos].parent_index;
 
-	
 	node_to_branch.index = Lists.all_nodes_list[pos].index; //1
 	node_to_branch.lower_bound = Lists.all_nodes_list[pos].lower_bound;
 
 	node_to_branch.branching_var_idx = Lists.all_nodes_list[pos].branching_var_idx; //4
-	node_to_branch.branching_final_val = Lists.all_nodes_list[pos].branching_final_val; //5
-
+	node_to_branch.branching_var_val = Lists.all_nodes_list[pos].branching_var_val;
+	node_to_branch.branching_var_val_floor = Lists.all_nodes_list[pos].branching_var_val_floor;
+	node_to_branch.branching_var_val_ceil = Lists.all_nodes_list[pos].branching_var_val_ceil;
 
 	size_t cols_num = Lists.all_nodes_list[pos].model_matrix.size();
 	size_t rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
@@ -101,14 +103,22 @@ void InitNewNode(All_Values&Values, All_Lists&Lists,Node& new_node, Node& parent
 	printf("##########################################################\n");
 	printf("##########################################################\n\n");
 
-
 	new_node.lower_bound = parent_node.lower_bound;
 
 	new_node.parent_index = parent_node.index;	 //2
 	new_node.parent_branching_flag = Values.tree_branching_status; //3
 
 	new_node.branching_var_idx = parent_node.branching_var_idx; //4
-	new_node.branching_final_val = parent_node.branching_final_val; //5
+	new_node.branching_var_val = parent_node.branching_var_val;
+
+	if (Values.tree_branching_status == 1)
+	{
+		new_node.branching_var_val_final = parent_node.branching_var_val_floor;
+	}
+	if (Values.tree_branching_status == 2)
+	{
+		new_node.branching_var_val_final = parent_node.branching_var_val_ceil;
+	}
 
 	size_t cols_num = parent_node.model_matrix.size();
 	size_t rows_num = parent_node.model_matrix[0].size();
@@ -141,7 +151,7 @@ void InitNewNode(All_Values&Values, All_Lists&Lists,Node& new_node, Node& parent
 	new_node.fsb_solns_val_list.clear();
 	new_node.fsb_solns_idx_list.clear();
 	new_node.int_solns_idx_list.clear();
-	new_node.int_solns_val_list.clear();;
+	new_node.int_solns_val_list.clear();
 
 	new_node.dual_prices_list.clear();
 	new_node.new_col.clear();

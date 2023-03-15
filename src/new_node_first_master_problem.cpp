@@ -16,8 +16,6 @@ bool SolveNewNodeFirstMasterProblem(
 	Node& parent_node)
 {
 
-
-
 	IloNumArray  con_min(Env_MP); // cons LB
 	IloNumArray  con_max(Env_MP); // cons UB
 
@@ -40,46 +38,31 @@ bool SolveNewNodeFirstMasterProblem(
 
 	for (size_t col = 0; col < cols_num; col++)
 	{
-		IloNum obj_coeff_1 = 1;
-		IloNumColumn CplexCol = Obj_MP(obj_coeff_1); // Init a col
+		IloNum obj_para = 1;
+		IloNumColumn CplexCol = Obj_MP(obj_para); // Init a col
 
 		for (size_t row = 0; row < rows_num; row++) // set rows in this col
 		{
-			IloNum row_coeff = this_node.model_matrix[col][row];
-			CplexCol += Cons_MP[row](row_coeff); // set coeff
+			IloNum row_para = this_node.model_matrix[col][row];
+			CplexCol += Cons_MP[row](row_para); // set coeff
 		}
 
 		string X_name = "X_" + to_string(col + 1); // var name
 
 		// Case 1 : 
-		// This var is the to-branching-var of Parent Node
-		// Branch this var to be an integer
+		// var of this col is the branching-var of Parent Node
 		if (col == this_node.branching_var_idx)
 		{
-			if (Values.tree_branching_status == 1)
-			{
-				IloNum branching_val = this_node.branching_var_val_floor;
-				printf("\n	x_var_%zd is set as %f, branching", col + 1, branching_val);
-
-				IloNumVar Var(CplexCol, branching_val, branching_val, ILOFLOAT, X_name.c_str()); // Init and set the to-branching-var
-				Vars_MP.add(Var);
-			}
-
-			if (Values.tree_branching_status == 2)
-			{
-				IloNum branching_val = this_node.branching_var_val_ceil;
-				printf("\n	x_var_%zd is set as %f, branching", col + 1, branching_val);
-
-				IloNumVar Var(CplexCol, branching_val, branching_val, ILOFLOAT, X_name.c_str()); // Init and set the to-branching-var
-				Vars_MP.add(Var);
-			}		
+			IloNum branching_val = this_node.branching_var_val_final;
+			printf("\n	x_var_%zd is set as %f, branching", col + 1, branching_val);
 		}
 
 		// Case 2:
-		// var of this col is not the to-branching-var of Parent Node
+		// var of this col is not the branching-var of Parent Node
 		else
 		{
 			// Case 2.1
+			//  var of this col is NOT a branched - var in previous Nodes
 			size_t branched_num = this_node.branched_vars_val_list.size();
 			int find_flag = -1;
 
@@ -100,7 +83,7 @@ bool SolveNewNodeFirstMasterProblem(
 			}
 
 			// Case 2.2
-			// The var of this col is NOT a branched-var in previous Nodes
+			// var of this col is NOT a branched-var in previous Nodes
 			if (find_flag == -1)
 			{
 				IloNum var_min = 0;
@@ -109,7 +92,8 @@ bool SolveNewNodeFirstMasterProblem(
 				Vars_MP.add(Var);
 			}
 		}
-		CplexCol.end(); // end this col
+
+		CplexCol.end(); // must end this IloNumColumn object
 	}
 
 	printf("\n\n################## Node_%d MP-1 CPLEX SOLVING START ##################\n\n", this_node.index);

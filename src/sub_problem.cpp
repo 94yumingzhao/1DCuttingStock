@@ -67,12 +67,10 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	// Init the new col for MP
 	this_node.new_col.clear(); // 
-	vector<double> New_Column;
 	int solve_flag = 0;
 
 	// Case 1:
-	// If the obj of SP, which is called reduce cost,, is larger than 1
-	// Then the optimal solns of this Node is not find, continue CG loop 
+	// If the reduced cost is larger than 1, the optimal solns of this Node is not find, continue CG loop 
 	if (SP_cplex.getValue(Obj_SP) > 1 + RC_EPS)
 	{
 		printf("\n	We got a REDUCED COST = %f that LARGER than 1\n\n	A NEW COLUMN will be added to the MP\n", SP_cplex.getValue(Obj_SP));
@@ -81,22 +79,14 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 		for (size_t k = 0; k < item_types_num; k++)
 		{
 			double var_value = SP_cplex.getValue(Vars_SP[k]);
-			New_Column.push_back(var_value);
+			this_node.new_col.push_back(var_value);
 		}
 
-		// print the new col
-		//for (int k = 0; k < item_types_num; k++)
-		//{
-		//	printf("	New Column Row %d = %f\n", k + 1, New_Column[k]);
-		//}
-
-		this_node.new_col = New_Column;
 		solve_flag = 0;
 	}
 
 	// Case 2
-	// If the reduced cost is smaller than 1
-	// Then the optimal solns of this Node is find, break CG loop
+	// If the reduced cost is smaller than 1, then the optimal solns of this Node is find, break CG loop
 	else
 	{
 		printf("\n	We got a REDUCED COST = %f that NOT LARGER than 1\n\n	COLUMN GENERATION procedure stops here!\n", SP_cplex.getValue(Obj_SP));

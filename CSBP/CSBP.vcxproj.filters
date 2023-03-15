@@ -21,7 +21,7 @@
     <ClCompile Include="..\src\update_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\branching_on_var.cpp">
+    <ClCompile Include="..\src\branching_on_node_var.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\read_input_data.cpp">
@@ -42,7 +42,7 @@
     <ClCompile Include="..\src\root_node_first_master_problem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\solve_one_node.cpp">
+    <ClCompile Include="..\src\init_and_solve_node.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\src\sub_problem.cpp">

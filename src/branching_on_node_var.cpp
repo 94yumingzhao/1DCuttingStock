@@ -68,8 +68,8 @@ int FindNodeBranchVar(All_Values& Values, All_Lists& Lists, Node& this_node)
 			int soln_int_val = int(soln_val);
 			if (soln_int_val != soln_val) // not an integer
 			{
-				printf("\n	Node_%d var_x_%d = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
-				printf("\n	Branching on Node_%d var_x_%d\n", this_node.index, col + 1);
+				printf("\n	Node_%d var_x_%d = %zf is NOT an integer\n", this_node.index, col + 1, soln_val);
+				printf("\n	Branching on Node_%d var_x_%zd\n", this_node.index, col + 1);
 
 				this_node.branching_var_idx = col; // set the branching var-col index
 				this_node.branching_var_val = soln_val; // set the branching var	
@@ -84,19 +84,19 @@ int FindNodeBranchVar(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 					if (ceil_gap > floor_gap)
 					{
-						this_node.branching_final_val = this_node.branching_var_val_floor;
+						this_node.branching_var_val_final = this_node.branching_var_val_floor;
 
 						printf("\n	The FLOOR value of %f =  %d\n",
-							this_node.branching_var_val, this_node.branching_final_val);
+							this_node.branching_var_val, this_node.branching_var_val_final);
 
 						Values.tree_branching_status = 1; // The next Node is the left branch of this Node
 					}
 					else
 					{
-						this_node.branching_final_val = this_node.branching_var_val_ceil;
+						this_node.branching_var_val_final = this_node.branching_var_val_ceil;
 
 						printf("\n	The CEIL value of %f = %d\n",
-							this_node.branching_var_val, this_node.branching_final_val);
+							this_node.branching_var_val, this_node.branching_var_val_final);
 
 						Values.tree_branching_status = 0; // The next Node is the right branch of this Node
 
@@ -104,10 +104,10 @@ int FindNodeBranchVar(All_Values& Values, All_Lists& Lists, Node& this_node)
 				}
 				else
 				{
-					this_node.branching_final_val = this_node.branching_var_val_ceil;
+					this_node.branching_var_val_final = this_node.branching_var_val_ceil;
 
 					printf("\n	The CEIL value of %f = %d\n",
-						this_node.branching_var_val, this_node.branching_final_val);
+						this_node.branching_var_val, this_node.branching_var_val_final);
 
 					Values.tree_branching_status = 1; // The next Node is the left branch of this Node
 				}
