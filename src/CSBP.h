@@ -81,11 +81,13 @@ struct StockProperties
 struct Node
 {
 	int index = -1; 
-	double lower_bound = -1;
 
 	// Values of the Parent Node of one Node
 	int parent_index = -1;
 	int parent_branching_flag = -1;
+	double lower_bound = -1;
+
+	double parent_var_to_branch_val = -1;
 
 	// Values of Node status
 	int node_branched_flag=-1;
@@ -96,12 +98,13 @@ struct Node
 	double var_to_branch_val = -1; // soln-val of the var-to-branch in Parent Node
 	int var_to_branch_val_floor = -1; // floor integer value of the var-to-branch in Parent Node
 	int var_to_branch_val_ceil = -1; // ceil interger value of the var-to-branch in Parent Node
-	int var_to_branch_val_final =-1; // the fixed val of the var-to-branch
+	int var_to_branch_int_val_final =-1; // the fixed val of the var-to-branch
 
 	// Lists of final branching of one Node
 	vector<int> branched_vars_idx_list; // column indexes of all branched-vars of previous Nodes on BP Tree
-	vector<double> branched_vars_val_list; // all branched-vars of previous Nodes on BP Tree 
-	vector<vector<double>>branched_cols_list;
+	vector<int> branched_vars_int_val_list; // all branched-vars of previous Nodes on BP Tree 
+	vector<double> branched_vars_soln_val_list; // all branched-vars of previous Nodes on BP Tree 
+	vector<vector<int>>branched_cols_list;
 
 	vector<double> all_solns_val_list; // final all (include 0) solutions of this Node
 	vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solutions of this Node
@@ -161,7 +164,7 @@ void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
 
 void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& this_node);
+void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
 
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
@@ -181,7 +184,8 @@ bool SolveNewNodeFirstMasterProblem(
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
-	Node& this_node);
+	Node& this_node,
+	Node& parent_node);
 
 bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
@@ -213,9 +217,11 @@ int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int NodeBranchAndStore(All_Values& Values, All_Lists& Lists,Node& this_node);
 
-void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node&new_node);
+void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node&new_node,Node& parent_node);
 
 void TerminalDisplay(int display_idx, int para_1,int para_2);
+
+void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
 
 
 

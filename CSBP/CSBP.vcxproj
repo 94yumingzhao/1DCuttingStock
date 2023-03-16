@@ -22,14 +22,14 @@
     <ClCompile Include="..\src\terminal_display.cpp" />
     <ClCompile Include="..\src\update_master_problem.cpp" />
     <ClCompile Include="..\src\node_branching.cpp" />
-    <ClCompile Include="..\src\branch_and_price_tree.cpp" />
+    <ClCompile Include="..\src\node_branch_and_price.cpp" />
     <ClCompile Include="..\src\read_input_data.cpp" />
     <ClCompile Include="..\src\main.cpp" />
     <ClCompile Include="..\src\new_node_column_generation.cpp" />
     <ClCompile Include="..\src\new_node_first_master_problem.cpp" />
     <ClCompile Include="..\src\root_node_column_generation.cpp" />
     <ClCompile Include="..\src\root_node_first_master_problem.cpp" />
-    <ClCompile Include="..\src\new_node_generate.cpp" />
+    <ClCompile Include="..\src\node_generating.cpp" />
     <ClCompile Include="..\src\sub_problem.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -18,15 +18,15 @@ bool SolveUpdateMasterProblem(
 	this_node.model_matrix.push_back(this_node.new_col);
 
 	// set the obj coeff of the new col
-	IloNum obj_coeff = 1;
-	IloNumColumn CplexCol = Obj_MP(obj_coeff);
+	IloNum obj_para = 1;
+	IloNumColumn CplexCol = Obj_MP(obj_para);
 
 	// add the new col ro the model of MP 
 	int rows_num = Values.item_types_num;
 	for (size_t row = 0; row < rows_num; row++)
 	{
-		IloNum row_val= this_node.new_col[row];
-		CplexCol += Cons_MP[row](row_val);
+		IloNum row_para= this_node.new_col[row];
+		CplexCol += Cons_MP[row](row_para);
 	}
 
 	// var >= 0
@@ -74,11 +74,14 @@ bool SolveUpdateMasterProblem(
 	}
 
 	printf("\n	BRANCHED VARS: \n\n");
-	size_t branched_num = this_node.branched_vars_val_list.size();
+	size_t branched_num = this_node.branched_vars_int_val_list.size();
+	int var_idx=-1;
+	int var_int_val = -1;
 	for (size_t k = 0; k < branched_num; k++)
 	{
-		printf("	var_x_%d = %f branched \n", 
-			this_node.branched_vars_idx_list[k]+1, this_node.branched_vars_val_list[k]);
+		var_idx = this_node.branched_vars_idx_list[k] + 1;
+		var_int_val = this_node.branched_vars_int_val_list[k];
+		printf("	var_x_%d = %d branched \n", var_idx, var_int_val);
 	}
 
 	// print and store dual-prices of MP cons
@@ -120,11 +123,13 @@ bool SolveFinalMasterProblem(
 	printf("\n\n####################### Node_%d MP-final CPLEX SOLVING START #######################\n\n",this_node.index);
 	IloCplex MP_cplex(Model_MP);
 	MP_cplex.extract(Model_MP);
-	MP_cplex.exportModel("FinalMasterProblem.lp");
+	//MP_cplex.exportModel("FinalMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve(); // 求解当前主问题
 	printf("\n####################### Node_%d MP-final CPLEX SOLVING END #########################\n", this_node.index);
 
 	printf("\n	OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
+
+	this_node.lower_bound = MP_cplex.getValue(Obj_MP);
 
 	size_t cols_num = this_node.model_matrix.size();
 	for (size_t col = 0; col < cols_num; col++)
@@ -157,11 +162,14 @@ bool SolveFinalMasterProblem(
 
 
 	printf("\n	BRANCHED VARS: \n\n");
-	size_t branched_num = this_node.branched_vars_val_list.size();
+	size_t branched_num = this_node.branched_vars_int_val_list.size();
+	int var_idx = -1;
+	int var_int_val = -1;
 	for (size_t k = 0; k < branched_num; k++)
 	{
-		printf("	var_x_%zd = %f branched \n",
-			this_node.branched_vars_idx_list[k]+1, this_node.branched_vars_val_list[k]);
+		var_idx = this_node.branched_vars_idx_list[k] + 1;
+		var_int_val = this_node.branched_vars_int_val_list[k];
+		printf("	var_x_%d = %d branched \n", var_idx, var_int_val);
 	}
 
 	size_t fsb_num= this_node.fsb_solns_val_list.size();

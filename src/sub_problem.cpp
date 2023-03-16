@@ -68,7 +68,6 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 		}
 
 		
-
 		// Case 1:
 		// If the reduced cost is larger than 1, the optimal solns of this Node is not find, continue CG loop 
 		if (Cplex_SP.getValue(Obj_SP) > 1 + RC_EPS)

@@ -6,7 +6,8 @@ using namespace std;
 void NewNodeColumnGeneration(
 	All_Values& Values, 
 	All_Lists& Lists, 
-	Node& this_node)
+	Node& this_node,
+	Node& parent_node)
 {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
@@ -24,7 +25,8 @@ void NewNodeColumnGeneration(
 		Obj_MP,
 		Cons_MP,
 		Vars_MP,
-		this_node);
+		this_node,
+		parent_node);
 
 	cout << endl;
 
@@ -65,6 +67,7 @@ void NewNodeColumnGeneration(
 			this_node);
 	}
 
+	Values.tree_optimal_bound = this_node.lower_bound;
 
 	Obj_MP.removeAllProperties();
 	Obj_MP.end();

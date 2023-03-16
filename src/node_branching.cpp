@@ -22,6 +22,8 @@ int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node)
 	return search_flag; // 0 -- continue to branch this Node; 1 -- search another generated Node
 }
 
+
+
 int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 {
 	bool node_int_flag = 1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
@@ -43,30 +45,9 @@ int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 				this_node.var_to_branch_val = soln_val; // set the var-to-branch	
 				this_node.var_to_branch_val_floor = floor(soln_val);
 				this_node.var_to_branch_val_ceil = ceil(soln_val);
-			
-				/*
-				if (soln_int_val >= 1)
-				{
-					double floor_gap = this_node.var_to_branch_val - this_node.var_to_branch_val_floor;
-					double ceil_gap = this_node.var_to_branch_val_ceil - this_node.var_to_branch_val;
-
-					if (ceil_gap > floor_gap)
-					{
-						Values.branch_status = 1; // The next Node is the left branch of this Node
-					}
-					else
-					{
-						Values.branch_status = 2; // The next Node is the right branch of this Node
-
-					}
-				}
-				else
-				{
-					Values.branch_status = 2; // The next Node is the right branch of this Node
-				}
-				*/
-
+					
 				node_int_flag = 0; // continue BP algorithm
+
 				break; // break the loop			
 			}
 		}	
@@ -74,20 +55,23 @@ int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	if (node_int_flag == 0)
 	{
-		this_node.node_branched_flag = 1;
+		int var_idx = this_node.var_to_branch_idx;
+		this_node.branched_vars_idx_list.push_back(var_idx);
 
-		int col_idx = this_node.var_to_branch_idx;
-		this_node.branched_vars_idx_list.push_back(col_idx);
+		double var_val = this_node.var_to_branch_val;
+		this_node.branched_vars_soln_val_list.push_back(var_val);
+
+		cout << endl;
 	}
 
 	if (node_int_flag == 1)
 	{
 		this_node.node_branched_flag = 0;
-
 		if (this_node.lower_bound < Values.tree_optimal_bound)
 		{
 			Values.tree_optimal_bound = this_node.lower_bound;
 		}
+		cout<<endl;
 	}
 
 	Lists.all_nodes_list.push_back(this_node); 	// store this Node

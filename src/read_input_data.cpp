@@ -99,7 +99,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 
 	s_in.str("");
 	//s_in << "/content/drive/MyDrive/CSBP/data/binpack2.txt";
-	s_in << "C:/Users/YMZhao/Desktop/CSBP/data/binpack2.txt";
+	s_in << "C:/Users/YMZhao/Desktop/CSBP/data/binpack1.txt";
 	in_str = s_in.str();
 	ifstream fin2(in_str);
 
