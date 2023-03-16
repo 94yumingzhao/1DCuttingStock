@@ -6,7 +6,7 @@ using namespace std;
 void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 {
 	int pos = -1;
-	size_t nodes_num = Lists.all_nodes_list.size();
+	int nodes_num = Lists.all_nodes_list.size();
 
 	if (Values.branch_status != 3) // continue to branch on the parent Node
 	{
@@ -49,7 +49,7 @@ void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 
 	if (Values.branch_status == 3) // search for a previously generated unbranched unpruned Node
 	{
-		for (size_t k = 0; k < nodes_num; k++)
+		for (int k = 0; k < nodes_num; k++)
 		{
 			if (Lists.all_nodes_list[k].node_branched_flag != 1 &&
 				Lists.all_nodes_list[k].node_pruned_flag != 1)
@@ -83,23 +83,23 @@ void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 	parent_node.var_to_branch_val_floor = Lists.all_nodes_list[pos].var_to_branch_val_floor;
 	parent_node.var_to_branch_val_ceil = Lists.all_nodes_list[pos].var_to_branch_val_ceil;
 
-	size_t cols_num = Lists.all_nodes_list[pos].model_matrix.size();
-	size_t rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
-	size_t branched_num = Lists.all_nodes_list[pos].branched_vars_idx_list.size();
+	int cols_num = Lists.all_nodes_list[pos].model_matrix.size();
+	int rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
+	int branched_num = Lists.all_nodes_list[pos].branched_vars_idx_list.size();
 
 	// Init model matrix of the Node-to-branch
-	for (size_t col = 0; col < cols_num; col++)
+	for (int col = 0; col < cols_num; col++)
 	{
-		vector<int> temp_col;
-		for (size_t row = 0; row < rows_num; row++)
+		vector<double> temp_col;
+		for (int row = 0; row < rows_num; row++)
 		{
-			int temp_val = Lists.all_nodes_list[pos].model_matrix[col][row];
+			double temp_val = Lists.all_nodes_list[pos].model_matrix[col][row];
 			temp_col.push_back(temp_val);
 		}
 		parent_node.model_matrix.push_back(temp_col); 
 	}
 
-	for (size_t k = 0; k < branched_num; k++)
+	for (int k = 0; k < branched_num; k++)
 	{
 		double temp_val = Lists.all_nodes_list[pos].branched_vars_soln_val_list[k];
 
@@ -107,7 +107,7 @@ void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 	}
 
 	// Init branched-vars list and their col-idx list of the Node-to-branch
-	for (size_t k = 0; k < branched_num; k++)
+	for (int k = 0; k < branched_num; k++)
 	{
 		int temp_idx = Lists.all_nodes_list[pos].branched_vars_idx_list[k];
 		parent_node.branched_vars_idx_list.push_back(temp_idx);
@@ -117,9 +117,9 @@ void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 
 	if (branched_num > 1)
 	{
-		for (size_t k = 0; k < branched_num - 1; k++)
+		for (int k = 0; k < branched_num - 1; k++)
 		{
-			int temp_val = Lists.all_nodes_list[pos].branched_vars_int_val_list[k];
+			double temp_val = Lists.all_nodes_list[pos].branched_vars_int_val_list[k];
 			parent_node.branched_vars_int_val_list.push_back(temp_val);
 		}
 	}
@@ -131,7 +131,7 @@ void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&parent_node)
 {
-	size_t nodes_num = Lists.all_nodes_list.size();
+	int nodes_num = Lists.all_nodes_list.size();
 
 	new_node.index = nodes_num + 1;
 	new_node.lower_bound = -1;
@@ -161,24 +161,24 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	new_node.var_to_branch_val_ceil = -1;
 	new_node.var_to_branch_int_val_final = -1;
 
-	size_t cols_num = parent_node.model_matrix.size();
-	size_t rows_num = parent_node.model_matrix[0].size();
-	size_t branched_num = parent_node.branched_vars_idx_list.size();
+	int cols_num = parent_node.model_matrix.size();
+	int rows_num = parent_node.model_matrix[0].size();
+	int branched_num = parent_node.branched_vars_idx_list.size();
 
 	// Init model matrix of the Node-to-branch
-	for (size_t col = 0; col < cols_num; col++)
+	for (int col = 0; col < cols_num; col++)
 	{
-		vector<int> temp_col;
-		for (size_t row = 0; row < rows_num; row++)
+		vector<double> temp_col;
+		for (int row = 0; row < rows_num; row++)
 		{
-			int temp_val = parent_node.model_matrix[col][row];
+			double temp_val = parent_node.model_matrix[col][row];
 			temp_col.push_back(temp_val);
 		}
 		new_node.model_matrix.push_back(temp_col); //6
 	}
 
 	// Init branched-vars list and their col-idx list of the Node-to-branch
-	for (size_t col = 0; col < branched_num; col++)
+	for (int col = 0; col < branched_num; col++)
 	{
 		int temp_idx = parent_node.branched_vars_idx_list[col];
 		new_node.branched_vars_idx_list.push_back(temp_idx);
@@ -193,7 +193,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 		new_node.var_to_branch_int_val_final = parent_node.var_to_branch_val_ceil;
 	}
 
-	int final_int_val = new_node.var_to_branch_int_val_final;
+	double final_int_val = new_node.var_to_branch_int_val_final;
 	if (branched_num <= 1) // if new_node is the left or right Node of Root Node
 	{
 		new_node.branched_vars_int_val_list.push_back(final_int_val);
@@ -202,7 +202,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	{
 		for (int col = 0; col < branched_num - 1; col++)
 		{
-			int temp_val = parent_node.branched_vars_int_val_list[col];
+			double temp_val = parent_node.branched_vars_int_val_list[col];
 			new_node.branched_vars_int_val_list.push_back(temp_val);
 		}
 		new_node.branched_vars_int_val_list.push_back(final_int_val);

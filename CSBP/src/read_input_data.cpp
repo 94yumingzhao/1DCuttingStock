@@ -32,7 +32,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 	vector<string> data_inline, data_inline1, data_inline2;
 
 	int stocks_num = -1;
-	int number_of_items = -1;
+	int items_num = -1;
 	int stock_length = -1;
 	int item_types_num = -1;
 
@@ -64,7 +64,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 //		printf("	The length of stock = %d\n", stock_length);
 //
 //		int item_index = 1;
-//		for (size_t i = 0; i < item_types_num; i++) // 所有子管种类行
+//		for (int i = 0; i < item_types_num; i++) // 所有子管种类行
 //		{
 //			getline(fin1, line);
 //			SplitString(line, data_inline, "\t");
@@ -99,7 +99,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 
 	s_in.str("");
 	//s_in << "/content/drive/MyDrive/CSBP/data/binpack2.txt";
-	s_in << "C:/Users/YMZhao/Desktop/CSBP/data/binpack2.txt";
+	s_in << "C:/Users/YMZhao/Desktop/CSBP/CSBP/data/binpack1.txt";
 	in_str = s_in.str();
 	ifstream fin2(in_str);
 
@@ -112,17 +112,17 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 
 		getline(fin2, line);
 		SplitString(line, data_inline, "\t");
-		number_of_items = atoi(data_inline[0].c_str());
+		items_num = atoi(data_inline[0].c_str());
 
 		getline(fin2, line);
 		SplitString(line, data_inline, "\t");
 		stock_length = atoi(data_inline[0].c_str());
 
 		printf("\n\n	The number of stocks = %d\n", stocks_num);
-		printf("	The number of items = %d\n", number_of_items);
+		printf("	The number of items = %d\n", items_num);
 		printf("	The length of stock = %d\n", stock_length);
 
-		for (size_t i = 0; i < stocks_num; i++)
+		for (int i = 0; i < stocks_num; i++)
 		{
 			StockProperties this_stock;
 			this_stock.length = stock_length;
@@ -132,7 +132,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		int item_index = 1;
 		int item_type_index = 1;
 
-		for (size_t i = 0; i < number_of_items; i++)
+		for (int i = 0; i < items_num; i++)
 		{
 			getline(fin2, line);
 			SplitString(line, data_inline, "\t");
@@ -149,12 +149,12 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			item_index++;
 		}
 
-		size_t all_items_list_size = Lists.all_items_list.size();
+		int all_items_list_size = Lists.all_items_list.size();
 		vector<int> temp_item_types_list;;
 		int distance_index = 0;
 		vector<int>::iterator iter;
 
-		for (size_t i = 0; i < all_items_list_size; i++)
+		for (int i = 0; i < all_items_list_size; i++)
 		{
 			int this_item_length = Lists.all_items_list[i].length;
 
@@ -178,18 +178,18 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			}
 		}
 
-		size_t item_types_num = Lists.all_item_types_list.size();
-		printf("	The number of item_type is %zd\n", item_types_num);
+		int item_types_num = Lists.all_item_types_list.size();
+		printf("	The number of item_type is %d\n", item_types_num);
 	}
 
 #pragma endregion binpack
 
 	ItemProperties  VP;
-	size_t all_items_list_size = Lists.all_items_list.size();
+	int all_items_list_size = Lists.all_items_list.size();
 
-	for (size_t i = 0; i < all_items_list_size - 1; i++)
+	for (int i = 0; i < all_items_list_size - 1; i++)
 	{
-		for (size_t j = i + 1; j < all_items_list_size; j++)
+		for (int j = i + 1; j < all_items_list_size; j++)
 		{
 			if (Lists.all_items_list[i].length < Lists.all_items_list[j].length)
 			{
@@ -200,7 +200,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		}
 	}
 
-	tuple<int, int, int> flag(stocks_num, number_of_items, stock_length);
+	tuple<int, int, int> flag(stocks_num, items_num, stock_length);
 	return flag;
 }
 

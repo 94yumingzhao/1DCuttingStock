@@ -18,7 +18,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	// Init and set vars of SP
 	int item_types_num = Values.item_types_num;
-	for (size_t k = 0; k < item_types_num; k++)
+	for (int k = 0; k < item_types_num; k++)
 	{
 		IloNumVar var(Env_SP, var_min, var_max, ILOINT);
 		Vars_SP.add(var);
@@ -26,7 +26,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	// Init and set obj of SP
 	IloExpr obj_sum(Env_SP);
-	for (size_t k = 0; k < item_types_num; k++)
+	for (int k = 0; k < item_types_num; k++)
 	{
 		obj_sum += this_node.dual_prices_list[k] * Vars_SP[k];
 	}
@@ -36,7 +36,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	// Init and set the only one con of SP
 	IloExpr con_sum(Env_SP);
-	for (size_t k = 0; k < item_types_num; k++)
+	for (int k = 0; k < item_types_num; k++)
 	{
 		con_sum += Lists.all_item_types_list[k].length * Vars_SP[k];
 	}
@@ -61,10 +61,10 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 		printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.index, this_node.iter, Cplex_SP.getValue(Obj_SP));
 
-		for (size_t k = 0; k < item_types_num; k++)
+		for (int k = 0; k < item_types_num; k++)
 		{
 			IloNum soln_val = Cplex_SP.getValue(Vars_SP[k]);
-			printf("	var_y_%zd = %d\n", k + 1, soln_val);
+			printf("	var_y_%d = %f\n",  k + 1, soln_val);
 		}
 
 		
@@ -76,9 +76,9 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 			// set the new col for MP
 			this_node.new_col.clear(); 
-			for (size_t k = 0; k < item_types_num; k++)
+			for (int k = 0; k < item_types_num; k++)
 			{
-				int var_val = Cplex_SP.getValue(Vars_SP[k]);
+				double var_val = Cplex_SP.getValue(Vars_SP[k]);
 				this_node.new_col.push_back(var_val);
 			}
 

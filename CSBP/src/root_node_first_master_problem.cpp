@@ -7,14 +7,14 @@ using namespace std;
 void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
-	for (size_t col = 0; col < item_types_num; col++) // cols num == item types num
+	for (int col = 0; col < item_types_num; col++) // cols num == item types num
 	{
-		vector<int> temp_col;
-		for (size_t row = 0; row < item_types_num; row++) // rows num == item types num
+		vector<double> temp_col;
+		for (int row = 0; row < item_types_num; row++) // rows num == item types num
 		{
 			if (row == col)
 			{
-				int temp_val = 0;
+				double temp_val = 0;
 				temp_val = Values.stock_length / Lists.all_item_types_list[row].length;
 				temp_col.push_back(temp_val);
 			}
@@ -44,7 +44,7 @@ bool SolveRootNodeFirstMasterProblem(
 	IloNumArray  con_max(Env_MP); // cons UB
 
 	int item_types_num = Values.item_types_num;
-	for (size_t i = 0; i < item_types_num; i++)
+	for (int i = 0; i < item_types_num; i++)
 	{
 		// con >= demand
 		int item_type_demand = Lists.all_item_types_list[i].demand;
@@ -62,12 +62,12 @@ bool SolveRootNodeFirstMasterProblem(
 	int cols_num = item_types_num;
 	int rows_num = item_types_num;
 
-	for (size_t col = 0; col < cols_num; col++)
+	for (int col = 0; col < cols_num; col++)
 	{
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para);
 
-		for (size_t row = 0; row < rows_num; row++)
+		for (int row = 0; row < rows_num; row++)
 		{
 			IloNum row_para = root_node.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_para);
@@ -105,7 +105,7 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
 		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (size_t col = 0; col < cols_num; col++)
+		for (int col = 0; col < cols_num; col++)
 		{
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) // feasible soln > 0
@@ -118,21 +118,21 @@ bool SolveRootNodeFirstMasterProblem(
 					if (soln_int_val >= 1)
 					{
 						int_num++;
-						printf("	var_x_%zd = %f int\n", col + 1, soln_val);
+						printf("	var_x_%d = %f int\n", col + 1, soln_val);
 					}
 				}
 				else
 				{
-					printf("	var_x_%zd = %f\n", col + 1, soln_val);
+					printf("	var_x_%d = %f\n", col + 1, soln_val);
 				}
 			}
 		}
 
 		printf("\n	DUAL PRICES: \n\n");
-		for (size_t k = 0; k < rows_num; k++)
+		for (int k = 0; k < rows_num; k++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[k]);
-			printf("	dual_r_%zd = %f\n", k + 1, dual_val);
+			printf("	dual_r_%d = %f\n", k + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
 		}
 

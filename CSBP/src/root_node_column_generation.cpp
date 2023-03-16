@@ -41,6 +41,11 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 		{
 			root_node.iter++; // CG loop iter index++
 
+			if (root_node.iter == 100)
+			{
+				cout << endl;
+			}
+
 			int SP_flag = SolveSubProblem(Values, Lists, root_node); // solve the SP of MP
 
 			// Case 1:

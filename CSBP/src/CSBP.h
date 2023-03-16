@@ -85,8 +85,8 @@ struct Node
 	// Values of the Parent Node of one Node
 	int parent_index = -1;
 	int parent_branching_flag = -1;
-	double lower_bound = -1;
 
+	double lower_bound = -1;
 	double parent_var_to_branch_val = -1;
 
 	// Values of Node status
@@ -96,28 +96,29 @@ struct Node
 	// Values of final branching of one Node
 	int var_to_branch_idx = -1; // column index of the var-to-branch in Parent Node
 	double var_to_branch_val = -1; // soln-val of the var-to-branch in Parent Node
-	int var_to_branch_val_floor = -1; // floor integer value of the var-to-branch in Parent Node
-	int var_to_branch_val_ceil = -1; // ceil interger value of the var-to-branch in Parent Node
-	int var_to_branch_int_val_final =-1; // the fixed val of the var-to-branch
+	double var_to_branch_val_floor = -1; // floor integer value of the var-to-branch in Parent Node
+	double var_to_branch_val_ceil = -1; // ceil interger value of the var-to-branch in Parent Node
+	double var_to_branch_int_val_final =-1; // the fixed val of the var-to-branch
 
 	// Lists of final branching of one Node
 	vector<int> branched_vars_idx_list; // column indexes of all branched-vars of previous Nodes on BP Tree
-	vector<int> branched_vars_int_val_list; // all branched-vars of previous Nodes on BP Tree 
+	vector<double> branched_vars_int_val_list; // all branched-vars of previous Nodes on BP Tree 
 	vector<double> branched_vars_soln_val_list; // all branched-vars of previous Nodes on BP Tree 
+
 	vector<vector<int>>branched_cols_list;
 
 	vector<double> all_solns_val_list; // final all (include 0) solutions of this Node
 	vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solutions of this Node
 	vector<int> fsb_solns_idx_list; // final column indexes of feasible solutions of this Node
-	vector<int> int_solns_val_list; // final all integer solutions of this Node
+	vector<double> int_solns_val_list; // final all integer solutions of this Node
 	vector<int> int_solns_idx_list;  // final column indexes of integer solutions of this Node
 
 	// Lists of one Column Generation iter of one Node
 	int iter = -1;
-	vector<vector<int>> model_matrix; // model matrix in this CG iter
+	vector<vector<double>> model_matrix; // model matrix in this CG iter
 	vector<double> dual_prices_list; // dual prices of Master Problem cons in this CG iter
-	vector<int> new_col; // one new col from Sub Problem in this CG iter
-	vector<vector<int>> new_cols_list; // new cols from Sub Problem in this CG iter
+	vector<double> new_col; // one new col from Sub Problem in this CG iter
+	vector<vector<double>> new_cols_list; // new cols from Sub Problem in this CG iter
 
 };
 
@@ -140,7 +141,7 @@ struct All_Values
 	// 1 -- stop at current Node and search for a previously generated Node
 	int search_flag = -1; 
 
-
+	// 
 	int fathom_flag = -1;
 
 	int level_num;

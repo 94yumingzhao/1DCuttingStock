@@ -58,8 +58,8 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 					{
 						Values.fathom_flag = 2;
 						printf("\n	Left Node_%d LB %.4f >= Right Node_%d LB %.4f \n\n	continue to fathom RIGHT Node_%d\n",
-							new_left_node.index, new_right_node.index,
-							new_left_node.lower_bound, new_right_node.lower_bound,
+							new_left_node.index, new_left_node.lower_bound, 
+							new_right_node.index, new_right_node.lower_bound,
 							new_right_node.index);
 					}					
 				}
@@ -89,7 +89,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 			printf("\n	Solns of this Node are all INTEGERS! \n");
 		}
 
-		if (Values.node_num > 30)
+		if (Values.node_num > 100)
 		{
 			printf("\n	//////////// PROCEDURE STOP 3 //////////////\n");
 			break;

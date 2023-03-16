@@ -30,8 +30,8 @@ int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 	double soln_val;
 
 	// find the var-to-branch of this Node
-	size_t all_solns_num = this_node.all_solns_val_list.size();
-	for (size_t col = 0; col < all_solns_num; col++)
+	int all_solns_num = this_node.all_solns_val_list.size();
+	for (int col = 0; col < all_solns_num; col++)
 	{
 		soln_val = this_node.all_solns_val_list[col];
 		if (soln_val > 0)
@@ -39,7 +39,7 @@ int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 			int soln_int_val = int(soln_val); // judge the integerity
 			if (soln_int_val != soln_val) // not an integer
 			{
-				printf("\n	Node_%d var_x_%zd = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
+				printf("\n	Node_%d var_x_%d = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
 
 				this_node.var_to_branch_idx = col; // set the var-to-branch-col index
 				this_node.var_to_branch_val = soln_val; // set the var-to-branch	
