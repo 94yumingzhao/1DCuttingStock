@@ -43,7 +43,7 @@
     <ClCompile Include="src\new_node_first_master_problem.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
-    <ClCompile Include="src\node_branch_and_price.cpp">
+    <ClCompile Include="src\branch_and_price.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="src\node_branching.cpp">
@@ -62,9 +62,6 @@
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="src\sub_problem.cpp">
-      <Filter>srcs</Filter>
-    </ClCompile>
-    <ClCompile Include="src\terminal_display.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="src\update_master_problem.cpp">

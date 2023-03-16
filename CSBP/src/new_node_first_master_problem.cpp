@@ -23,9 +23,11 @@ bool SolveNewNodeFirstMasterProblem(
 	int item_types_num = Values.item_types_num;
 	for (int k = 0; k < item_types_num; k++)
 	{
-		int item_type_demand = Lists.all_item_types_list[k].demand;
-		con_min.add(IloNum(item_type_demand)); // cons > demand
-		con_max.add(IloNum(IloInfinity)); // 
+		int item_type_demand = Lists.all_item_types_list[k].item_type_demand;
+
+		// cons > item_type_demand
+		con_min.add(IloNum(item_type_demand)); // con LB
+		con_max.add(IloNum(IloInfinity)); // con UB
 	}
 
 	// set cons
@@ -36,6 +38,7 @@ bool SolveNewNodeFirstMasterProblem(
 	int cols_num = this_node.model_matrix.size();
 	int rows_num = item_types_num;
 
+	// Cplex Modeling
 	for (int col = 0; col < cols_num; col++)
 	{
 		IloNum obj_para = 1;
@@ -44,7 +47,7 @@ bool SolveNewNodeFirstMasterProblem(
 		for (int row = 0; row < rows_num; row++) // set rows in this col
 		{
 			IloNum row_para = this_node.model_matrix[col][row];
-			CplexCol += Cons_MP[row](row_para); // set coeff
+			CplexCol += Cons_MP[row](row_para); // set para
 		}
 
 		string X_name = "X_" + to_string(col + 1); // var name
@@ -95,23 +98,23 @@ bool SolveNewNodeFirstMasterProblem(
 		CplexCol.end(); // must end this IloNumColumn object
 	}
 
-	printf("\n\n################## Node_%d MP-1 CPLEX SOLVING START ##################\n\n", this_node.index);
+	printf("\n\n################## Node_%d MP-1 CPLEX SOLVING START ##################\n\n", this_node.idx);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	//MP_cplex.exportModel("NewNodeProblem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("\n################## Node_%d MP-1 CPLEX SOLVING END ####################\n\n", this_node.index);
+	printf("\n################## Node_%d MP-1 CPLEX SOLVING END ####################\n\n", this_node.idx);
 
 	int fsb_num = 0;
 	int int_num = 0;
 	if (MP_flag == 0)
 	{
-		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", this_node.index);
+		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", this_node.idx);
 	}
 	else
 	{
-		printf("\n	Node_%d MP-1 is FEASIBLE\n", this_node.index);
-		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", this_node.index, MP_cplex.getValue(Obj_MP));
+		printf("\n	Node_%d MP-1 is FEASIBLE\n", this_node.idx);
+		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", this_node.idx, MP_cplex.getValue(Obj_MP));
 
 		for (int col = 0; col < cols_num; col++)
 		{
@@ -155,9 +158,8 @@ bool SolveNewNodeFirstMasterProblem(
 			this_node.dual_prices_list.push_back(dual_price);
 		}
 
-		this_node.lower_bound = MP_cplex.getValue(Obj_MP);
-		printf("\n	Node_%d MP-1:\n", this_node.index);
-		printf("\n	Lower Bound = %f", this_node.lower_bound);
+		printf("\n	Node_%d MP-1:\n", this_node.idx);
+		printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
 		printf("\n	NUM of all solns = %d", cols_num);
 		printf("\n	NUM of fsb solns = %d", fsb_num);
 		printf("\n	NUM of int solns = %d", int_num);

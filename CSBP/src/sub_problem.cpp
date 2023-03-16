@@ -20,7 +20,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 	int item_types_num = Values.item_types_num;
 	for (int k = 0; k < item_types_num; k++)
 	{
-		IloNumVar var(Env_SP, var_min, var_max, ILOINT);
+		IloNumVar var(Env_SP, var_min, var_max, ILOINT); // ATTENTION: all vars in SP must be set as INT 
 		Vars_SP.add(var);
 	}
 
@@ -38,28 +38,28 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 	IloExpr con_sum(Env_SP);
 	for (int k = 0; k < item_types_num; k++)
 	{
-		con_sum += Lists.all_item_types_list[k].length * Vars_SP[k];
+		con_sum += Lists.all_item_types_list[k].item_type_length * Vars_SP[k];
 	}
 	Model_SP.add(con_sum <= Values.stock_length);
 
 	// solve SP
-	printf("\n\n####################### Node_%d SP-%d CPLEX SOLVING START #######################\n\n", this_node.index, this_node.iter);
+	printf("\n\n####################### Node_%d SP-%d CPLEX SOLVING START #######################\n\n", this_node.idx, this_node.iter);
 	IloCplex Cplex_SP(Env_SP);
 	Cplex_SP.extract(Model_SP);
 	//Cplex_SP.exportModel("SubProblem.lp");
 	bool SP_flag = Cplex_SP.solve(); // solve sub problem
-	printf("\n####################### Node_%d SP-%d CPLEX SOLVING END #########################\n", this_node.index, this_node.iter);
+	printf("\n####################### Node_%d SP-%d CPLEX SOLVING END #########################\n", this_node.idx, this_node.iter);
 
 	// print everything
 	if (SP_flag == 0)
 	{
-		printf("\n	Node_%d MP-%d is NOT FEASIBLE\n", this_node.index, this_node.iter);
+		printf("\n	Node_%d MP-%d is NOT FEASIBLE\n", this_node.idx, this_node.iter);
 	}
 	else
 	{
-		printf("\n	Node_%d SP-%d is FEASIBLE\n", this_node.index, this_node.iter);
+		printf("\n	Node_%d SP-%d is FEASIBLE\n", this_node.idx, this_node.iter);
 
-		printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.index, this_node.iter, Cplex_SP.getValue(Obj_SP));
+		printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.idx, this_node.iter, Cplex_SP.getValue(Obj_SP));
 
 		for (int k = 0; k < item_types_num; k++)
 		{
@@ -68,8 +68,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 		}
 
 		
-		// Case 1:
-		// If the reduced cost is larger than 1, the optimal solns of this Node is not find, continue CG loop 
+		// Case 1:If the reduced cost is larger than 1, the optimal solns of this Node is not find, continue CG loop 
 		if (Cplex_SP.getValue(Obj_SP) > 1 + RC_EPS)
 		{
 			printf("\n	We got a REDUCED COST = %f that LARGER than 1\n\n	A NEW COLUMN will be added to the MP\n", Cplex_SP.getValue(Obj_SP));
@@ -85,12 +84,13 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 			optimal_flag = 0;
 		}
 
-		// Case 2
-		// If the reduced cost is smaller than 1, then the optimal solns of this Node is find, break CG loop
+		// Case 2: If the reduced cost is smaller than 1, then the optimal solns of this Node is find, break CG loop
 		else
 		{
-			printf("\n	We got a REDUCED COST = %f that NOT LARGER than 1\n\n	COLUMN GENERATION procedure stops here!\n", Cplex_SP.getValue(Obj_SP));
+			printf("\n	We got a REDUCED COST = %f that NOT LARGER than 1\n\n	COLUMN GENERATION procedure stops here!\n", 
+				Cplex_SP.getValue(Obj_SP));
 			printf("\n	Return to the last MP and get the FINAL INTEGER solutions\n");
+
 			optimal_flag = 1;
 		}
 	}

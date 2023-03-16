@@ -7,15 +7,18 @@ using namespace std;
 void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
-	for (int col = 0; col < item_types_num; col++) // cols num == item types num
+	int rows_num = item_types_num;
+	int cols_num = item_types_num;
+
+	for (int col = 0; col < cols_num; col++) 
 	{
 		vector<double> temp_col;
-		for (int row = 0; row < item_types_num; row++) // rows num == item types num
+		for (int row = 0; row < rows_num; row++) 
 		{
 			if (row == col)
 			{
 				double temp_val = 0;
-				temp_val = Values.stock_length / Lists.all_item_types_list[row].length;
+				temp_val = Values.stock_length / Lists.all_item_types_list[row].item_type_length;
 				temp_col.push_back(temp_val);
 			}
 			else
@@ -44,12 +47,16 @@ bool SolveRootNodeFirstMasterProblem(
 	IloNumArray  con_max(Env_MP); // cons UB
 
 	int item_types_num = Values.item_types_num;
-	for (int i = 0; i < item_types_num; i++)
+	int rows_num = item_types_num;
+	int cols_num = item_types_num;
+
+	for (int row = 0; row < rows_num; row++)
 	{
-		// con >= demand
-		int item_type_demand = Lists.all_item_types_list[i].demand;
-		con_min.add(IloNum(item_type_demand));
-		con_max.add(IloNum(IloInfinity)); 
+		// con >= item_type_demand
+		int item_type_demand = Lists.all_item_types_list[row].item_type_demand;
+
+		con_min.add(IloNum(item_type_demand)); // con LB
+		con_max.add(IloNum(IloInfinity));  // con UB
 	}
 
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);
@@ -58,10 +65,7 @@ bool SolveRootNodeFirstMasterProblem(
 	con_min.end();
 	con_max.end();
 
-	// set model matrix
-	int cols_num = item_types_num;
-	int rows_num = item_types_num;
-
+	// Cplex Modeling
 	for (int col = 0; col < cols_num; col++)
 	{
 		IloNum obj_para = 1;
@@ -85,12 +89,12 @@ bool SolveRootNodeFirstMasterProblem(
 	}
 
 	// solve model
-	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n",root_node.index);
+	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n",root_node.idx);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("initialMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("####################### Node_%d MP-1 CPLEX SOLVING END #########################\n",root_node.index);
+	printf("####################### Node_%d MP-1 CPLEX SOLVING END #########################\n",root_node.idx);
 
 	int fsb_num = 0;
 	int int_num = 0;
@@ -98,12 +102,12 @@ bool SolveRootNodeFirstMasterProblem(
 	// judge model feasibility
 	if (MP_flag == 0)
 	{
-		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", root_node.index);
+		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", root_node.idx);
 	}
 	else
 	{
-		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
-		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
+		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.idx);
+		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.idx, MP_cplex.getValue(Obj_MP));
 
 		for (int col = 0; col < cols_num; col++)
 		{
@@ -114,7 +118,6 @@ bool SolveRootNodeFirstMasterProblem(
 				int soln_int_val = int(soln_val);
 				if (soln_int_val == soln_val)
 				{
-					// ATTTENTION:  
 					if (soln_int_val >= 1)
 					{
 						int_num++;
@@ -136,9 +139,8 @@ bool SolveRootNodeFirstMasterProblem(
 			root_node.dual_prices_list.push_back(dual_val);
 		}
 
-		root_node.lower_bound = MP_cplex.getValue(Obj_MP);
-		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
-		printf("\n	Lower Bound = %f", root_node.lower_bound);
+		printf("\n	Node_%d MP-%d:\n", root_node.idx, root_node.iter);
+		printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
 		printf("\n	NUM of all solns = %d",  cols_num);
 		printf("\n	NUM of fsb solns = %d", fsb_num);
 		printf("\n	NUM of int solns = %d", int_num);

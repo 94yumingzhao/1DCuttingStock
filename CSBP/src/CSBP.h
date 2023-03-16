@@ -1,6 +1,6 @@
 ﻿// 2023-03-06 
 // 
-// CG -- column generation
+// CG -- col generation
 // MP -- master  problem
 // SP  -- sub problem
 // LB  -- lower bound
@@ -9,12 +9,12 @@
 // var -- variable
 // con -- constraint
 // para -- parameter
-// col -- column
+// col -- col
 //
 // fsb -- feasible
-// int -- integer
+// int -- int-
 // soln -- solution
-// val -- value
+// val -- val
 
 #include<vector>
 #include<queue>
@@ -33,28 +33,28 @@ using namespace std;
 
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
-// item type
+// item_type
 struct ItemTypeProperties
 {
-	int type = -1;
-	int length = -1;
-	int demand = -1;
+	int item_type = -1; 
+	int item_type_length = -1;
+	int item_type_demand = -1; 
 };
 
 // stock type
 struct StockTypeProperties
 {
-	int type = -1;
+	int item_type = -1;
 	int count = -1;
 };
 
 // item
 struct ItemProperties
 {
-	int type = -1;
-	int demand = -1;
+	int item_type = -1;
+	int item_type_demand = -1;
 	int length = -1;
-	int index = -1;
+	int idx = -1;
 	int stock_index = -1;
 	int occupied = -1;
 
@@ -65,10 +65,10 @@ struct ItemProperties
 // stock
 struct StockProperties
 {
-	int type = -1;
+	int item_type = -1;
 	int pattern = -1;
-	int length = -1;
-	int index = -1;
+	int item_type_length = -1;
+	int idx = -1;
 
 	int cutting_distance = -1;
 	int material_cutting_loss = -1;
@@ -77,48 +77,46 @@ struct StockProperties
 	int material_area_loss = -1;
 };
 
-
+// Node
 struct Node
 {
-	int index = -1; 
+	int idx = -1; 
 
 	// Values of the Parent Node of one Node
-	int parent_index = -1;
+	int parent_index = -1; 
 	int parent_branching_flag = -1;
-
-	double lower_bound = -1;
 	double parent_var_to_branch_val = -1;
 
 	// Values of Node status
-	int node_branched_flag=-1;
-	int node_pruned_flag=-1;
+	double lower_bound = -1; // LB of this Node
+	int node_branched_flag=-1; // flag: this Node is the left or the Right Node of its Parent Node, 1 -- left, 2 -- right
+	int node_pruned_flag=0; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
 
 	// Values of final branching of one Node
-	int var_to_branch_idx = -1; // column index of the var-to-branch in Parent Node
-	double var_to_branch_val = -1; // soln-val of the var-to-branch in Parent Node
-	double var_to_branch_val_floor = -1; // floor integer value of the var-to-branch in Parent Node
-	double var_to_branch_val_ceil = -1; // ceil interger value of the var-to-branch in Parent Node
-	double var_to_branch_int_val_final =-1; // the fixed val of the var-to-branch
+	int var_to_branch_idx = -1; // var-to-branch's col-idx of this Node
+	double var_to_branch_soln_val = -1; // var-to-branch's soln-val of this Node
+	double var_to_branch_int_val_floor = -1; // var-to-branch's floored int-val of this Node
+	double var_to_branch_int_val_ceil = -1; // var-to-branch's ceiled int-val of this Node
+	double var_to_branch_int_val_final =-1; // var-to-branch's final int-val (floored or ceiled)
 
 	// Lists of final branching of one Node
-	vector<int> branched_vars_idx_list; // column indexes of all branched-vars of previous Nodes on BP Tree
-	vector<double> branched_vars_int_val_list; // all branched-vars of previous Nodes on BP Tree 
-	vector<double> branched_vars_soln_val_list; // all branched-vars of previous Nodes on BP Tree 
+	vector<int> branched_vars_idx_list; // all branched-vars' col-idx on the route from this Node to Root Node
+	vector<double> branched_vars_int_val_list; // all branched-vars' int-val (floored or ceiled) on the route from this Node to Root Node
+	vector<double> branched_vars_soln_val_list; // all branched-vars' soln-val on the route from this Node to Root Node
+	//vector<vector<int>>branched_cols_list;
 
-	vector<vector<int>>branched_cols_list;
-
-	vector<double> all_solns_val_list; // final all (include 0) solutions of this Node
-	vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solutions of this Node
-	vector<int> fsb_solns_idx_list; // final column indexes of feasible solutions of this Node
-	vector<double> int_solns_val_list; // final all integer solutions of this Node
-	vector<int> int_solns_idx_list;  // final column indexes of integer solutions of this Node
+	vector<double> all_solns_val_list; // final all (include 0) solns of this Node
+	vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solns of this Node
+	vector<int> fsb_solns_idx_list; // final col-idx of feasible-solns of this Node
+	vector<double> int_solns_val_list; // final all int-solns of this Node
+	vector<int> int_solns_idx_list;  // final col-idx of int-solns of this Node
 
 	// Lists of one Column Generation iter of one Node
 	int iter = -1;
 	vector<vector<double>> model_matrix; // model matrix in this CG iter
 	vector<double> dual_prices_list; // dual prices of Master Problem cons in this CG iter
 	vector<double> new_col; // one new col from Sub Problem in this CG iter
-	vector<vector<double>> new_cols_list; // new cols from Sub Problem in this CG iter
+	//vector<vector<double>> new_cols_list; // new cols from Sub Problem in this CG iter
 
 };
 
@@ -126,13 +124,16 @@ struct All_Values
 {
 	int stocks_num = -1; // number of all available stocks
 	int item_types_num = -1; // number of all item_types demanded
-	int stock_length = -1; // length of a stock
+	int stock_length = -1; // item_type_length of a stock
+
+	int level_num; // number of all node-branch structurew
+	int node_num; // number of all Nodes
 
 	double tree_optimal_bound = -1; // current optimal lower bound of BP Tree
 
-	// flag of the next Node
-	// 1 -- new left Node,
-	// 2 -- new right Node
+	// flag of left or right or searching
+	// 1 -- new the Left Node,
+	// 2 -- new the Right Node
 	// 3 -- previously generated Node
 	int branch_status = -1;
 
@@ -141,20 +142,19 @@ struct All_Values
 	// 1 -- stop at current Node and search for a previously generated Node
 	int search_flag = -1; 
 
-	// 
+	// flag of fathoming
+	// 1 -- fathom on the Left Node
+	// 2 -- fathom on the Right Node
 	int fathom_flag = -1;
 
-	int level_num;
-	int node_num;
-
-	int integerity_nodes_num = -1;
+	// int integerity_nodes_num = -1;
 };
 
 struct All_Lists
 {
-	vector<ItemProperties> all_items_list; // all items 
-	vector<ItemTypeProperties> all_item_types_list; // all item_types
-	vector<Node> all_nodes_list; // all Nodes generated on BP Tree
+	vector<ItemProperties> all_items_list; // list of all items 
+	vector<ItemTypeProperties> all_item_types_list; // list of all item_types
+	vector<Node> all_nodes_list; // list of all Nodes generated
 };
 
 void SplitString(const string& s, vector<string>& v, const string& c);
@@ -165,8 +165,6 @@ void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
 
 void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
-
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -176,17 +174,6 @@ bool SolveRootNodeFirstMasterProblem(
 	IloRangeArray& Cons_List_MP,
 	IloNumVarArray& Vars_List_MP,
 	Node& root_node);
-
-bool SolveNewNodeFirstMasterProblem(
-	All_Values& Values,
-	All_Lists& Lists,
-	IloEnv& Env_MP,
-	IloModel& Model_MP,
-	IloObjective& Obj_MP,
-	IloRangeArray& Cons_List_MP,
-	IloNumVarArray& Vars_List_MP,
-	Node& this_node,
-	Node& parent_node);
 
 bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node);
 
@@ -210,19 +197,39 @@ bool SolveFinalMasterProblem(
 	IloNumVarArray& Vars_List_MP,
 	Node& this_node);
 
-//int NodeIntergerityJudgement(All_Values& Values, All_Lists& Lists, Node& this_node);
+int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node);
+
+int NodeFinishAndStore(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int BranchAndPriceTree(All_Values& Values, All_Lists& Lists);
 
-int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node);
+void InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node);
 
-int NodeBranchAndStore(All_Values& Values, All_Lists& Lists,Node& this_node);
+void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
 
-void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node&new_node,Node& parent_node);
+void NewNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
 
-void TerminalDisplay(int display_idx, int para_1,int para_2);
+bool SolveNewNodeFirstMasterProblem(
+	All_Values& Values,
+	All_Lists& Lists,
+	IloEnv& Env_MP,
+	IloModel& Model_MP,
+	IloObjective& Obj_MP,
+	IloRangeArray& Cons_List_MP,
+	IloNumVarArray& Vars_List_MP,
+	Node& this_node,
+	Node& parent_node);
 
-void FindNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
+
+
+
+
+
+
+
+
+
+
 
 
 

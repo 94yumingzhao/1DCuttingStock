@@ -8,7 +8,7 @@ int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node)
 	int node_int_flag = -1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	int search_flag = -1; // 0 -- continue to branch this Node; 1 -- search another generated Node
 
-	node_int_flag = NodeBranchAndStore(Values, Lists, this_node); // branch this Node
+	node_int_flag = NodeFinishAndStore(Values, Lists, this_node); // branch this Node
 
 	if (node_int_flag == 1)  // ALL non-zero-solns are int in this Node
 	{
@@ -24,7 +24,7 @@ int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 
 
-int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
+int NodeFinishAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 {
 	bool node_int_flag = 1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	double soln_val;
@@ -39,12 +39,12 @@ int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 			int soln_int_val = int(soln_val); // judge the integerity
 			if (soln_int_val != soln_val) // not an integer
 			{
-				printf("\n	Node_%d var_x_%d = %f is NOT an integer\n", this_node.index, col + 1, soln_val);
+				printf("\n	Node_%d var_x_%d = %f is NOT an integer\n", this_node.idx, col + 1, soln_val);
 
-				this_node.var_to_branch_idx = col; // set the var-to-branch-col index
-				this_node.var_to_branch_val = soln_val; // set the var-to-branch	
-				this_node.var_to_branch_val_floor = floor(soln_val);
-				this_node.var_to_branch_val_ceil = ceil(soln_val);
+				this_node.var_to_branch_idx = col; // set the var-to-branch-col idx
+				this_node.var_to_branch_soln_val = soln_val; // set the var-to-branch	
+				this_node.var_to_branch_int_val_floor = floor(soln_val);
+				this_node.var_to_branch_int_val_ceil = ceil(soln_val);
 					
 				node_int_flag = 0; // continue BP algorithm
 
@@ -58,7 +58,7 @@ int NodeBranchAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)
 		int var_idx = this_node.var_to_branch_idx;
 		this_node.branched_vars_idx_list.push_back(var_idx);
 
-		double var_val = this_node.var_to_branch_val;
+		double var_val = this_node.var_to_branch_soln_val;
 		this_node.branched_vars_soln_val_list.push_back(var_val);
 
 		cout << endl;

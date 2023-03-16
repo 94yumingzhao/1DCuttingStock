@@ -19,8 +19,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
 
-	root_node.iter = 0; // Root node index == 0
-	root_node.lower_bound = Values.tree_optimal_bound; // Init Root node bound 
+	root_node.iter = 0; // Root node idx == 0
 
 	// solve the first MP of the Root node 
 	int MP_flag = SolveRootNodeFirstMasterProblem(
@@ -39,7 +38,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 		// Column Generation loop
 		while (1)
 		{
-			root_node.iter++; // CG loop iter index++
+			root_node.iter++; // CG loop iter idx++
 
 			if (root_node.iter == 100)
 			{
@@ -52,7 +51,7 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 			// No better reduced cost is get from SP anymore
 			if (SP_flag == 1)
 			{
-				break; // break CG loop and here the Node get final solns
+				break; // break CG loop
 			}
 			// Case 2:
 			// Better reduced cost is get from SP

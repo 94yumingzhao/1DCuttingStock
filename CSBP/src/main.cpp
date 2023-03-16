@@ -24,19 +24,16 @@ int main()
 
 	Values.stocks_num = get<0>(fileTxt);// number of all stocks
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
-	Values.stock_length = get<2>(fileTxt); // length of a stock
+	Values.stock_length = get<2>(fileTxt); // item_type_length of a stock
 
 	Node root_node; // Init Root Node
-	root_node.index = 1; // Node index
+	root_node.idx = 1; // Node idx
 	Values.branch_status = 0; 
 
 	InitRootNodeMatrix(Values, Lists, root_node); // generate Root Node matrix
 	RootNodeColumnGeneration(Values, Lists, root_node);
 	Values.search_flag = BranchOrSearch(Values, Lists, root_node); // find the branch var of Root Node
 	Values.fathom_flag = 0;
-
-	int node_num = 1;
-	int level_num = 1;
 
 	// continue to BP
 	if (Values.search_flag == 0)
@@ -48,9 +45,9 @@ int main()
 	finish = clock();
 	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
 	printf("\n	Process Time = %f seconds\n", duration);
-	printf("\n	There are %d Levels and %d Nodes in BP Tree\n", level_num, node_num);
 
 	Lists.all_nodes_list.clear();
+
 	cout << endl;
 	return 0;
 }
