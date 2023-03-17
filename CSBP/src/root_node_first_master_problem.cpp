@@ -89,12 +89,12 @@ bool SolveRootNodeFirstMasterProblem(
 	}
 
 	// solve model
-	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n",root_node.idx);
+	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n",root_node.index);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("initialMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("####################### Node_%d MP-1 CPLEX SOLVING OVER #########################\n",root_node.idx);
+	printf("####################### Node_%d MP-1 CPLEX SOLVING OVER #########################\n",root_node.index);
 
 	int fsb_num = 0;
 	int int_num = 0;
@@ -103,12 +103,13 @@ bool SolveRootNodeFirstMasterProblem(
 	if (MP_flag == 0)
 	{
 		root_node.node_pruned_flag = 1;
-		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", root_node.idx);
+		printf("\n	Node_%d MP-1 is NOT FEASIBLE!\n", root_node.index);
+		printf("\n	Node_%d MP-1 has to be pruned\n", root_node.index);
 	}
 	else
 	{
-		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.idx);
-		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.idx, MP_cplex.getValue(Obj_MP));
+		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
+		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
 		for (int col = 0; col < cols_num; col++)
 		{
@@ -140,7 +141,7 @@ bool SolveRootNodeFirstMasterProblem(
 			root_node.dual_prices_list.push_back(dual_val);
 		}
 
-		printf("\n	Node_%d MP-%d:\n", root_node.idx, root_node.iter);
+		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
 		printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
 		printf("\n	NUM of all solns = %d",  cols_num);
 		printf("\n	NUM of fsb solns = %d", fsb_num);

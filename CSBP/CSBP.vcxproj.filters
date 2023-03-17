@@ -46,10 +46,10 @@
     <ClCompile Include="src\branch_and_price.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
-    <ClCompile Include="src\node_branching.cpp">
+    <ClCompile Include="src\branching.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
-    <ClCompile Include="src\node_generating.cpp">
+    <ClCompile Include="src\new_node_generating.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="src\read_data.cpp">

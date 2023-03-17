@@ -43,23 +43,23 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 	Model_SP.add(con_sum <= Values.stock_length);
 
 	// solve SP
-	printf("\n\n####################### Node_%d SP-%d CPLEX SOLVING START #######################\n\n", this_node.idx, this_node.iter);
+	printf("\n\n####################### Node_%d SP-%d CPLEX SOLVING START #######################\n\n", this_node.index, this_node.iter);
 	IloCplex Cplex_SP(Env_SP);
 	Cplex_SP.extract(Model_SP);
 	//Cplex_SP.exportModel("SubProblem.lp");
 	bool SP_flag = Cplex_SP.solve(); // solve sub problem
-	printf("\n####################### Node_%d SP-%d CPLEX SOLVING OVER #########################\n", this_node.idx, this_node.iter);
+	printf("\n####################### Node_%d SP-%d CPLEX SOLVING OVER #########################\n", this_node.index, this_node.iter);
 
 	// print everything
 	if (SP_flag == 0)
 	{
-		printf("\n	Node_%d MP-%d is NOT FEASIBLE\n", this_node.idx, this_node.iter);
+		printf("\n	Node_%d MP-%d is NOT FEASIBLE\n", this_node.index, this_node.iter);
 	}
 	else
 	{
-		printf("\n	Node_%d SP-%d is FEASIBLE\n", this_node.idx, this_node.iter);
+		printf("\n	Node_%d SP-%d is FEASIBLE\n", this_node.index, this_node.iter);
 
-		printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.idx, this_node.iter, Cplex_SP.getValue(Obj_SP));
+		printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.index, this_node.iter, Cplex_SP.getValue(Obj_SP));
 
 		for (int k = 0; k < item_types_num; k++)
 		{

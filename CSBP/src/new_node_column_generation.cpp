@@ -15,7 +15,7 @@ void NewNodeColumnGeneration(
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
 
-	this_node.iter = 0; // The firsth MP idx ==0
+	this_node.iter = 0; // The firsth MP index ==0
 
 	bool MP_flag = SolveNewNodeFirstMasterProblem(
 		Values,

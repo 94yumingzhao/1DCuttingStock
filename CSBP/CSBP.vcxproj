@@ -30,9 +30,9 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\new_node_column_generation.cpp" />
     <ClCompile Include="src\new_node_first_master_problem.cpp" />
-    <ClCompile Include="src\node_branching.cpp" />
+    <ClCompile Include="src\branching.cpp" />
     <ClCompile Include="src\branch_and_price.cpp" />
-    <ClCompile Include="src\node_generating.cpp" />
+    <ClCompile Include="src\new_node_generating.cpp" />
     <ClCompile Include="src\read_data.cpp" />
     <ClCompile Include="src\root_node_column_generation.cpp" />
     <ClCompile Include="src\root_node_first_master_problem.cpp" />

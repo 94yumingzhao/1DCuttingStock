@@ -76,7 +76,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 				this_item.item_type_demand = atoi(data_inline[1].c_str()); // 子管行第2位：子管需求
 				this_item.item_type = atoi(data_inline[2].c_str()); // 子管行第3位：子管种类
 
-				this_item.idx = item_index; // 子管序号，从1开始
+				this_item.index = item_index; // 子管序号，从1开始
 				this_item.stock_index = -1; // 子管所属母板编号
 				this_item.occupied = 0;
 				Lists.all_items_list.push_back(this_item);
@@ -134,7 +134,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			SplitString(line, data_inline, "\t");
 
 			ItemProperties this_item;
-			this_item.idx = item_index;
+			this_item.index = item_index;
 			this_item.item_type = -1;
 			this_item.item_type_demand = -1;
 			this_item.length = atoi(data_inline[0].c_str());		
