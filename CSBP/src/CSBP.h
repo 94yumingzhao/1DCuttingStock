@@ -90,7 +90,7 @@ struct Node
 	// Values of Node status
 	double node_lower_bound = -1; // LB of this Node
 	int node_branched_flag=-1; // flag: this Node is the left or the Right Node of its Parent Node, 1 -- left, 2 -- right
-	int node_pruned_flag=0; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
+	int node_pruned_flag=-1; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
 
 	// Values of final branching of one Node
 	int var_to_branch_idx = -1; // var-to-branch's col-index of this Node

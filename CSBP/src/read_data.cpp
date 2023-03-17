@@ -39,7 +39,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 
 	/*
 	s_in.str("");
-	s_in << "CSBB01.txt";
+	s_in << "C:/Users/YMZhao/Desktop/CSBP/CSBP/data/CSBB01.txt";
 	in_str = s_in.str();
 	ifstream fin1(in_str);
 
@@ -59,7 +59,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		printf("\n\n");
 		printf("	The number of stocks = %d\n", stocks_num);
 		printf("	The number of item_types = %d\n", item_types_num);
-		printf("	The item_type_length of stock = %d\n", stock_length);
+		printf("	The length of a stock = %d\n", stock_length);
 
 		int item_index = 1;
 		for (int k = 0; k < item_types_num; k++) // 所有子管种类行
@@ -72,7 +72,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			for (int col = 0; col < item_demand; col++) // 子管需求量
 			{
 				ItemProperties this_item;
-				this_item.item_type_length = atoi(data_inline[0].c_str()); // 子管行第1位：子管长度
+				this_item.length = atoi(data_inline[0].c_str()); // 子管行第1位：子管长度
 				this_item.item_type_demand = atoi(data_inline[1].c_str()); // 子管行第2位：子管需求
 				this_item.item_type = atoi(data_inline[2].c_str()); // 子管行第3位：子管种类
 
@@ -92,10 +92,10 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 	*/
 
 	// binpack.txt
-
+	
 	s_in.str("");
 	//s_in << "/content/drive/MyDrive/CSBP/data/binpack2.txt";
-	s_in << "C:/Users/YMZhao/Desktop/CSBP/CSBP/data/binpack1.txt";
+	s_in << "C:/Users/YMZhao/Desktop/CSBP/CSBP/data/binpack2.txt";
 	in_str = s_in.str();
 	ifstream fin2(in_str);
 
@@ -117,12 +117,6 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		printf("	The number of items = %d\n", items_num);
 		printf("	The item_type_length of stock = %d\n", stock_length);
 
-		//for (int k = 0; k < stocks_num; k++)
-		//{
-		//	StockProperties this_stock;
-		//	this_stock.item_type_length = stock_length;
-		//	//Lists.stock_pool_list.insert(Lists.stock_pool_list.begin(), this_stock);
-		//}
 
 		int item_index = 1;
 		int item_type_index = 1;
@@ -183,6 +177,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		int item_types_num = Lists.all_item_types_list.size();
 		printf("	The number of item_type is %d\n", item_types_num);
 	}
+	
 
 	// Sort all items according to their length
 	ItemProperties  temp_item;

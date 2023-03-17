@@ -33,6 +33,7 @@ int main()
 	InitRootNodeMatrix(Values, Lists, root_node); // generate Root Node matrix
 	RootNodeColumnGeneration(Values, Lists, root_node);
 	Values.search_flag = FinishNode(Values, Lists, root_node); // find the branch var of Root Node
+	Lists.all_nodes_list.push_back(root_node);
 	Values.root_flag = 1;
 
 	printf("\n	Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);

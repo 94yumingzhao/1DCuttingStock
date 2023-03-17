@@ -31,6 +31,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 				GenerateNewNode(Values, Lists, new_left_node, parent_node); // set the Left Node
 				NewNodeColumnGeneration(Values, Lists, new_left_node, parent_node); // solve the Left Node with CG loop
 				int left_search_flag = FinishNode(Values, Lists, new_left_node); // finish the Left Node
+				Lists.all_nodes_list.push_back(new_left_node);
 
 				// Then the Right Node
 				Values.branch_status = 2;
@@ -38,6 +39,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 				GenerateNewNode(Values, Lists, new_right_node, parent_node);  // set the Right Node
 				NewNodeColumnGeneration(Values, Lists, new_right_node, parent_node); // solve the Right Node with CG loop
 				int right_search_flag = FinishNode(Values, Lists, new_right_node);  // finish the RightNode
+				Lists.all_nodes_list.push_back(new_right_node);
 
 				Values.root_flag = 0;
 
@@ -101,7 +103,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 
 		}
 
-		if (Values.node_num > 100)
+		if (Values.node_num > 30)
 		{
 			printf("\n	//////////// PROCEDURE STOP 3 //////////////\n");
 			break;
