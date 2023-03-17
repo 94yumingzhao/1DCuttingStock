@@ -1,2 +1,2 @@
-# CSBP
-Branch and Price in depth
+# 1D Cutting Stock Branch and Price
+Solving one dimensional cutting stock problem with branch and price in C++
