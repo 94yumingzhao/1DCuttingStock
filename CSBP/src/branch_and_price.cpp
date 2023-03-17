@@ -87,8 +87,8 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists)
 			Values.search_flag = 0; // search_flag set to continue to the next while-iter
 
 			printf("\n	Solns of this Node are all INTEGERS! \n");
+			printf("\n	Current Optimal Lower Bound = %f\n", Values.tree_optimal_bound);
 
-			break;
 		}
 
 		if (Values.node_num > 100)

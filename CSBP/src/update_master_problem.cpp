@@ -43,7 +43,7 @@ bool SolveUpdateMasterProblem(
 	MP_cplex.extract(Model_MP);
 	//MP_cplex.exportModel("updateMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve(); // solve MP
-	printf("\n####################### Node_%d MP-%d CPLEX SOLVING END #########################\n", this_node.idx, this_node.iter + 1);
+	printf("\n####################### Node_%d MP-%d CPLEX SOLVING OVER #########################\n", this_node.idx, this_node.iter + 1);
 
 	printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.idx, this_node.iter + 1, MP_cplex.getValue(Obj_MP));
 
@@ -125,7 +125,7 @@ bool SolveFinalMasterProblem(
 	MP_cplex.extract(Model_MP);
 	//MP_cplex.exportModel("FinalMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve(); // 求解当前主问题
-	printf("\n####################### Node_%d MP-final CPLEX SOLVING END #########################\n", this_node.idx);
+	printf("\n####################### Node_%d MP-final CPLEX SOLVING OVER #########################\n", this_node.idx);
 
 	this_node.lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
 	printf("\n	OBJ of Node_%d MP-final is %f \n\n", this_node.idx, MP_cplex.getValue(Obj_MP));

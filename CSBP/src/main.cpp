@@ -28,16 +28,19 @@ int main()
 
 	Node root_node; // Init Root Node
 	root_node.idx = 1; // Node idx
-	Values.branch_status = 0; 
+	Values.branch_status = 0;
 
 	InitRootNodeMatrix(Values, Lists, root_node); // generate Root Node matrix
 	RootNodeColumnGeneration(Values, Lists, root_node);
 	Values.search_flag = BranchOrSearch(Values, Lists, root_node); // find the branch var of Root Node
 	Values.fathom_flag = 0;
 
+	Values.tree_optimal_bound = root_node.lower_bound; 0;
+	printf("\n	Current Optimal Lower Bound = %f\n", Values.tree_optimal_bound);
+
 	// continue to BP
 	if (Values.search_flag == 0)
-	{	
+	{
 		Values.branch_status = 1;
 		BranchAndPriceTree(Values, Lists); // Branch and Price loop
 	}

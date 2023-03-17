@@ -103,12 +103,13 @@ bool SolveNewNodeFirstMasterProblem(
 	MP_cplex.extract(Model_MP);
 	//MP_cplex.exportModel("NewNodeProblem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("\n################## Node_%d MP-1 CPLEX SOLVING END ####################\n\n", this_node.idx);
+	printf("\n################## Node_%d MP-1 CPLEX SOLVING OVER ####################\n\n", this_node.idx);
 
 	int fsb_num = 0;
 	int int_num = 0;
 	if (MP_flag == 0)
 	{
+		this_node.node_pruned_flag = 1;
 		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", this_node.idx);
 	}
 	else

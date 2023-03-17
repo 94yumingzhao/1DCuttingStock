@@ -52,7 +52,7 @@
     <ClCompile Include="src\node_generating.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
-    <ClCompile Include="src\read_input_data.cpp">
+    <ClCompile Include="src\read_data.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="src\root_node_column_generation.cpp">

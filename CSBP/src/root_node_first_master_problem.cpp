@@ -94,7 +94,7 @@ bool SolveRootNodeFirstMasterProblem(
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("initialMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("####################### Node_%d MP-1 CPLEX SOLVING END #########################\n",root_node.idx);
+	printf("####################### Node_%d MP-1 CPLEX SOLVING OVER #########################\n",root_node.idx);
 
 	int fsb_num = 0;
 	int int_num = 0;
@@ -102,6 +102,7 @@ bool SolveRootNodeFirstMasterProblem(
 	// judge model feasibility
 	if (MP_flag == 0)
 	{
+		root_node.node_pruned_flag = 1;
 		printf("\n	Node_%d MP-1 is NOT FEASIBLE\n", root_node.idx);
 	}
 	else

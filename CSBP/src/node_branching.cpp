@@ -10,18 +10,24 @@ int BranchOrSearch(All_Values& Values, All_Lists& Lists, Node& this_node)
 
 	node_int_flag = NodeFinishAndStore(Values, Lists, this_node); // branch this Node
 
-	if (node_int_flag == 1)  // ALL non-zero-solns are int in this Node
+	if (this_node.node_pruned_flag != 1)
 	{
-		search_flag = 1; 
+		if (node_int_flag == 1)  // ALL non-zero-solns are int in this Node
+		{
+			search_flag = 1;
+		}
+		else  // NOT ALL non-zero-solns are int in this Node
+		{
+			search_flag = 0;
+		}
 	}
-	else  // NOT ALL non-zero-solns are int in this Node
+	else
 	{
-		search_flag = 0; 
+		search_flag = 1;
 	}
 
 	return search_flag; // 0 -- continue to branch this Node; 1 -- search another generated Node
 }
-
 
 
 int NodeFinishAndStore(All_Values& Values, All_Lists& Lists, Node& this_node)

@@ -48,7 +48,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node)
 	Cplex_SP.extract(Model_SP);
 	//Cplex_SP.exportModel("SubProblem.lp");
 	bool SP_flag = Cplex_SP.solve(); // solve sub problem
-	printf("\n####################### Node_%d SP-%d CPLEX SOLVING END #########################\n", this_node.idx, this_node.iter);
+	printf("\n####################### Node_%d SP-%d CPLEX SOLVING OVER #########################\n", this_node.idx, this_node.iter);
 
 	// print everything
 	if (SP_flag == 0)
