@@ -141,7 +141,6 @@ bool SolveNewNodeFirstMasterProblem(
 			}
 		}
 
-
 		printf("\n	BRANCHED VARS: \n\n");
 		int branched_num = this_node.branched_vars_int_val_list.size();
 		for (int k = 0; k < branched_num; k++)

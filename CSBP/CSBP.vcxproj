@@ -45,6 +45,7 @@
     <ProjectGuid>{fbf4f782-776e-491a-8860-19a7c84045a6}</ProjectGuid>
     <RootNamespace>CSBP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>1DBP</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
