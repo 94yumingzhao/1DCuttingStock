@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="headers">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="srcs">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="datas">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="models">
+      <UniqueIdentifier>{1fc72a36-5db0-4369-8073-91d8454b7493}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="first_master_problem.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="sub_problem.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="column_generation.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="read_data.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="primal_heuristic.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="update_master_problem.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CSCG.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="binpack2.txt">
+      <Filter>datas</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="initialMasterProblem.lp">
+      <Filter>models</Filter>
+    </None>
+    <None Include="FinalMasterProblem.lp">
+      <Filter>models</Filter>
+    </None>
+    <None Include="updateMasterProblem.lp">
+      <Filter>models</Filter>
+    </None>
+  </ItemGroup>
+</Project>
