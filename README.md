@@ -1,5 +1,9 @@
-# 1D Cutting Stock Branch and Price
-Solving one dimensional cutting stock problem with branch and price in C++  
+# 1D Cutting Stock Problem
+Solving one dimensional cutting stock problem  
+
+File 1DCG: solving with column generation  
+File 1DBB: solving with branch and bound  
+File 1dBP: solving with branch and price  
 
  About:  
  https://en.wikipedia.org/wiki/Cutting_stock_problem  
