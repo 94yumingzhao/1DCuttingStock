@@ -85,61 +85,6 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node)
 		parent_node = Lists.all_nodes_list[pos];
 		parent_node.node_branched_flag = 1;	
 
-		/*
-		Lists.all_nodes_list[pos].node_branched_flag = 1;
-		
-		parent_node.index = Lists.all_nodes_list[pos].index;
-		parent_node.node_lower_bound = Lists.all_nodes_list[pos].node_lower_bound;
-
-		parent_node.parent_index = Lists.all_nodes_list[pos].parent_index;
-		parent_node.parent_branching_flag = Lists.all_nodes_list[pos].parent_branching_flag;
-		parent_node.parent_var_to_branch_val = Lists.all_nodes_list[pos].parent_var_to_branch_val;
-
-		parent_node.var_to_branch_idx = Lists.all_nodes_list[pos].var_to_branch_idx;
-		parent_node.var_to_branch_soln_val = Lists.all_nodes_list[pos].var_to_branch_soln_val;
-		parent_node.var_to_branch_int_val_floor = Lists.all_nodes_list[pos].var_to_branch_int_val_floor;
-		parent_node.var_to_branch_int_val_ceil = Lists.all_nodes_list[pos].var_to_branch_int_val_ceil;
-
-		int all_cols_num = Lists.all_nodes_list[pos].model_matrix.size();
-		int all_rows_num = Lists.all_nodes_list[pos].model_matrix[0].size();
-		int branched_num = Lists.all_nodes_list[pos].branched_vars_idx_list.size();
-
-		// Init model matrix of the Parent Node
-		for (int col = 0; col < all_cols_num; col++)
-		{
-			vector<double> temp_col;
-			for (int row = 0; row < all_rows_num; row++)
-			{
-				double temp_val = Lists.all_nodes_list[pos].model_matrix[col][row];
-				temp_col.push_back(temp_val);
-			}
-			parent_node.model_matrix.push_back(temp_col);
-		}
-
-		for (int k = 0; k < branched_num; k++)
-		{
-			double temp_val = Lists.all_nodes_list[pos].branched_vars_soln_val_list[k];
-
-			parent_node.branched_vars_soln_val_list.push_back(temp_val);
-		}
-
-		// Init branched-vars list of the Parent Node
-		for (int k = 0; k < branched_num; k++)
-		{
-			int temp_idx = Lists.all_nodes_list[pos].branched_vars_idx_list[k];
-			parent_node.branched_vars_idx_list.push_back(temp_idx);
-		}
-
-		if (branched_num > 1)
-		{
-			for (int k = 0; k < branched_num - 1; k++)
-			{
-				double temp_val = Lists.all_nodes_list[pos].branched_vars_int_val_list[k];
-				parent_node.branched_vars_int_val_list.push_back(temp_val);
-			}
-		}
-		*/
-
 		printf("\n\t The Node to branch is Node_%d\n", parent_node.index);
 	}
 	
