@@ -34,22 +34,22 @@ using namespace std;
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
 // item_type
-struct ItemTypeProperties
+struct Item_Type_Stc
 {
-	int item_type = -1; 
+	int item_type = -1;
 	int item_type_length = -1;
-	int item_type_demand = -1; 
+	int item_type_demand = -1;
 };
 
 // stock type
-struct StockTypeProperties
+struct Stock_Type_Stc
 {
 	int item_type = -1;
 	int count = -1;
 };
 
 // item
-struct ItemProperties
+struct Item_Stc
 {
 	int item_type = -1;
 	int item_type_demand = -1;
@@ -63,7 +63,7 @@ struct ItemProperties
 };
 
 // stock
-struct StockProperties
+struct Stock_Stc
 {
 	int item_type = -1;
 	int pattern = -1;
@@ -80,24 +80,24 @@ struct StockProperties
 // Node
 struct Node
 {
-	int index = -1; 
+	int index = -1;
 
 	// Values of the Parent Node of one Node
-	int parent_index = -1; 
+	int parent_index = -1;
 	int parent_branching_flag = -1;
 	double parent_var_to_branch_val = -1;
 
 	// Values of Node status
 	double node_lower_bound = -1; // LB of this Node
-	int node_branched_flag=-1; // flag: this Node is the left or the Right Node of its Parent Node, 1 -- left, 2 -- right
-	int node_pruned_flag=-1; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
+	int node_branched_flag = -1; // flag: this Node is the left or the Right Node of its Parent Node, 1 -- left, 2 -- right
+	int node_pruned_flag = -1; // flag: this Node is pruned from Tree or not. 1 -- pruned, 0 -- not pruned
 
 	// Values of final branching of one Node
 	int var_to_branch_idx = -1; // var-to-branch's col-index of this Node
 	double var_to_branch_soln_val = -1; // var-to-branch's soln-val of this Node
 	double var_to_branch_int_val_floor = -1; // var-to-branch's floored int-val of this Node
 	double var_to_branch_int_val_ceil = -1; // var-to-branch's ceiled int-val of this Node
-	double var_to_branch_int_val_final =-1; // var-to-branch's final int-val (floored or ceiled)
+	double var_to_branch_int_val_final = -1; // var-to-branch's final int-val (floored or ceiled)
 
 	// Lists of final branching of one Node
 	vector<int> branched_vars_idx_list; // all branched-vars' col-index on the route from this Node to Root Node
@@ -106,10 +106,10 @@ struct Node
 	//vector<vector<int>>branched_cols_list;
 
 	vector<double> all_solns_val_list; // final all (include 0) solns of this Node
-	vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solns of this Node
-	vector<int> fsb_solns_idx_list; // final col-index of feasible-solns of this Node
-	vector<double> int_solns_val_list; // final all int-solns of this Node
-	vector<int> int_solns_idx_list;  // final col-index of int-solns of this Node
+	//vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solns of this Node
+	//vector<int> fsb_solns_idx_list; // final col-index of feasible-solns of this Node
+	//vector<double> int_solns_val_list; // final all int-solns of this Node
+	//vector<int> int_solns_idx_list;  // final col-index of int-solns of this Node
 
 	// Lists of one Column Generation iter of one Node
 	int iter = -1;
@@ -140,7 +140,7 @@ struct All_Values
 	// flag of branching or searching
 	// 0 -- contiinue to branch current Node
 	// 1 -- stop at current Node and search for a previously generated Node
-	int search_flag = -1; 
+	int search_flag = -1;
 
 	// flag of fathoming
 	// 1 -- fathom on the Left Node
@@ -153,8 +153,8 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<ItemProperties> all_items_list; // list of all items 
-	vector<ItemTypeProperties> all_item_types_list; // list of all item_types
+	vector<Item_Stc> all_items_list; // list of all items 
+	vector<Item_Type_Stc> all_item_types_list; // list of all item_types
 	vector<Node> all_nodes_list; // list of all Nodes generated
 };
 
@@ -162,7 +162,7 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
-void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node);
 
 void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node);
 
@@ -204,7 +204,7 @@ int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int BranchAndPriceTree(All_Values& Values, All_Lists& Lists);
 
-int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node);
+int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
 
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
 

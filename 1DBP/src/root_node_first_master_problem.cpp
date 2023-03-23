@@ -4,16 +4,16 @@
 using namespace std;
 
 // function to init model matrix of Root Node
-void InitRootNodeMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
-	int rows_num = item_types_num;
-	int cols_num = item_types_num;
+	int all_rows_num = item_types_num;
+	int all_cols_num = item_types_num;
 
-	for (int col = 0; col < cols_num; col++) 
+	for (int col = 0; col < all_cols_num; col++) 
 	{
 		vector<double> temp_col;
-		for (int row = 0; row < rows_num; row++) 
+		for (int row = 0; row < all_rows_num; row++) 
 		{
 			if (row == col)
 			{
@@ -47,10 +47,10 @@ bool SolveRootNodeFirstMasterProblem(
 	IloNumArray  con_max(Env_MP); // cons UB
 
 	int item_types_num = Values.item_types_num;
-	int rows_num = item_types_num;
-	int cols_num = item_types_num;
+	int all_rows_num = item_types_num;
+	int all_cols_num = item_types_num;
 
-	for (int row = 0; row < rows_num; row++)
+	for (int row = 0; row < all_rows_num; row++)
 	{
 		// con >= item_type_demand
 		int item_type_demand = Lists.all_item_types_list[row].item_type_demand;
@@ -66,12 +66,12 @@ bool SolveRootNodeFirstMasterProblem(
 	con_max.end();
 
 	// Cplex Modeling
-	for (int col = 0; col < cols_num; col++)
+	for (int col = 0; col < all_cols_num; col++)
 	{
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para);
 
-		for (int row = 0; row < rows_num; row++)
+		for (int row = 0; row < all_rows_num; row++)
 		{
 			IloNum row_para = root_node.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_para);
@@ -111,7 +111,7 @@ bool SolveRootNodeFirstMasterProblem(
 		printf("\n	Node_%d MP-1 is FEASIBLE\n",  root_node.index);
 		printf("\n	OBJ of Node_%d MP-1 is %f\n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (int col = 0; col < cols_num; col++)
+		for (int col = 0; col < all_cols_num; col++)
 		{
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) // feasible soln > 0
@@ -134,7 +134,7 @@ bool SolveRootNodeFirstMasterProblem(
 		}
 
 		printf("\n	DUAL PRICES: \n\n");
-		for (int k = 0; k < rows_num; k++)
+		for (int k = 0; k < all_rows_num; k++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[k]);
 			printf("	dual_r_%d = %f\n", k + 1, dual_val);
@@ -143,7 +143,7 @@ bool SolveRootNodeFirstMasterProblem(
 
 		printf("\n	Node_%d MP-%d:\n", root_node.index, root_node.iter);
 		printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-		printf("\n	NUM of all solns = %d",  cols_num);
+		printf("\n	NUM of all solns = %d",  all_cols_num);
 		printf("\n	NUM of fsb solns = %d", fsb_num);
 		printf("\n	NUM of int solns = %d", int_num);
 	}

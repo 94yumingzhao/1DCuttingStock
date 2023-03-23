@@ -34,7 +34,7 @@ using namespace std;
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
 // item_type
-struct ItemTypeProperties
+struct Item_Type_Stc
 {
 	int item_type_idx = -1;
 	int item_type_length = -1;
@@ -42,7 +42,7 @@ struct ItemTypeProperties
 };
 
 // item
-struct ItemProperties
+struct Item_Stc
 {
 	int length = -1;
 	int idx = -1;
@@ -60,8 +60,8 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<ItemProperties> all_items_list; // list of all items 
-	vector<ItemTypeProperties> all_item_types_list; // list of all item_types
+	vector<Item_Stc> all_items_list; // list of all items 
+	vector<Item_Type_Stc> all_item_types_list; // list of all item_types
 
 	vector<vector<double>> model_matrix;
 	vector<double> dual_prices_list;

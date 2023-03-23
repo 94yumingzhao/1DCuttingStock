@@ -30,7 +30,7 @@ int main()
 	root_node.index = 1; // Node index
 	Values.branch_status = 0;
 
-	InitRootNodeMatrix(Values, Lists, root_node); // generate Root Node matrix
+	PrimalHeuristic(Values, Lists, root_node); // generate Root Node matrix
 	RootNodeColumnGeneration(Values, Lists, root_node);
 	Values.search_flag = FinishNode(Values, Lists, root_node); // find the branch var of Root Node
 	Lists.all_nodes_list.push_back(root_node);

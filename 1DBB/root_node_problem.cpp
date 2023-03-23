@@ -16,10 +16,10 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 	IloNumArray  con_max(Env_MP); // cons UB
 
 	int item_types_num = Values.item_types_num;
-	int rows_num = item_types_num;
-	int cols_num = item_types_num;
+	int all_rows_num = item_types_num;
+	int all_cols_num = item_types_num;
 
-	for (int row = 0; row < rows_num; row++)
+	for (int row = 0; row < all_rows_num; row++)
 	{
 		// con >= item_type_demand
 		int item_type_demand = Lists.all_item_types_list[row].item_type_demand;
@@ -35,12 +35,12 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 	con_max.end();
 
 	// Cplex Modeling
-	for (int col = 0; col < cols_num; col++)
+	for (int col = 0; col < all_cols_num; col++)
 	{
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para);
 
-		for (int row = 0; row < rows_num; row++)
+		for (int row = 0; row < all_rows_num; row++)
 		{
 			IloNum row_para = root_node.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_para);
@@ -68,14 +68,14 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 	if (MP_flag == 0)
 	{
 		root_node.node_pruned_flag = 1;
-		printf("\n MP-1 NOT FEASIBLE\n");
+		printf("\n\t MP-1 NOT FEASIBLE\n");
 	}
 	else
 	{
 		root_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
-		printf("\n	OBJ of Node_%d MP-final is %f \n\n", root_node.index, MP_cplex.getValue(Obj_MP));
+		printf("\n\t Obj of Node_%d MP-final is %f \n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (int col = 0; col < cols_num; col++)
+		for (int col = 0; col < all_cols_num; col++)
 		{
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			root_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
@@ -87,41 +87,41 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 				{
 					if (soln_int_val >= 1) // and it is an int-soln that larger than 1
 					{
-						root_node.int_solns_val_list.push_back(soln_val); //  Node int-solns
-						root_node.int_solns_idx_list.push_back(col); // Node int-solns' index
+						//root_node.int_solns_val_list.push_back(soln_val); //  Node int-solns
+						//root_node.int_solns_idx_list.push_back(col); // Node int-solns' index
 
-						printf("	var_x_%d = %f int\n", col + 1, soln_val);
+						printf("\t var_x_%d = %f int\n", col + 1, soln_val);
 					}
 				}
 				else // if this soln is not int
 				{
-					printf("	var_x_%d = %f\n", col + 1, soln_val);
+					printf("\t var_x_%d = %f\n", col + 1, soln_val);
 				}
 
-				root_node.fsb_solns_val_list.push_back(soln_val); // Node feasible (i.e. non-zero-solns) solns 
-				root_node.fsb_solns_idx_list.push_back(col); 	// Node fsb-solns' index
+				//root_node.fsb_solns_val_list.push_back(soln_val); // Node feasible (i.e. non-zero-solns) solns 
+				//root_node.fsb_solns_idx_list.push_back(col); 	// Node fsb-solns' index
 			}
 		}
 
-		printf("\n	BRANCHED VARS: \n\n	None\n");
+		printf("\n\t BRANCHED VARS: \n\n	None\n");
 
-		int fsb_num = root_node.fsb_solns_val_list.size();
-		int int_num = root_node.int_solns_idx_list.size();
-		printf("\n	Node_%d MP-final:\n", root_node.index);
-		printf("\n	Lower Bound = %f", root_node.node_lower_bound);
-		printf("\n	NUM of all solns = %d", cols_num);
-		printf("\n	NUM of fsb-solns = %d", fsb_num);
-		printf("\n	NUM of int-solns = %d", int_num);
+		//int fsb_num = root_node.fsb_solns_val_list.size();
+		//int int_num = root_node.int_solns_idx_list.size();
+		printf("\n\t Node_%d MP-final:\n", root_node.index);
+		printf("\n\t Lower Bound = %f", root_node.node_lower_bound);
+		printf("\n\t NUM of all solns = %d", all_cols_num);
+		//printf("\n	NUM of fsb-solns = %d", fsb_num);
+		//printf("\n	NUM of int-solns = %d", int_num);
 	}
 	
 	MP_cplex.removeAllProperties();
 	MP_cplex.end();
-	Obj_MP.removeAllProperties();
-	Obj_MP.end();
 	Vars_MP.clear();
 	Vars_MP.end();
 	Cons_MP.clear();
 	Cons_MP.end();
+	Obj_MP.removeAllProperties();
+	Obj_MP.end();
 	Model_MP.removeAllProperties();
 	Model_MP.end();
 	Env_MP.removeAllProperties();

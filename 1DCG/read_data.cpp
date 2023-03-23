@@ -71,14 +71,14 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			
 			for (int m = 0; m < item_demand; m++) 
 			{
-				ItemProperties this_item;
+				Item_Stc this_item;
 				this_item.length = atoi(data_inline[0].c_str()); 
 				this_item.idx = item_index; 
 
 				Lists.all_items_list.push_back(this_item);
 				item_index++;
 			}
-			ItemTypeProperties this_item_type;
+			Item_Type_Stc this_item_type;
 			this_item_type.item_type_length = atoi(data_inline[0].c_str());
 			this_item_type.item_type_demand = atoi(data_inline[1].c_str());
 			this_item_type.item_type_idx = atoi(data_inline[2].c_str());
@@ -121,7 +121,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			getline(fin2, line); // start from line 4
 			SplitString(line, data_inline, "\t");
 
-			ItemProperties this_item;
+			Item_Stc this_item;
 			this_item.idx = item_index;
 			this_item.length = atoi(data_inline[0].c_str());
 
@@ -145,7 +145,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			{
 				temp_item_types_list.push_back(this_item_length);
 
-				ItemTypeProperties this_item_type; // Init this new item_type
+				Item_Type_Stc this_item_type; // Init this new item_type
 				this_item_type.item_type_length = Lists.all_items_list[k].length;
 				this_item_type.item_type_demand = 1;
 				this_item_type.item_type_idx = item_type_index;
@@ -170,7 +170,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 	*/
 
 	// Sort all items according to their length
-	ItemProperties  temp_item;
+	Item_Stc  temp_item;
 	for (int k = 0; k < items_num - 1; k++)
 	{
 		for (int m = k + 1; m < items_num; m++)

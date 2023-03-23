@@ -30,16 +30,16 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 	Model_MP.add(Cons_MP); // add cons to the model
 
 	// set model matrix 
-	int cols_num = this_node.model_matrix.size();
-	int rows_num = item_types_num;
+	int all_cols_num = this_node.model_matrix.size();
+	int all_rows_num = item_types_num;
 
 	// Cplex Modeling
-	for (int col = 0; col < cols_num; col++)
+	for (int col = 0; col < all_cols_num; col++)
 	{
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para); // Init a col
 
-		for (int row = 0; row < rows_num; row++) // set rows in this col
+		for (int row = 0; row < all_rows_num; row++) // set rows in this col
 		{
 			IloNum row_para = this_node.model_matrix[col][row];
 			CplexCol += Cons_MP[row](row_para); // set para
@@ -51,7 +51,7 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 		if (col == parent_node.var_to_branch_idx)
 		{
 			IloNum to_branch_val = this_node.var_to_branch_int_val_final;
-			printf("\n	x_var_%d is set as %f, to be branched", col + 1, to_branch_val);
+			printf("\n\t x_var_%d is set as %f, to be branched", col + 1, to_branch_val);
 
 			IloNumVar Var(CplexCol, to_branch_val, to_branch_val, ILOFLOAT, X_name.c_str()); // Init and set var
 			Vars_MP.add(Var);
@@ -70,7 +70,7 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 				if (col == branched_col) // var of this col is a branched-var in Parent Node
 				{
 					IloNum branched_val = parent_node.branched_vars_int_val_list[index];
-					printf("\n	x_var_%d is set as %f, branched", col + 1, branched_val);
+					printf("\n\t x_var_%d is set as %f, branched", col + 1, branched_val);
 
 					IloNumVar Var(CplexCol, branched_val, branched_val, ILOFLOAT, X_name.c_str()); // Init and set var
 					Vars_MP.add(Var);
@@ -103,15 +103,15 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 	if (MP_flag == 0)
 	{
 		this_node.node_pruned_flag = 1;
-		printf("\n	Node_%d MP IS NOT FEASIBLE!\n", this_node.index);
-		printf("\n	Node_%d has to be pruned\n", this_node.index);
+		printf("\n\t Node_%d MP IS NOT FEASIBLE!\n", this_node.index);
+		printf("\n\t Node_%d has to be pruned\n", this_node.index);
 	}
 	else
 	{
 		this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
-		printf("\n	OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
+		printf("\n\t Obj of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (int col = 0; col < cols_num; col++)
+		for (int col = 0; col < all_cols_num; col++)
 		{
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			this_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
@@ -123,24 +123,24 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 				{
 					if (soln_int_val >= 1) // and it is an int-soln that larger than 1
 					{
-						this_node.int_solns_val_list.push_back(soln_val); //  Node int-solns
-						this_node.int_solns_idx_list.push_back(col); // Node int-solns' index
+						//this_node.int_solns_val_list.push_back(soln_val); //  Node int-solns
+						//this_node.int_solns_idx_list.push_back(col); // Node int-solns' index
 
-						printf("	var_x_%d = %f int\n", col + 1, soln_val);
+						printf("\t var_x_%d = %f int\n", col + 1, soln_val);
 					}
 				}
 				else // if this soln is not int
 				{
-					printf("	var_x_%d = %f\n", col + 1, soln_val);
+					printf("\t var_x_%d = %f\n", col + 1, soln_val);
 				}
 
-				this_node.fsb_solns_val_list.push_back(soln_val); // Node feasible (i.e. non-zero-solns) solns 
-				this_node.fsb_solns_idx_list.push_back(col); 	// Node fsb-solns' index
+				//this_node.fsb_solns_val_list.push_back(soln_val); // Node feasible (i.e. non-zero-solns) solns 
+				//this_node.fsb_solns_idx_list.push_back(col); 	// Node fsb-solns' index
 			}
 		}
 
 
-		printf("\n	BRANCHED VARS: \n\n");
+		printf("\n\t BRANCHED VARS: \n\n");
 		int branched_num = this_node.branched_vars_int_val_list.size();
 		int var_idx = -1;
 		double var_int_val = -1;
@@ -148,27 +148,27 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 		{
 			var_idx = this_node.branched_vars_idx_list[k] + 1;
 			var_int_val = this_node.branched_vars_int_val_list[k];
-			printf("	var_x_%d = %f branched \n", var_idx, var_int_val);
+			printf("\t var_x_%d = %f branched \n", var_idx, var_int_val);
 		}
 
-		int fsb_num = this_node.fsb_solns_val_list.size();
-		int int_num = this_node.int_solns_idx_list.size();
-		printf("\n	Node_%d MP-final:\n", this_node.index);
-		printf("\n	Lower Bound = %f", this_node.node_lower_bound);
-		printf("\n	NUM of all solns = %d", cols_num);
-		printf("\n	NUM of fsb-solns = %d", fsb_num);
-		printf("\n	NUM of int-solns = %d", int_num);
-		printf("\n	NUM of branched-vars = %d\n", branched_num);
+		//int fsb_num = this_node.fsb_solns_val_list.size();
+		//int int_num = this_node.int_solns_idx_list.size();
+		printf("\n\t Node_%d MP-final:\n", this_node.index);
+		printf("\n\t Lower Bound = %f", this_node.node_lower_bound);
+		printf("\n\t NUM of all solns = %d", all_cols_num);
+		//printf("\n	NUM of fsb-solns = %d", fsb_num);
+		//printf("\n	NUM of int-solns = %d", int_num);
+		printf("\n\t NUM of branched-vars = %d\n", branched_num);
 	}
 
 	MP_cplex.removeAllProperties();
 	MP_cplex.end();
-	Obj_MP.removeAllProperties();
-	Obj_MP.end();
 	Vars_MP.clear();
 	Vars_MP.end();
 	Cons_MP.clear();
 	Cons_MP.end();
+	Obj_MP.removeAllProperties();
+	Obj_MP.end();
 	Model_MP.removeAllProperties();
 	Model_MP.end();
 	Env_MP.removeAllProperties();

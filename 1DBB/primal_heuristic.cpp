@@ -7,13 +7,13 @@ using namespace std;
 void InitModelMatrix(All_Values& Values, All_Lists& Lists, Node& root_node)
 {
 	int item_types_num = Values.item_types_num;
-	int rows_num = item_types_num;
-	int cols_num = item_types_num;
+	int all_rows_num = item_types_num;
+	int all_cols_num = item_types_num;
 
-	for (int col = 0; col < cols_num; col++)
+	for (int col = 0; col < all_cols_num; col++)
 	{
 		vector<double> temp_col;
-		for (int row = 0; row < rows_num; row++)
+		for (int row = 0; row < all_rows_num; row++)
 		{
 			if (row == col)
 			{

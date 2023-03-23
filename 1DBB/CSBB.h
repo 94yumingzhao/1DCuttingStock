@@ -34,7 +34,7 @@ using namespace std;
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
 // item_type
-struct ItemTypeProperties
+struct Item_Type_Stc
 {
 	int item_type = -1;
 	int item_type_length = -1;
@@ -42,14 +42,14 @@ struct ItemTypeProperties
 };
 
 // stock type
-struct StockTypeProperties
+struct Stock_Type_Stc
 {
 	int item_type = -1;
 	int count = -1;
 };
 
 // item
-struct ItemProperties
+struct Item_Stc
 {
 	int item_type = -1;
 	int item_type_demand = -1;
@@ -63,7 +63,7 @@ struct ItemProperties
 };
 
 // stock
-struct StockProperties
+struct Stock_Stc
 {
 	int item_type = -1;
 	int pattern = -1;
@@ -101,10 +101,10 @@ struct Node
 	//vector<vector<int>>branched_cols_list;
 
 	vector<double> all_solns_val_list; // final all (include 0) solns of this Node
-	vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solns of this Node
-	vector<int> fsb_solns_idx_list; // final col-index of feasible-solns of this Node
-	vector<double> int_solns_val_list; // final all int-solns of this Node
-	vector<int> int_solns_idx_list;  // final col-index of int-solns of this Node
+	//vector<double> fsb_solns_val_list; // final feasible (i.e. non-0) solns of this Node
+	//vector<int> fsb_solns_idx_list; // final col-index of feasible-solns of this Node
+	//vector<double> int_solns_val_list; // final all int-solns of this Node
+	//vector<int> int_solns_idx_list;  // final col-index of int-solns of this Node
 
 	// Lists of one Column Generation iter of one Node
 	int iter = -1;
@@ -148,8 +148,8 @@ struct All_Values
 
 struct All_Lists
 {
-	vector<ItemProperties> all_items_list; // list of all items 
-	vector<ItemTypeProperties> all_item_types_list; // list of all item_types
+	vector<Item_Stc> all_items_list; // list of all items 
+	vector<Item_Type_Stc> all_item_types_list; // list of all item_types
 	vector<Node> all_nodes_list; // list of all Nodes generated
 };
 
@@ -167,7 +167,7 @@ int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int BranchAndBoundTree(All_Values& Values, All_Lists& Lists);
 
-int InitParentNode(All_Values& Values, All_Lists& Lists, Node& parent_node);
+int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
 
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
 

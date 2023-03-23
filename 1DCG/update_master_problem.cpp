@@ -21,8 +21,8 @@ bool SolveUpdateMasterProblem(
 	IloNumColumn CplexCol = Obj_MP(obj_para);
 
 	// add the new col ro the model of MP 
-	int rows_num = Values.item_types_num;
-	for (int row = 0; row < rows_num; row++)
+	int all_rows_num = Values.item_types_num;
+	for (int row = 0; row < all_rows_num; row++)
 	{
 		IloNum row_para = Lists.new_col[row];
 		CplexCol += Cons_MP[row](row_para);
@@ -49,10 +49,10 @@ bool SolveUpdateMasterProblem(
 	// print fsb-solns of the updated MP
 	int fsb_num = 0;
 	int int_num = 0;
-	int cols_num = Lists.model_matrix.size();
+	int all_cols_num = Lists.model_matrix.size();
 
 	printf("\n	FEASIBLE SOLNS of MP: \n\n");
-	for (int col = 0; col < cols_num; col++)
+	for (int col = 0; col < all_cols_num; col++)
 	{
 		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 		if (soln_val > 0) // feasible soln > 0
@@ -78,7 +78,7 @@ bool SolveUpdateMasterProblem(
 	Lists.dual_prices_list.clear();
 	printf("\n	DUAL PRICES of MP cons: \n\n");
 
-	for (int row = 0; row < rows_num; row++)
+	for (int row = 0; row < all_rows_num; row++)
 	{
 		double dual_val = MP_cplex.getDual(Cons_MP[row]); // get dual-prices of all cons
 		printf("	dual_r_%d = %f\n", row + 1, dual_val);
@@ -87,7 +87,7 @@ bool SolveUpdateMasterProblem(
 
 	printf("\n	MP-%d:\n", Values.iter);
 	printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-	printf("\n	NUM of all solns = %d", cols_num);
+	printf("\n	NUM of all solns = %d", all_cols_num);
 	printf("\n	NUM of fsb-solns = %d", fsb_num);
 	printf("\n	NUM of int-solns = %d", int_num);
 

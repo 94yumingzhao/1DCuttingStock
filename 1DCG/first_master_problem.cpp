@@ -17,10 +17,10 @@ bool SolveFirstMasterProblem(
 	IloNumArray  con_max(Env_MP); // cons UB
 
 	int item_types_num = Values.item_types_num;
-	int rows_num = item_types_num;
-	int cols_num = item_types_num;
+	int all_rows_num = item_types_num;
+	int all_cols_num = item_types_num;
 
-	for (int row = 0; row < rows_num; row++)
+	for (int row = 0; row < all_rows_num; row++)
 	{
 		// con >= item_type_demand
 		int item_type_demand = Lists.all_item_types_list[row].item_type_demand;
@@ -36,12 +36,12 @@ bool SolveFirstMasterProblem(
 	con_max.end();
 
 	// Cplex Modeling
-	for (int col = 0; col < cols_num; col++)
+	for (int col = 0; col < all_cols_num; col++)
 	{
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para);
 
-		for (int row = 0; row < rows_num; row++)
+		for (int row = 0; row < all_rows_num; row++)
 		{
 			IloNum row_para = Lists.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_para);
@@ -80,7 +80,7 @@ bool SolveFirstMasterProblem(
 		printf("\n	OBJ of MP-1 is %f\n\n", MP_cplex.getValue(Obj_MP));
 
 		printf("\n	FEASIBLE SOLNS of MP: \n\n");
-		for (int col = 0; col < cols_num; col++)
+		for (int col = 0; col < all_cols_num; col++)
 		{
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			if (soln_val > 0) // feasible soln > 0
@@ -103,7 +103,7 @@ bool SolveFirstMasterProblem(
 		}
 
 		printf("\n	DUAL PRICES of MP cons: \n\n");
-		for (int k = 0; k < rows_num; k++)
+		for (int k = 0; k < all_rows_num; k++)
 		{
 			double dual_val = MP_cplex.getDual(Cons_MP[k]);
 			printf("	dual_r_%d = %f\n", k + 1, dual_val);
@@ -112,7 +112,7 @@ bool SolveFirstMasterProblem(
 
 		printf("\n	MP-%d:\n", Values.iter);
 		printf("\n	Lower Bound = %f", MP_cplex.getValue(Obj_MP));
-		printf("\n	NUM of all solns = %d", cols_num);
+		printf("\n	NUM of all solns = %d", all_cols_num);
 		printf("\n	NUM of fsb solns = %d", fsb_num);
 		printf("\n	NUM of int solns = %d", int_num);
 	}

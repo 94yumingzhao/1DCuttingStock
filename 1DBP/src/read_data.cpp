@@ -71,7 +71,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			//问题：每个母管 按照需求的长度切一刀，因而按照需求量来进行循环？
 			for (int col = 0; col < item_demand; col++) // 子管需求量
 			{
-				ItemProperties this_item;
+				Item_Stc this_item;
 				this_item.length = atoi(data_inline[0].c_str()); // 子管行第1位：子管长度
 				this_item.item_type_demand = atoi(data_inline[1].c_str()); // 子管行第2位：子管需求
 				this_item.item_type = atoi(data_inline[2].c_str()); // 子管行第3位：子管种类
@@ -82,7 +82,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 				Lists.all_items_list.push_back(this_item);
 				item_index++;
 			}
-			ItemTypeProperties this_item_type;
+			Item_Type_Stc this_item_type;
 			this_item_type.item_type_length = atoi(data_inline[0].c_str());
 			this_item_type.item_type_demand = atoi(data_inline[1].c_str());
 			this_item_type.item_type = atoi(data_inline[2].c_str());
@@ -127,7 +127,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			getline(fin2, line); // start from line 4
 			SplitString(line, data_inline, "\t");
 
-			ItemProperties this_item;
+			Item_Stc this_item;
 			this_item.index = item_index;
 			this_item.item_type = -1;
 			this_item.item_type_demand = -1;
@@ -155,7 +155,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			{
 				temp_item_types_list.push_back(this_item_length);
 
-				ItemTypeProperties this_item_type; // Init this new item_type
+				Item_Type_Stc this_item_type; // Init this new item_type
 				this_item_type.item_type_length = Lists.all_items_list[k].length;
 				this_item_type.item_type_demand = 1;
 				this_item_type.item_type = item_type_index;
@@ -180,7 +180,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 	
 
 	// Sort all items according to their length
-	ItemProperties  temp_item;
+	Item_Stc  temp_item;
 	for (int k = 0; k < items_num - 1; k++)
 	{
 		for (int m = k + 1; m < items_num; m++)

@@ -17,7 +17,7 @@ int main()
 	InitModelMatrix(Values, Lists);
 	ColumnGeneration(Values, Lists);
 
-	int cols_num = Lists.model_matrix.size();
+	int all_cols_num = Lists.model_matrix.size();
 
 	system("pause");
 	return 0;
