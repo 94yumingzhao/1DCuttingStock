@@ -34,23 +34,20 @@ using namespace std;
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
 // item_type
-struct Item_Type_Stc
-{
+struct Item_Type_Stc {
 	int item_type = -1;
 	int item_type_length = -1;
 	int item_type_demand = -1;
 };
 
 // stock type
-struct Stock_Type_Stc
-{
+struct Stock_Type_Stc {
 	int item_type = -1;
 	int count = -1;
 };
 
 // item
-struct Item_Stc
-{
+struct Item_Stc {
 	int item_type = -1;
 	int item_type_demand = -1;
 	int length = -1;
@@ -63,8 +60,7 @@ struct Item_Stc
 };
 
 // stock
-struct Stock_Stc
-{
+struct Stock_Stc {
 	int item_type = -1;
 	int pattern = -1;
 	int item_type_length = -1;
@@ -78,8 +74,7 @@ struct Stock_Stc
 };
 
 // Node
-struct Node
-{
+struct Node {
 	int index = -1;
 	int parent_index = -1;
 	int parent_branching_flag = -1;
@@ -115,8 +110,7 @@ struct Node
 
 };
 
-struct All_Values
-{
+struct All_Values {
 	int stocks_num = -1; // number of all available stocks
 	int item_types_num = -1; // number of all item_types demanded
 	int stock_length = -1; // item_type_length of a stock
@@ -146,8 +140,7 @@ struct All_Values
 	int root_flag = -1;
 };
 
-struct All_Lists
-{
+struct All_Lists {
 	vector<Item_Stc> all_items_list; // list of all items 
 	vector<Item_Type_Stc> all_item_types_list; // list of all item_types
 	vector<Node> all_nodes_list; // list of all Nodes generated
@@ -159,7 +152,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
 void InitModelMatrix(All_Values& Values, All_Lists& Lists, Node& root_node);
 
-bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists,	Node& root_node);
+bool SolveRootNodeProblem(All_Values& Values, All_Lists& Lists, Node& root_node);
 
 int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node);
 
@@ -171,7 +164,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
 
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
 
-bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Node& parent_node);
+bool SolveNewNodeProblem(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node);
 
 
 

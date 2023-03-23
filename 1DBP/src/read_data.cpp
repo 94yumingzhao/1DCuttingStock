@@ -4,26 +4,22 @@
 using namespace std;
 
 
-void SplitString(const string& line_string, vector<string>& string_list, const string& data_string)
-{
+void SplitString(const string& line_string, vector<string>& string_list, const string& data_string) {
 	string::size_type pos1, pos2;
 	pos2 = line_string.find(data_string);
 	pos1 = 0;
 	string_list.clear();
-	while (string::npos != pos2)
-	{
+	while (string::npos != pos2) {
 		string_list.push_back(line_string.substr(pos1, pos2 - pos1));
 		pos1 = pos2 + data_string.size();
 		pos2 = line_string.find(data_string, pos1);
 	}
-	if (pos1 != line_string.length())
-	{
+	if (pos1 != line_string.length()) {
 		string_list.push_back(line_string.substr(pos1));
 	}
 }
 
-tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
-{
+tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 	ostringstream s_in, s_out;
 	string in_str, out_str;
 	ofstream f_out;
@@ -92,15 +88,14 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 	*/
 
 	// binpack.txt
-	
+
 	s_in.str("");
 	//s_in << "/content/drive/MyDrive/CSBP/data/binpack2.txt";
 	s_in << "C:/Users/YMZhao/Desktop/CSBP/CSBP/data/binpack2.txt";
 	in_str = s_in.str();
 	ifstream fin2(in_str);
 
-	if (fin2)
-	{
+	if (fin2) {
 		getline(fin2, line);
 		SplitString(line, data_inline, "\t");
 		stocks_num = atoi(data_inline[0].c_str()); // line 1 col 1
@@ -122,8 +117,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		int item_type_index = 1;
 
 		// store all items' info
-		for (int k = 0; k < items_num; k++)
-		{
+		for (int k = 0; k < items_num; k++) {
 			getline(fin2, line); // start from line 4
 			SplitString(line, data_inline, "\t");
 
@@ -131,7 +125,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			this_item.index = item_index;
 			this_item.item_type = -1;
 			this_item.item_type_demand = -1;
-			this_item.length = atoi(data_inline[0].c_str());		
+			this_item.length = atoi(data_inline[0].c_str());
 			this_item.stock_index = -1;
 			this_item.occupied = 0;
 
@@ -145,8 +139,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		vector<int>::iterator iter;
 
 		// Find all item_types from all items.
-		for (int k = 0; k < items_num; k++)
-		{
+		for (int k = 0; k < items_num; k++) {
 			// Items that have the same length belong to the same item_type
 			int this_item_length = Lists.all_items_list[k].length;
 
@@ -169,7 +162,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 				iter = find(temp_item_types_list.begin(), temp_item_types_list.end(), this_item_length);
 				distance_index = distance(temp_item_types_list.begin(), iter);
 
-				Lists.all_item_types_list[distance_index].item_type_demand = 
+				Lists.all_item_types_list[distance_index].item_type_demand =
 					Lists.all_item_types_list[distance_index].item_type_demand + 1; // this item_type's demand+1
 			}
 		}
@@ -177,16 +170,13 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 		int item_types_num = Lists.all_item_types_list.size();
 		printf("	The number of item_type is %d\n", item_types_num);
 	}
-	
+
 
 	// Sort all items according to their length
 	Item_Stc  temp_item;
-	for (int k = 0; k < items_num - 1; k++)
-	{
-		for (int m = k + 1; m < items_num; m++)
-		{
-			if (Lists.all_items_list[k].length < Lists.all_items_list[m].length)
-			{
+	for (int k = 0; k < items_num - 1; k++) {
+		for (int m = k + 1; m < items_num; m++) {
+			if (Lists.all_items_list[k].length < Lists.all_items_list[m].length) {
 				temp_item = Lists.all_items_list[k];
 				Lists.all_items_list[k] = Lists.all_items_list[m];
 				Lists.all_items_list[m] = temp_item;

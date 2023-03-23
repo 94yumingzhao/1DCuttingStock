@@ -34,22 +34,19 @@ using namespace std;
 #define RC_EPS 1.0e-6 // a num that is very close to 0
 
 // item_type
-struct Item_Type_Stc
-{
+struct Item_Type_Stc {
 	int item_type_idx = -1;
 	int item_type_length = -1;
 	int item_type_demand = -1;
 };
 
 // item
-struct Item_Stc
-{
+struct Item_Stc {
 	int length = -1;
 	int idx = -1;
 };
 
-struct All_Values
-{
+struct All_Values {
 	int stocks_num = -1; // number of all available stocks
 	int item_types_num = -1; // number of all item_types demanded
 	int stock_length = -1; // item_type_length of a stock
@@ -58,8 +55,7 @@ struct All_Values
 	double lower_bound = -1;
 };
 
-struct All_Lists
-{
+struct All_Lists {
 	vector<Item_Stc> all_items_list; // list of all items 
 	vector<Item_Type_Stc> all_item_types_list; // list of all item_types
 

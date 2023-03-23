@@ -10,8 +10,7 @@ bool SolveUpdateMasterProblem(
 	IloModel& Model_MP,
 	IloObjective& Obj_MP,
 	IloRangeArray& Cons_MP,
-	IloNumVarArray& Vars_MP)
-{
+	IloNumVarArray& Vars_MP) {
 
 	// add new col to the matrix of MP
 	Lists.model_matrix.push_back(Lists.new_col);
@@ -22,8 +21,7 @@ bool SolveUpdateMasterProblem(
 
 	// add the new col ro the model of MP 
 	int all_rows_num = Values.item_types_num;
-	for (int row = 0; row < all_rows_num; row++)
-	{
+	for (int row = 0; row < all_rows_num; row++) {
 		IloNum row_para = Lists.new_col[row];
 		CplexCol += Cons_MP[row](row_para);
 	}
@@ -37,12 +35,12 @@ bool SolveUpdateMasterProblem(
 	CplexCol.end(); // end this IloNumColumn object
 
 	// solve the new updated MP
-	printf("\n\n####################### MP-%d CPLEX SOLVING START #######################\n\n", Values.iter);
+	printf("\n\n################ MP-%d CPLEX SOLVING START ################\n\n", Values.iter);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("updateMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve(); // solve MP
-	printf("\n####################### MP-%d CPLEX SOLVING OVER #########################\n", Values.iter);
+	printf("\n################ MP-%d CPLEX SOLVING OVER ##################\n", Values.iter);
 
 	printf("\n	OBJ of MP-%d is %f\n\n", Values.iter, MP_cplex.getValue(Obj_MP));
 
@@ -52,23 +50,18 @@ bool SolveUpdateMasterProblem(
 	int all_cols_num = Lists.model_matrix.size();
 
 	printf("\n	FEASIBLE SOLNS of MP: \n\n");
-	for (int col = 0; col < all_cols_num; col++)
-	{
+	for (int col = 0; col < all_cols_num; col++) {
 		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-		if (soln_val > 0) // feasible soln > 0
-		{
+		if (soln_val > 0) {// feasible soln > 0
 			fsb_num++;
 			int soln_int_val = int(soln_val);
-			if (soln_int_val == soln_val)
-			{
-				if (soln_int_val >= 1)
-				{
+			if (soln_int_val == soln_val) {
+				if (soln_int_val >= 1) {
 					int_num++;
 					printf("	var_x_%d = %f int\n", col + 1, soln_val);
 				}
 			}
-			else
-			{
+			else {
 				printf("	var_x_%d = %f\n", col + 1, soln_val);
 			}
 		}
@@ -78,8 +71,7 @@ bool SolveUpdateMasterProblem(
 	Lists.dual_prices_list.clear();
 	printf("\n	DUAL PRICES of MP cons: \n\n");
 
-	for (int row = 0; row < all_rows_num; row++)
-	{
+	for (int row = 0; row < all_rows_num; row++) {
 		double dual_val = MP_cplex.getDual(Cons_MP[row]); // get dual-prices of all cons
 		printf("	dual_r_%d = %f\n", row + 1, dual_val);
 		Lists.dual_prices_list.push_back(dual_val);

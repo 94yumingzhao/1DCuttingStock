@@ -4,13 +4,12 @@
 using namespace std;
 
 // solve the Root node with CG loop
-void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node)
-{
-	printf("\n##########################################################\n");
-	printf("##########################################################\n");
-	printf("####################### ROOT Node ######################\n");
-	printf("##########################################################\n");
-	printf("##########################################################\n\n");
+void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node) {
+	printf("\n############################################\n");
+	printf("############################################\n");
+	printf("################ ROOT Node ###################\n");
+	printf("############################################\n");
+	printf("############################################\n\n");
 
 	// Init CPLEX
 	IloEnv Env_MP; // Init environment
@@ -33,15 +32,12 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 		root_node);
 
 	// if the LB of the first MP >= 0, then the 1st MP has feasible solns.
-	if (MP_flag == 1)
-	{
+	if (MP_flag == 1) {
 		// Column Generation loop
-		while (1)
-		{
+		while (1) {
 			root_node.iter++; // CG loop iter index++
 
-			if (root_node.iter == 100)
-			{
+			if (root_node.iter == 100) {
 				cout << endl;
 			}
 
@@ -49,14 +45,12 @@ void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_n
 
 			// Case 1:
 			// No better reduced cost is get from SP anymore
-			if (SP_flag == 1)
-			{
+			if (SP_flag == 1) {
 				break; // break CG loop
 			}
 			// Case 2:
 			// Better reduced cost is get from SP
-			if (SP_flag == 0)
-			{
+			if (SP_flag == 0) {
 				// continue CG loop and update MP with the new col from SP
 				// solve the new updated MP
 				SolveUpdateMasterProblem(

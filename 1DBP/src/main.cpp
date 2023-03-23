@@ -11,8 +11,7 @@
 #include "CSBP.h"
 using namespace std;
 
-int main()
-{
+int main() {
 	clock_t start, finish;
 	start = clock();
 
@@ -39,8 +38,7 @@ int main()
 	printf("\n	Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
 
 	// continue to BP
-	if (Values.search_flag == 0)
-	{
+	if (Values.search_flag == 0) {
 		Values.branch_status = 1;
 		BranchAndPriceTree(Values, Lists); // Branch and Price loop
 	}

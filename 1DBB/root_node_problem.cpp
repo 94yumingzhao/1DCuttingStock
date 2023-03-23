@@ -3,8 +3,7 @@
 #include "CSBB.h"
 using namespace std;
 
-bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
-{
+bool SolveRootNodeProblem(All_Values& Values, All_Lists& Lists, Node& root_node) {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj
@@ -19,8 +18,7 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 	int all_rows_num = item_types_num;
 	int all_cols_num = item_types_num;
 
-	for (int row = 0; row < all_rows_num; row++)
-	{
+	for (int row = 0; row < all_rows_num; row++) {
 		// con >= item_type_demand
 		int item_type_demand = Lists.all_item_types_list[row].item_type_demand;
 
@@ -35,13 +33,11 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 	con_max.end();
 
 	// Cplex Modeling
-	for (int col = 0; col < all_cols_num; col++)
-	{
+	for (int col = 0; col < all_cols_num; col++) {
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para);
 
-		for (int row = 0; row < all_rows_num; row++)
-		{
+		for (int row = 0; row < all_rows_num; row++) {
 			IloNum row_para = root_node.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_para);
 		}
@@ -58,30 +54,26 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 	}
 
 	// solve model
-	printf("\n\n####################### Node_%d MP-1 CPLEX SOLVING START #######################\n", root_node.index);
+	printf("\n\n################ Node_%d MP-1 CPLEX SOLVING START ################\n", root_node.index);
 	IloCplex MP_cplex(Env_MP);
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("initialMasterProblem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("####################### Node_%d MP-1 CPLEX SOLVING END #########################\n", root_node.index);
+	printf("################ Node_%d MP-1 CPLEX SOLVING END ##################\n", root_node.index);
 
-	if (MP_flag == 0)
-	{
+	if (MP_flag == 0) {
 		root_node.node_pruned_flag = 1;
 		printf("\n\t MP-1 NOT FEASIBLE\n");
 	}
-	else
-	{
+	else {
 		root_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
 		printf("\n\t Obj of Node_%d MP-final is %f \n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (int col = 0; col < all_cols_num; col++)
-		{
+		for (int col = 0; col < all_cols_num; col++) {
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			root_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
 
-			if (soln_val > 0)
-			{
+			if (soln_val > 0) {
 				int soln_int_val = int(soln_val); // TODO
 				if (soln_int_val == soln_val) // if this soln is not int
 				{
@@ -113,7 +105,7 @@ bool SolveRootNodeProblem(All_Values& Values,All_Lists& Lists, Node& root_node)
 		//printf("\n	NUM of fsb-solns = %d", fsb_num);
 		//printf("\n	NUM of int-solns = %d", int_num);
 	}
-	
+
 	MP_cplex.removeAllProperties();
 	MP_cplex.end();
 	Vars_MP.clear();

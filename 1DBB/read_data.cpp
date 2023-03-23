@@ -3,26 +3,22 @@
 #include "CSBB.h"
 using namespace std;
 
-void SplitString(const string& line_string, vector<string>& string_list, const string& data_string)
-{
+void SplitString(const string& line_string, vector<string>& string_list, const string& data_string) {
 	string::size_type pos1, pos2;
 	pos2 = line_string.find(data_string);
 	pos1 = 0;
 	string_list.clear();
-	while (string::npos != pos2)
-	{
+	while (string::npos != pos2) {
 		string_list.push_back(line_string.substr(pos1, pos2 - pos1));
 		pos1 = pos2 + data_string.size();
 		pos2 = line_string.find(data_string, pos1);
 	}
-	if (pos1 != line_string.length())
-	{
+	if (pos1 != line_string.length()) {
 		string_list.push_back(line_string.substr(pos1));
 	}
 }
 
-tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
-{
+tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 	ostringstream s_in, s_out;
 	string in_str, out_str;
 	ofstream f_out;
@@ -36,14 +32,13 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 
 	// CSBB01.txt
 
-	
+
 	s_in.str("");
 	s_in << "CSBB01.txt";
 	in_str = s_in.str();
 	ifstream fin1(in_str);
 
-	if (fin1)
-	{
+	if (fin1) {
 		getline(fin1, line);
 		SplitString(line, data_inline, "\t"); // 第1行
 		stocks_num = atoi(data_inline[0].c_str()); // 第1行第1位：总计可用母管数量
@@ -89,7 +84,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 			Lists.all_item_types_list.push_back(this_item_type);
 		}
 	}
-	
+
 
 	// binpack.txt
 

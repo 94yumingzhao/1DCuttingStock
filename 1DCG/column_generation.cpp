@@ -3,8 +3,7 @@
 #include "CSCG.h"
 using namespace std;
 
-void ColumnGeneration(All_Values& Values, All_Lists& Lists)
-{
+void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 	// Init CPLEX
 	IloEnv Env_MP; // Init environment
 	IloModel Model_MP(Env_MP); // Init model
@@ -12,7 +11,7 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
 
-	Values.iter = 1; 
+	Values.iter = 1;
 
 	// solve the first MP
 	int MP_flag = SolveFirstMasterProblem(
@@ -28,16 +27,13 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 	SP_flag = SolveSubProblem(Values, Lists); // solve the SP of the first MP
 
 	// if the LB of the first MP >= 0, then the 1st MP has feasible solns.
-	if (MP_flag == 1)
-	{
+	if (MP_flag == 1) {
 		// Column Generation loop
-		while (1)
-		{
+		while (1) {
 			Values.iter++; // CG loop iter idx++
 
 			// Case 1: Better reduced cost is get from SP
-			if (SP_flag == 0)
-			{
+			if (SP_flag == 0) {
 				// continue CG loop and update MP with the new col from SP
 				SolveUpdateMasterProblem(
 					Values,
@@ -49,11 +45,10 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists)
 					Vars_MP);
 			}
 			// Case 2: No better reduced cost is get from SP anymore
-			if (SP_flag == 1)
-			{
+			if (SP_flag == 1) {
 				break; // break CG loop
 			}
-			
+
 			SP_flag = SolveSubProblem(Values, Lists); // solve the SP of the updated MP
 		}
 	}

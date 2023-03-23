@@ -3,8 +3,7 @@
 #include "CSBB.h"
 using namespace std;
 
-int main()
-{
+int main() {
 	All_Lists Lists;
 	All_Values Values;
 
@@ -26,8 +25,7 @@ int main()
 	Values.root_flag = 1;
 
 	// continue to BP
-	if (Values.tree_search_flag == 0)
-	{
+	if (Values.tree_search_flag == 0) {
 		Values.tree_branch_status = 1;
 		BranchAndBoundTree(Values, Lists); // Branch and Price loop
 	}

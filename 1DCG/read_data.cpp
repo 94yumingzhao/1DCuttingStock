@@ -4,28 +4,24 @@
 using namespace std;
 
 
-void SplitString(const string& line_string, vector<string>& string_list, const string& data_string)
-{
+void SplitString(const string& line_string, vector<string>& string_list, const string& data_string) {
 	string::size_type pos1, pos2;
 	pos2 = line_string.find(data_string);
 	pos1 = 0;
 	string_list.clear();
 
-	while (string::npos != pos2)
-	{
+	while (string::npos != pos2) {
 		string_list.push_back(line_string.substr(pos1, pos2 - pos1));
 		pos1 = pos2 + data_string.size();
 		pos2 = line_string.find(data_string, pos1);
 	}
 
-	if (pos1 != line_string.length())
-	{
+	if (pos1 != line_string.length()) {
 		string_list.push_back(line_string.substr(pos1));
 	}
 }
 
-tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
-{
+tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 	ostringstream s_in, s_out;
 	string in_str, out_str;
 	ofstream f_out;
@@ -43,37 +39,34 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 	in_str = s_in.str();
 	ifstream fin1(in_str);
 
-	if (fin1)
-	{
+	if (fin1) {
 		getline(fin1, line);
-		SplitString(line, data_inline, "\t"); 
-		stocks_num = atoi(data_inline[0].c_str()); 
+		SplitString(line, data_inline, "\t");
+		stocks_num = atoi(data_inline[0].c_str());
 
 		getline(fin1, line);
-		SplitString(line, data_inline, "\t"); 
-		item_types_num = atoi(data_inline[0].c_str()); 
+		SplitString(line, data_inline, "\t");
+		item_types_num = atoi(data_inline[0].c_str());
 
 		getline(fin1, line);
-		SplitString(line, data_inline, "\t"); 
-		stock_length = atoi(data_inline[0].c_str()); 
+		SplitString(line, data_inline, "\t");
+		stock_length = atoi(data_inline[0].c_str());
 		printf("\n\n");
 		printf("	The number of stocks = %d\n", stocks_num);
 		printf("	The number of item_types = %d\n", item_types_num);
 		printf("	The length of a stock = %d\n", stock_length);
 
 		int item_index = 1;
-		for (int k = 0; k < item_types_num; k++) 
-		{
+		for (int k = 0; k < item_types_num; k++) {
 			getline(fin1, line);
 			SplitString(line, data_inline, "\t");
 
 			int item_demand = atoi(data_inline[1].c_str());
-			
-			for (int m = 0; m < item_demand; m++) 
-			{
+
+			for (int m = 0; m < item_demand; m++) {
 				Item_Stc this_item;
-				this_item.length = atoi(data_inline[0].c_str()); 
-				this_item.idx = item_index; 
+				this_item.length = atoi(data_inline[0].c_str());
+				this_item.idx = item_index;
 
 				Lists.all_items_list.push_back(this_item);
 				item_index++;
@@ -171,12 +164,9 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists)
 
 	// Sort all items according to their length
 	Item_Stc  temp_item;
-	for (int k = 0; k < items_num - 1; k++)
-	{
-		for (int m = k + 1; m < items_num; m++)
-		{
-			if (Lists.all_items_list[k].length < Lists.all_items_list[m].length)
-			{
+	for (int k = 0; k < items_num - 1; k++) {
+		for (int m = k + 1; m < items_num; m++) {
+			if (Lists.all_items_list[k].length < Lists.all_items_list[m].length) {
 				temp_item = Lists.all_items_list[k];
 				Lists.all_items_list[k] = Lists.all_items_list[m];
 				Lists.all_items_list[m] = temp_item;

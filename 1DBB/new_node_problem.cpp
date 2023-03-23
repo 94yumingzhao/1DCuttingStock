@@ -3,21 +3,19 @@
 #include "CSBB.h"
 using namespace std;
 
-bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Node& parent_node)
-{
+bool SolveNewNodeProblem(All_Values& Values, All_Lists& Lists, Node& this_node, Node& parent_node) {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj
 	IloNumVarArray Vars_MP(Env_MP); // Init vars
 	IloRangeArray Cons_MP(Env_MP); // Init cons
-	
+
 	IloNumArray  con_min(Env_MP); // cons LB
 	IloNumArray  con_max(Env_MP); // cons UB
 
 	// set cons bound
 	int item_types_num = Values.item_types_num;
-	for (int k = 0; k < item_types_num; k++)
-	{
+	for (int k = 0; k < item_types_num; k++) {
 		int item_type_demand = Lists.all_item_types_list[k].item_type_demand;
 
 		// cons > item_type_demand
@@ -34,8 +32,7 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 	int all_rows_num = item_types_num;
 
 	// Cplex Modeling
-	for (int col = 0; col < all_cols_num; col++)
-	{
+	for (int col = 0; col < all_cols_num; col++) {
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para); // Init a col
 
@@ -48,8 +45,7 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 		string X_name = "X_" + to_string(col + 1); // var name
 
 		// Case 1 :  var of this col is the to be branched-var of Parent Node
-		if (col == parent_node.var_to_branch_idx)
-		{
+		if (col == parent_node.var_to_branch_idx) {
 			IloNum to_branch_val = this_node.var_to_branch_int_val_final;
 			printf("\n\t x_var_%d is set as %f, to be branched", col + 1, to_branch_val);
 
@@ -58,8 +54,7 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 		}
 
 		// Case 2:	var of this col is not the to be branched-var of Parent Node
-		else
-		{
+		else {
 			// Case 2.1: var of this col is NOT a branched - var in previous Nodes	
 			int branched_num = parent_node.branched_vars_int_val_list.size();
 			bool find_flag = 0;
@@ -81,8 +76,7 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 			}
 
 			// Case 2.2: var of this col is NOT a branched-var in previous Nodes
-			if (find_flag == 0)
-			{
+			if (find_flag == 0) {
 				IloNum var_min = 0;
 				IloNum var_max = IloInfinity;
 				IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // Init and set var
@@ -98,26 +92,22 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 	MP_cplex.extract(Model_MP);
 	MP_cplex.exportModel("NewNodeProblem.lp");
 	bool MP_flag = MP_cplex.solve();
-	printf("\n################## Node_%d MP CPLEX SOLVING END ####################\n\n", this_node.index);
+	printf("\n################## Node_%d MP CPLEX SOLVING END #################\n\n", this_node.index);
 
-	if (MP_flag == 0)
-	{
+	if (MP_flag == 0) {
 		this_node.node_pruned_flag = 1;
 		printf("\n\t Node_%d MP IS NOT FEASIBLE!\n", this_node.index);
 		printf("\n\t Node_%d has to be pruned\n", this_node.index);
 	}
-	else
-	{
+	else {
 		this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
 		printf("\n\t Obj of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
-		for (int col = 0; col < all_cols_num; col++)
-		{
+		for (int col = 0; col < all_cols_num; col++) {
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
 			this_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
 
-			if (soln_val > 0)
-			{
+			if (soln_val > 0) {
 				int soln_int_val = int(soln_val); // TODO
 				if (soln_int_val == soln_val) // if this soln is not int
 				{
@@ -144,8 +134,7 @@ bool SolveNewNodeProblem(All_Values& Values,All_Lists& Lists,Node& this_node,Nod
 		int branched_num = this_node.branched_vars_int_val_list.size();
 		int var_idx = -1;
 		double var_int_val = -1;
-		for (int k = 0; k < branched_num; k++)
-		{
+		for (int k = 0; k < branched_num; k++) {
 			var_idx = this_node.branched_vars_idx_list[k] + 1;
 			var_int_val = this_node.branched_vars_int_val_list[k];
 			printf("\t var_x_%d = %f branched \n", var_idx, var_int_val);

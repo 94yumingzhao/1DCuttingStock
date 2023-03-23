@@ -4,11 +4,10 @@
 using namespace std;
 
 void NewNodeColumnGeneration(
-	All_Values& Values, 
-	All_Lists& Lists, 
+	All_Values& Values,
+	All_Lists& Lists,
 	Node& this_node,
-	Node& parent_node)
-{
+	Node& parent_node) {
 	IloEnv Env_MP; // int environment
 	IloModel Model_MP(Env_MP); // int model 
 	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init and set obj
@@ -30,20 +29,14 @@ void NewNodeColumnGeneration(
 
 	cout << endl;
 
-	if (MP_flag == 1)
-	{
-		while (1)
-		{
+	if (MP_flag == 1) {
+		while (1) {
 			this_node.iter++;
-
 			int SP_flag = SolveSubProblem(Values, Lists, this_node);
-
-			if (SP_flag == 1)
-			{
+			if (SP_flag == 1) {
 				break;
 			}
-			if (SP_flag == 0)
-			{
+			if (SP_flag == 0) {
 				SolveUpdateMasterProblem(
 					Values,
 					Lists,
@@ -66,7 +59,6 @@ void NewNodeColumnGeneration(
 			Vars_MP,
 			this_node);
 	}
-
 
 	Obj_MP.removeAllProperties();
 	Obj_MP.end();
