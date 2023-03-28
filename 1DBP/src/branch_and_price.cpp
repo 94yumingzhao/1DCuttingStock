@@ -7,7 +7,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 	Values.node_num = 1; // Root Node already generated
 
 	while (1) {
-		if (Values.search_flag == 0) {// search_flag set to branch current Parent Node
+		if (Values.search_flag == 0) { // search_flag set to branch current Parent Node
 
 			Node parent_node;
 			int parent_branch_flag = ChooseNodeToBranch(Values, Lists, parent_node); // decide the Node to branch
@@ -19,6 +19,7 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 			}
 
 			if (parent_branch_flag == 1) {
+
 				Node new_left_node;
 				Node new_right_node;
 
@@ -84,7 +85,6 @@ int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
 			Values.search_flag = 0; // search_flag set to continue to the next while-iter
 			printf("\n\t Solns of this Node are all INTEGERS!\n");
 			printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
-
 		}
 
 		if (Values.node_num > 30) {

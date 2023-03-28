@@ -10,5 +10,5 @@ Subject To
  c4: 2 X_4 >= 8
  c5: X_5 >= 30
 Bounds
-      X_1 = 12
+      X_1 = 13
 End
