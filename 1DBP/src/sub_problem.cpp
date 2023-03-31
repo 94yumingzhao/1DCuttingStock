@@ -55,8 +55,6 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 			printf("\t var_y_%d = %f\n", k + 1, soln_val);
 		}
 
-
-
 		// Case 1:
 		if (Cplex_SP.getValue(Obj_SP) > 1 + RC_EPS) { // If the reduced cost is larger than 1
 			optimal_flag = 0; // the optimal solns of this Node is not find, continue CG loop

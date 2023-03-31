@@ -110,7 +110,6 @@ struct All_Values {
 	int stocks_num = -1; // 所有可用 stock 的数量
 	int item_types_num = -1; // 所有 item type 的数量
 	int stock_length = -1; // stock 的长度
-	//int level_num; // number of all node-branch structurew
 	int node_num; // number of all Nodes
 
 	double optimal_LB = -1; // 当前整个分支定价树上的最优下界

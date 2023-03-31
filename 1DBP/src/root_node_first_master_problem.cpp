@@ -5,6 +5,7 @@ using namespace std;
 
 // 启发式生成根节点初始主问题模型的系数矩阵
 void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) {
+
 	int item_types_num = Values.item_types_num;
 	int all_rows_num = item_types_num;
 	int all_cols_num = item_types_num;
@@ -81,8 +82,6 @@ bool SolveRootNodeFirstMasterProblem(
 
 	int fsb_num = 0;
 	int int_num = 0;
-
-	// judge model feasibility
 	if (MP_flag == 0) {
 		root_node.node_pruned_flag = 1;
 		printf("\n	Node_%d MP-1 is NOT FEASIBLE!\n", root_node.index);
@@ -109,10 +108,10 @@ bool SolveRootNodeFirstMasterProblem(
 			}
 		}
 
-		printf("\n	DUAL PRICES: \n\n");
+		printf("\n\t DUAL PRICES: \n\n");
 		for (int k = 0; k < all_rows_num; k++) {
 			double dual_val = MP_cplex.getDual(Cons_MP[k]);
-			printf("	dual_r_%d = %f\n", k + 1, dual_val);
+			printf("\t dual_r_%d = %f\n", k + 1, dual_val);
 			root_node.dual_prices_list.push_back(dual_val);
 		}
 
