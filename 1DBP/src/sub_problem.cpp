@@ -4,20 +4,19 @@
 #include "CSBP.h"
 using namespace std;
 
+// 生成并求解子问题
 bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
-	bool optimal_flag = 0;
 
 	IloEnv Env_SP;
 	IloModel Model_SP(Env_SP);
 	IloNumVarArray Vars_SP(Env_SP);
-
-	// var >= 0
-	IloNum var_min = 0; // var LB
-	IloNum var_max = IloInfinity; // var UB
+	bool optimal_flag = 0;
 
 	// Init and set vars of SP
 	int item_types_num = Values.item_types_num;
 	for (int k = 0; k < item_types_num; k++) {
+		IloNum var_min = 0; // var LB
+		IloNum var_max = IloInfinity; // var UB
 		IloNumVar var(Env_SP, var_min, var_max, ILOINT); // ATTENTION: all vars in SP must be set as INT 
 		Vars_SP.add(var);
 	}
@@ -56,15 +55,16 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 			printf("\t var_y_%d = %f\n", k + 1, soln_val);
 		}
 
+
+
 		// Case 1:
 		if (Cplex_SP.getValue(Obj_SP) > 1 + RC_EPS) { // If the reduced cost is larger than 1
-			// the optimal solns of this Node is not find, continue CG loop
+			optimal_flag = 0; // the optimal solns of this Node is not find, continue CG loop
 			this_node.new_col.clear(); 	// set the new col for MP
 			for (int k = 0; k < item_types_num; k++) {
 				double var_val = Cplex_SP.getValue(Vars_SP[k]);
 				this_node.new_col.push_back(var_val);
-			}
-			optimal_flag = 0;
+			}			
 			printf("\n\t We got a REDUCED COST = %f that LARGER than 1\n", Cplex_SP.getValue(Obj_SP));
 			printf("\n\t A NEW COLUMN will be added to the MP\n");
 		}

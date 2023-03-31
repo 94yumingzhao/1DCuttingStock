@@ -3,7 +3,7 @@
 #include "CSBB.h"
 using namespace std;
 
-int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) {
+int DecideNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) {
 	int parent_branch_flag = -1;
 	int pos = -1;
 	int nodes_num = Lists.all_nodes_list.size();
@@ -12,7 +12,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 		for (int k = 0; k < nodes_num; k++) {
 			if (Lists.all_nodes_list[k].node_branched_flag != 1 &&
 				Lists.all_nodes_list[k].node_pruned_flag != 1) {  // unbranched unpruned
-				if (Lists.all_nodes_list[k].node_lower_bound < Values.tree_optimal_lower_bound) {
+				if (Lists.all_nodes_list[k].LB < Values.optimal_LB) {
 					pos = k;  // branch this previously generated Node_(k+1)
 					cout << endl;
 				}
@@ -74,7 +74,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	int nodes_num = Lists.all_nodes_list.size();
 	new_node.index = nodes_num + 1;
-	new_node.node_lower_bound = -1;
+	new_node.LB = -1;
 
 	if (Values.tree_branch_status == 1) {
 		printf("\n\t Newly Generated Node_%d is the LEFT branch of Node_%d	\n", new_node.index, parent_node.index);
@@ -85,7 +85,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	new_node.parent_index = parent_node.index;
 	new_node.parent_branching_flag = Values.tree_branch_status;
-	new_node.parent_var_to_branch_val = parent_node.var_to_branch_soln_val;
+	new_node.parent_var_to_branch_val = parent_node.var_to_branch_soln;
 
 	printf("\n############################################\n");
 	printf("############################################\n");
@@ -94,10 +94,10 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	printf("############################################\n\n");
 
 	new_node.var_to_branch_idx = -1;
-	new_node.var_to_branch_soln_val = -1;
-	new_node.var_to_branch_int_val_floor = -1;
-	new_node.var_to_branch_int_val_ceil = -1;
-	new_node.var_to_branch_int_val_final = -1;
+	new_node.var_to_branch_soln = -1;
+	new_node.var_to_branch_floor = -1;
+	new_node.var_to_branch_ceil = -1;
+	new_node.var_to_branch_final = -1;
 
 	int all_cols_num = parent_node.model_matrix.size();
 	int all_rows_num = parent_node.model_matrix[0].size();
@@ -120,27 +120,27 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 	}
 
 	if (Values.tree_branch_status == 1) {
-		new_node.var_to_branch_int_val_final = parent_node.var_to_branch_int_val_floor;
+		new_node.var_to_branch_final = parent_node.var_to_branch_floor;
 	}
 	if (Values.tree_branch_status == 2) {
-		new_node.var_to_branch_int_val_final = parent_node.var_to_branch_int_val_ceil;
+		new_node.var_to_branch_final = parent_node.var_to_branch_ceil;
 	}
 
-	double final_int_val = new_node.var_to_branch_int_val_final;
+	double final_int_val = new_node.var_to_branch_final;
 
 	if (branched_num <= 1) {  // if new_node is the left or the Right Node of Root Node
-		new_node.branched_vars_int_val_list.push_back(final_int_val);
+		new_node.branched_vars_int_list.push_back(final_int_val);
 	}
 	if (branched_num > 1) {  // other Nodes
 		for (int col = 0; col < branched_num - 1; col++) {
-			double temp_val = parent_node.branched_vars_int_val_list[col];
-			new_node.branched_vars_int_val_list.push_back(temp_val);
+			double temp_val = parent_node.branched_vars_int_list[col];
+			new_node.branched_vars_int_list.push_back(temp_val);
 		}
-		new_node.branched_vars_int_val_list.push_back(final_int_val);
+		new_node.branched_vars_int_list.push_back(final_int_val);
 	}
 
 	// Clear all other lists to init them
-	new_node.all_solns_val_list.clear();
+	new_node.all_solns_list.clear();
 	new_node.dual_prices_list.clear();
 	new_node.new_col.clear();
 }

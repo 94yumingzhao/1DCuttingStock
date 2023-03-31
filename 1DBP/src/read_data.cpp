@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-
+// 分割字符串
 void SplitString(const string& line_string, vector<string>& string_list, const string& data_string) {
 	string::size_type pos1, pos2;
 	pos2 = line_string.find(data_string);
@@ -19,6 +19,7 @@ void SplitString(const string& line_string, vector<string>& string_list, const s
 	}
 }
 
+// 读取输入数据
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 	ostringstream s_in, s_out;
 	string in_str, out_str;

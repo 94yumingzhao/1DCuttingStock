@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-// solve the Root node with CG loop
+// 根节点的列生成循环
 void RootNodeColumnGeneration(All_Values& Values, All_Lists& Lists, Node& root_node) {
 	printf("\n############################################\n");
 	printf("############################################\n");

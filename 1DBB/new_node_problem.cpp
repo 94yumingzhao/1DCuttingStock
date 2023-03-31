@@ -39,7 +39,7 @@ bool SolveNewNodeProblem(All_Values& Values, All_Lists& Lists, Node& this_node, 
 		// Case 1 :  var of this col is the to be branched-var of Parent Node
 		if (col == parent_node.var_to_branch_idx) {
 			string X_name = "X_" + to_string(col + 1); // var name
-			IloNum to_branch_val = this_node.var_to_branch_int_val_final;
+			IloNum to_branch_val = this_node.var_to_branch_final;
 			IloNumVar Var(CplexCol, to_branch_val, to_branch_val, ILOFLOAT, X_name.c_str()); // Init and set var
 			Vars_MP.add(Var);
 			printf("\n\t x_var_%d is set as %f, to be branched", col + 1, to_branch_val);
@@ -48,14 +48,14 @@ bool SolveNewNodeProblem(All_Values& Values, All_Lists& Lists, Node& this_node, 
 		// Case 2:	var of this col is not the to be branched-var of Parent Node
 		else {
 			// Case 2.1: var of this col is NOT a branched - var in previous Nodes	
-			int branched_num = parent_node.branched_vars_int_val_list.size();
+			int branched_num = parent_node.branched_vars_int_list.size();
 			bool find_flag = 0;
 			for (int index = 0; index < branched_num; index++) {   // loop of all branched-vars in previous Nodes
 				int branched_col = parent_node.branched_vars_idx_list[index];
 				if (col == branched_col) {   // var of this col is a branched-var in Parent Node
 					find_flag = 1;
 					string X_name = "X_" + to_string(col + 1); // var name
-					IloNum branched_val = parent_node.branched_vars_int_val_list[index];
+					IloNum branched_val = parent_node.branched_vars_int_list[index];
 					IloNumVar Var(CplexCol, branched_val, branched_val, ILOFLOAT, X_name.c_str()); // Init and set var
 					Vars_MP.add(Var);
 					printf("\n\t x_var_%d is set as %f, branched", col + 1, branched_val);
@@ -90,27 +90,27 @@ bool SolveNewNodeProblem(All_Values& Values, All_Lists& Lists, Node& this_node, 
 		printf("\n\t Node_%d has to be pruned\n", this_node.index);
 	}
 	else {
-		this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
+		this_node.LB = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
 		printf("\n\t Obj of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 		printf("\n\t MP VARS: \n\n");
 		for (int col = 0; col < all_cols_num; col++) {
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-			this_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
+			this_node.all_solns_list.push_back(soln_val); // Node all solns (including zero-solns)
 			printf("\t var_x_%d = %f\n", col + 1, soln_val);
 		}
 
 		printf("\n\t BRANCHED VARS: \n\n");
-		int branched_num = this_node.branched_vars_int_val_list.size();
+		int branched_num = this_node.branched_vars_int_list.size();
 		int var_idx = -1;
 		double var_int_val = -1;
 		for (int k = 0; k < branched_num; k++) {
 			var_idx = this_node.branched_vars_idx_list[k] + 1;
-			var_int_val = this_node.branched_vars_int_val_list[k];
+			var_int_val = this_node.branched_vars_int_list[k];
 			printf("\t var_x_%d = %f branched \n", var_idx, var_int_val);
 		}
 
 		printf("\n\t Node_%d MP-final:\n", this_node.index);
-		printf("\n\t Lower Bound = %f", this_node.node_lower_bound);
+		printf("\n\t Lower Bound = %f", this_node.LB);
 		printf("\n\t NUM of all solns = %d", all_cols_num);
 		printf("\n\t NUM of branched-vars = %d\n", branched_num);
 	}

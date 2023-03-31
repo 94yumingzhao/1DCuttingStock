@@ -11,6 +11,7 @@
 #include "CSBP.h"
 using namespace std;
 
+// 主函数
 int main() {
 	clock_t start, finish;
 	start = clock();
@@ -25,6 +26,7 @@ int main() {
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
 	Values.stock_length = get<2>(fileTxt); // item_type_length of a stock
 
+	// 生成并求解根节点
 	Node root_node; // Init Root Node
 	root_node.index = 1; // Node index
 	Values.tree_branch_status = 0;
@@ -35,20 +37,17 @@ int main() {
 	Lists.all_nodes_list.push_back(root_node);
 	Values.root_flag = 1;
 
-	printf("\n	Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+	printf("\n	Current Optimal Lower Bound = %f\n", Values.optimal_LB);
 
-	// continue to BP
+	// 分支定价循环
 	if (Values.tree_search_flag == 0) {
 		Values.tree_branch_status = 1;
-		BranchAndPriceTree(Values, Lists); // Branch and Price loop
+		BranchAndPriceTree(Values, Lists); 
 	}
 
 	finish = clock();
 	double duration = (double)(finish - start) / CLOCKS_PER_SEC;
 	printf("\n	Process Time = %f seconds\n", duration);
-
-	Lists.all_nodes_list.clear();
-
 	cout << endl;
 	return 0;
 }

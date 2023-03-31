@@ -82,19 +82,19 @@ struct Node {
 	int node_branched_flag = -1; // flag: 判断当前节点在上节点的左支还是右支, 1 -- left, 2 -- right
 	int node_pruned_flag = -1; // flag: 判断当前节点是否已被剪掉. 1 -- pruned, 0 -- not pruned
 
-	double node_lower_bound = -1; // 节点最终下界
+	double LB = -1; // 节点最终下界
 	double parent_var_to_branch_val = -1; // 当前节点的上节点的分支变量值
 	int var_to_branch_idx = -1; // 当前节点的待分支变量，对应的列序号
-	double var_to_branch_soln_val = -1; // 当前节点的待分支变量，对应解的值
-	double var_to_branch_int_val_floor = -1; // 当前节点的待分支变量，对应解的四舍分支后的值
-	double var_to_branch_int_val_ceil = -1; // 当前节点的待分支变量，对应解的五入分支后的值
-	double var_to_branch_int_val_final = -1; // var-to-branch's final int-val (floored or ceiled)
+	double var_to_branch_soln = -1; // 当前节点的待分支变量，对应解的值
+	double var_to_branch_floor = -1; // 当前节点的待分支变量，对应解的四舍分支后的值
+	double var_to_branch_ceil = -1; // 当前节点的待分支变量，对应解的五入分支后的值
+	double var_to_branch_final = -1; // var-to-branch's final int-val (floored or ceiled)
 
 	// Lists of final branching of one Node
-	vector<double> all_solns_val_list; //  当前节点所有解的表
+	vector<double> all_solns_list; //  当前节点所有解的表
 	vector<int> branched_vars_idx_list; // 当前节点所有已分支变量，对应列序号的表
-	vector<double> branched_vars_soln_val_list; // 当前节点所有已分支变量，对应解的值的表
-	vector<double> branched_vars_int_val_list; // 当前节点所有已分支变量，对应解分支后的整数值的表
+	vector<double> branched_vars_soln_list; // 当前节点所有已分支变量，对应解的值的表
+	vector<double> branched_vars_int_list; // 当前节点所有已分支变量，对应解分支后的整数值的表
 
 
 	// Lists of one Column Generation iter of one Node
@@ -113,20 +113,20 @@ struct All_Values {
 	//int level_num; // number of all node-branch structurew
 	int node_num; // number of all Nodes
 
-	double tree_optimal_lower_bound = -1; // 当前整个分支定价树上的最优下界
+	double optimal_LB = -1; // 当前整个分支定价树上的最优下界
 
-	/*操作决定
+	/*一级操作
 	0 -- 分支：从当前节点继续分支
 	1 --  搜索：剪掉当前节点，并从之前生成过但未分支也未剪掉的某个节点，重新继续分支定价*/
 	int tree_search_flag = -1;
 
-	/*求解决定：
+	/*二级操作：
 	1 -- 左支：从当前节点生成并求解左支子节点
 	2 -- 右支：从当前节点生成并求解右支子节点
 	3 -- 放弃：剪掉当前节点，并从之前生成过但未分支也未剪掉的某个节点，重新继续分支定价*/
 	int tree_branch_status = -1;
 
-	/*选支决定：
+	/*选支操作：
 	1 -- 左支：将左支节点继续分支
 	2 -- 右支：将右支节点继续分支*/
 	int node_fathom_flag = -1;
@@ -183,11 +183,11 @@ bool SolveFinalMasterProblem(
 
 int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node);
 
-int ChooseVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node);
+int DecideVarToBranch(All_Values& Values, All_Lists& Lists, Node& this_node);
 
 int BranchAndPriceTree(All_Values& Values, All_Lists& Lists);
 
-int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
+int DecideNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node);
 
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node);
 

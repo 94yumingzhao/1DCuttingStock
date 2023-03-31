@@ -57,17 +57,17 @@ bool SolveRootNodeProblem(All_Values& Values, All_Lists& Lists, Node& root_node)
 		printf("\n\t MP-1 NOT FEASIBLE\n");
 	}
 	else {
-		root_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
+		root_node.LB = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
 		printf("\n\t Obj of Node_%d MP-final is %f \n\n", root_node.index, MP_cplex.getValue(Obj_MP));
 		for (int col = 0; col < all_cols_num; col++) {
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-			root_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
+			root_node.all_solns_list.push_back(soln_val); // Node all solns (including zero-solns)
 			printf("\t var_x_%d = %f\n", col + 1, soln_val);
 		}
 
 		printf("\n\t BRANCHED VARS: \n\n	None\n");
 		printf("\n\t Node_%d MP-final:\n", root_node.index);
-		printf("\n\t Lower Bound = %f", root_node.node_lower_bound);
+		printf("\n\t Lower Bound = %f", root_node.LB);
 		printf("\n\t NUM of all solns = %d", all_cols_num);
 	}
 

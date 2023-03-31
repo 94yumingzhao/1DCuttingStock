@@ -67,12 +67,12 @@ bool SolveUpdateMasterProblem(
 	}
 
 	printf("\n	BRANCHED VARS: \n\n");
-	int branched_num = this_node.branched_vars_int_val_list.size();
+	int branched_num = this_node.branched_vars_int_list.size();
 	int var_idx = -1;
 	double var_int_val = -1;
 	for (int k = 0; k < branched_num; k++) {
 		var_idx = this_node.branched_vars_idx_list[k] + 1;
-		var_int_val = this_node.branched_vars_int_val_list[k];
+		var_int_val = this_node.branched_vars_int_list[k];
 		printf("	var_x_%d = %f branched \n", var_idx, var_int_val);
 	}
 
@@ -116,13 +116,13 @@ bool SolveFinalMasterProblem(
 	bool MP_flag = MP_cplex.solve(); // 求解当前主问题
 	printf("\n################ Node_%d MP-final CPLEX SOLVING OVER ##################\n", this_node.index);
 
-	this_node.node_lower_bound = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
+	this_node.LB = MP_cplex.getValue(Obj_MP); // set Node LB in the last MP
 	printf("\n	OBJ of Node_%d MP-final is %f \n\n", this_node.index, MP_cplex.getValue(Obj_MP));
 
 	int all_cols_num = this_node.model_matrix.size();
 	for (int col = 0; col < all_cols_num; col++) {
 		IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-		this_node.all_solns_val_list.push_back(soln_val); // Node all solns (including zero-solns)
+		this_node.all_solns_list.push_back(soln_val); // Node all solns (including zero-solns)
 
 		if (soln_val > 0) {
 			int soln_int_val = int(soln_val); // TODO
@@ -143,19 +143,19 @@ bool SolveFinalMasterProblem(
 
 
 	printf("\n	BRANCHED VARS: \n\n");
-	int branched_num = this_node.branched_vars_int_val_list.size();
+	int branched_num = this_node.branched_vars_int_list.size();
 	int var_idx = -1;
 	double var_int_val = -1;
 	for (int k = 0; k < branched_num; k++) {
 		var_idx = this_node.branched_vars_idx_list[k] + 1;
-		var_int_val = this_node.branched_vars_int_val_list[k];
+		var_int_val = this_node.branched_vars_int_list[k];
 		printf("	var_x_%d = %f branched \n", var_idx, var_int_val);
 	}
 
 	//int fsb_num = this_node.fsb_solns_val_list.size();
 	//int int_num = this_node.int_solns_idx_list.size();
 	printf("\n	Node_%d MP-final:\n", this_node.index);
-	printf("\n	Lower Bound = %f", this_node.node_lower_bound);
+	printf("\n	Lower Bound = %f", this_node.LB);
 	printf("\n	NUM of all solns = %d", all_cols_num);
 	//printf("\n	NUM of fsb-solns = %d", fsb_num);
 	//printf("\n	NUM of int-solns = %d", int_num);

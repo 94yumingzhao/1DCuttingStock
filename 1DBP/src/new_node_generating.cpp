@@ -3,7 +3,9 @@
 #include "CSBP.h"
 using namespace std;
 
-int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) {
+// 确定分支节点
+int DecideNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) {
+
 	int parent_branch_flag = -1;
 	int pos = -1;
 	int nodes_num = Lists.all_nodes_list.size();
@@ -11,7 +13,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 	if (Values.tree_branch_status == 3) { // 遍历搜索节点表，寻找新被分支节点
 		for (int k = 0; k < nodes_num; k++) {
 			if (Lists.all_nodes_list[k].node_branched_flag != 1 && Lists.all_nodes_list[k].node_pruned_flag != 1) { // 必须是未分支且未剪掉的节点
-				if (Lists.all_nodes_list[k].node_lower_bound < Values.tree_optimal_lower_bound) { // 新节点下界必须优于当前全局最优下界
+				if (Lists.all_nodes_list[k].LB < Values.optimal_LB) { // 新节点下界必须优于当前全局最优下界
 					pos = k; // 确定被分支节点在节点表中的位置
 					cout << endl;
 				}
@@ -68,12 +70,12 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 	return parent_branch_flag;
 }
 
-
+// 生成新节点
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node) {
 	int nodes_num = Lists.all_nodes_list.size();
 
 	new_node.index = nodes_num + 1;
-	new_node.node_lower_bound = -1;
+	new_node.LB = -1;
 
 	if (Values.tree_branch_status == 1) {
 		printf("\n	Node_%d is the LEFT branch of Node_%d	\n", new_node.index, parent_node.index);
@@ -84,7 +86,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	new_node.parent_index = parent_node.index;
 	new_node.parent_branching_flag = Values.tree_branch_status;
-	new_node.parent_var_to_branch_val = parent_node.var_to_branch_soln_val;
+	new_node.parent_var_to_branch_val = parent_node.var_to_branch_soln;
 
 	printf("\n############################################\n");
 	printf("############################################\n");
@@ -94,10 +96,10 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	// 这些参数不需要继承被分支节点
 	new_node.var_to_branch_idx = -1;
-	new_node.var_to_branch_soln_val = -1;
-	new_node.var_to_branch_int_val_floor = -1;
-	new_node.var_to_branch_int_val_ceil = -1;
-	new_node.var_to_branch_int_val_final = -1;
+	new_node.var_to_branch_soln = -1;
+	new_node.var_to_branch_floor = -1;
+	new_node.var_to_branch_ceil = -1;
+	new_node.var_to_branch_final = -1;
 
 	int all_cols_num = parent_node.model_matrix.size();
 	int all_rows_num = parent_node.model_matrix[0].size();
@@ -121,28 +123,28 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	// 当前节点继承被分支节点：分支变量对应解分支后的整数值
 	if (Values.tree_branch_status == 1) { // 当前节点是被分支节点：左支子节点
-		new_node.var_to_branch_int_val_final = parent_node.var_to_branch_int_val_floor; // 被分支节点的分支变量对应解，在当前节点向下取整
+		new_node.var_to_branch_final = parent_node.var_to_branch_floor; // 被分支节点的分支变量对应解，在当前节点向下取整
 	}
 	if (Values.tree_branch_status == 2) { // 当前节点是被分支节点：左支子节点
-		new_node.var_to_branch_int_val_final = parent_node.var_to_branch_int_val_ceil; // 被分支节点的分支变量对应解，在当前节点向上取整
+		new_node.var_to_branch_final = parent_node.var_to_branch_ceil; // 被分支节点的分支变量对应解，在当前节点向上取整
 	}
 
-	double final_int_val = new_node.var_to_branch_int_val_final;
+	double final_int_val = new_node.var_to_branch_final;
 	if (branched_num <= 1)  // 被分支节点是根节点
 	{
-		new_node.branched_vars_int_val_list.push_back(final_int_val);
+		new_node.branched_vars_int_list.push_back(final_int_val);
 	}
 	else // 被分支节点不是根节点
 	{
 		for (int col = 0; col < branched_num - 1; col++) {
-			double temp_val = parent_node.branched_vars_int_val_list[col];
-			new_node.branched_vars_int_val_list.push_back(temp_val);
+			double temp_val = parent_node.branched_vars_int_list[col];
+			new_node.branched_vars_int_list.push_back(temp_val);
 		}
-		new_node.branched_vars_int_val_list.push_back(final_int_val); 
+		new_node.branched_vars_int_list.push_back(final_int_val); 
 	}
 
 	// 初始化表，清空
-	new_node.all_solns_val_list.clear();
+	new_node.all_solns_list.clear();
 	new_node.dual_prices_list.clear();
 	new_node.new_col.clear();
 

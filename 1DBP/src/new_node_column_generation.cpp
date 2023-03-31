@@ -3,6 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
+// 新节点的列生成循环
 void NewNodeColumnGeneration(
 	All_Values& Values,
 	All_Lists& Lists,
@@ -31,8 +32,10 @@ void NewNodeColumnGeneration(
 
 	if (MP_flag == 1) {
 		while (1) {
+
 			this_node.iter++;
 			int SP_flag = SolveSubProblem(Values, Lists, this_node);
+
 			if (SP_flag == 1) {
 				break;
 			}

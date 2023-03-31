@@ -3,7 +3,7 @@
 #include "CSBP.h"
 using namespace std;
 
-// function to init model matrix of Root Node
+// 启发式生成根节点初始主问题模型的系数矩阵
 void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) {
 	int item_types_num = Values.item_types_num;
 	int all_rows_num = item_types_num;
@@ -26,7 +26,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists, Node& root_node) {
 	cout << endl;
 }
 
-
+// 生成并求解根节点的初始主问题
 bool SolveRootNodeFirstMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
