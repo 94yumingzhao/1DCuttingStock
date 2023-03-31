@@ -14,27 +14,25 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
 		tree_search_flag = 1;
 	}
 	else {
-		if (node_int_flag == 0) {// NOT ALL non-zero-solns are int in this Node
+		if (node_int_flag == 0) {  // NOT ALL non-zero-solns are int in this Node
 			int var_idx = this_node.var_to_branch_idx;
 			double var_val = this_node.var_to_branch_soln_val;
 			this_node.branched_vars_idx_list.push_back(var_idx);
 			this_node.branched_vars_soln_val_list.push_back(var_val);
-
 			tree_search_flag = 0;
 		}
-
-		if (node_int_flag == 1) {// ALL non-zero-solns are int in this Node
-			if (this_node.index == 1) { // this node is Root Node 
+		if (node_int_flag == 1) {  // ALL non-zero-solns are int in this Node
+			if (this_node.index == 1) {  // this node is Root Node 
 				Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 				printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
 			}
-			else { // this Node is not Root Node
+			else {  // this Node is not Root Node
 				if (Values.tree_optimal_lower_bound == -1) // this Node is the first Node with all int-solns
 				{
 					Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 					printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
 				}
-				else {// other Nodes with all int-solns
+				else {  // other Nodes with all int-solns
 					if (this_node.node_lower_bound < Values.tree_optimal_lower_bound) {
 						Values.tree_optimal_lower_bound = this_node.node_lower_bound;
 						printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
@@ -48,7 +46,6 @@ int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
 			tree_search_flag = 1;
 		}
 	}
-
 	return tree_search_flag; // 0 -- continue to branch this Node; 1 -- search another generated Node
 }
 

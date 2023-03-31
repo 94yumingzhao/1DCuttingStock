@@ -4,96 +4,90 @@
 using namespace std;
 
 int BranchAndPriceTree(All_Values& Values, All_Lists& Lists) {
-	Values.node_num = 1; // Root Node already generated
 
+	Values.node_num = 1; // 已有根节点
+
+	// 分支定价循环
 	while (1) {
-		if (Values.search_flag == 0) { // search_flag set to branch current Parent Node
+		if (Values.tree_search_flag == 0) { // 当前节点已被剪掉，搜索已生成的未分支未剪节点继续分支
 
-			Node parent_node;
-			int parent_branch_flag = ChooseNodeToBranch(Values, Lists, parent_node); // decide the Node to branch
+			Node parent_node; // 
+			int parent_branch_flag = ChooseNodeToBranch(Values, Lists, parent_node); // 从节点表中遍历节点
 
-			if (parent_branch_flag == 0) {
-				printf("\n\t Branch and Bound stop!\n");
-				printf("\n\t Final Optimal Lower Bound = %f\n\n\n", Values.tree_optimal_lower_bound);
+			if (parent_branch_flag == 0) { // 当前没有任何已生成节点的下界优于全局最优下界
+				printf("\n\t Branch and Bound stop!\n"); // 分支定价循环结束
+				printf("\n\t Final Optimal Lower Bound = %f\n\n\n", Values.tree_optimal_lower_bound); // 全局最优下界
 				break;
 			}
 
-			if (parent_branch_flag == 1) {
+			if (parent_branch_flag == 1) {  // 找到了一个优于全局最优下界的节点
 
 				Node new_left_node;
 				Node new_right_node;
 
-				// always start from the Left Node
-				Values.branch_status = 1;
+				// 先生成左支子节点
+				Values.tree_branch_status = 1;
 				Values.node_num++;
-				GenerateNewNode(Values, Lists, new_left_node, parent_node); // set the Left Node
-				NewNodeColumnGeneration(Values, Lists, new_left_node, parent_node); // solve the Left Node with CG loop
-				int left_search_flag = FinishNode(Values, Lists, new_left_node); // finish the Left Node
-				Lists.all_nodes_list.push_back(new_left_node);
+				GenerateNewNode(Values, Lists, new_left_node, parent_node); // 生成节点
+				NewNodeColumnGeneration(Values, Lists, new_left_node, parent_node); // 列生成求解节点
+				int left_search_flag = FinishNode(Values, Lists, new_left_node); // 最后处理节点
+				Lists.all_nodes_list.push_back(new_left_node); // 新节点加入节点表
 
-				// Then the Right Node
-				Values.branch_status = 2;
+				// 再生成右支子节点
+				Values.tree_branch_status = 2;
 				Values.node_num++;
-				GenerateNewNode(Values, Lists, new_right_node, parent_node);  // set the Right Node
-				NewNodeColumnGeneration(Values, Lists, new_right_node, parent_node); // solve the Right Node with CG loop
-				int right_search_flag = FinishNode(Values, Lists, new_right_node);  // finish the RightNode
-				Lists.all_nodes_list.push_back(new_right_node);
+				GenerateNewNode(Values, Lists, new_right_node, parent_node);  // 生成节点
+				NewNodeColumnGeneration(Values, Lists, new_right_node, parent_node); // 列生成求解节点
+				int right_search_flag = FinishNode(Values, Lists, new_right_node);  //最后处理节点
+				Lists.all_nodes_list.push_back(new_right_node); // 新节点加入节点表
 
-				Values.root_flag = 0;
+				Values.root_flag = 0; // 循环中的所有节点都不是根节点了
 
-				// the var-to-branch val of the Parent Node decide which Node to fathom in next while-iter
+
 				double parent_branch_val = parent_node.var_to_branch_soln_val;
-				if (parent_branch_val > 1) {
-					if (new_left_node.node_lower_bound < new_right_node.node_lower_bound) // choose the Node with better LB to fathom
-					{
-						Values.search_flag = left_search_flag;
-						if (Values.search_flag != 1) {
-							Values.fathom_flag = 1; //  fathom_flag set to fathom the Left Node and branch it in next while-iter
-							printf("\n\t Left Node_%d LB %.4f < Right Node_%d LB %.4f\n\n\t continue to fathom RIGHT Node_%d\n",
-								new_left_node.index, new_left_node.node_lower_bound,
-								new_right_node.index, new_right_node.node_lower_bound,
-								new_right_node.index);
+				if (parent_branch_val > 1) { // 如果当前节点分支变量对应解的值大于1
+					if (new_left_node.node_lower_bound < new_right_node.node_lower_bound) {  // 如果左支子节点下界 优于 右支子节点下界
+						Values.tree_search_flag = left_search_flag;// 当前节点操作决策
+						if (Values.tree_search_flag != 1) { // 继续分支子节点，而不去搜索其他节点
+							Values.node_fathom_flag = 1; //  子节点选择决策
+							printf("\n\t Left Node_%d LB %.4f < Right Node_%d LB %.4f\n",new_left_node.index, new_left_node.node_lower_bound,new_right_node.index, new_right_node.node_lower_bound);
+							printf("\n\t continue to fathom RIGHT Node_%d\n",new_right_node.index);
 						}
 					}
 					else {
-						Values.search_flag = right_search_flag;
-						if (Values.search_flag != 1) {
-							Values.fathom_flag = 2; // fathom_flag set to fathom the Right Node and branch it in next while-iter
-							printf("\n\t Left Node_%d LB %.4f >= Right Node_%d LB %.4f\n\n\t continue to fathom RIGHT Node_%d\n",
-								new_left_node.index, new_left_node.node_lower_bound,
-								new_right_node.index, new_right_node.node_lower_bound,
-								new_right_node.index);
+						Values.tree_search_flag = right_search_flag;  // 当前节点操作决策
+						if (Values.tree_search_flag != 1) {  // 继续分支子节点，而不去搜索其他节点
+							Values.node_fathom_flag = 2; // 子节点分支决策
+							printf("\n\t Left Node_%d LB %.4f >= Right Node_%d LB %.4f\n",new_left_node.index, new_left_node.node_lower_bound,new_right_node.index, new_right_node.node_lower_bound);
+							printf("\n\t continue to fathom RIGHT Node_%d\n",new_right_node.index);
 						}
 					}
 				}
-				else // if 
-				{
-					Values.search_flag = right_search_flag;
-					if (Values.search_flag != 1) {
-						Values.fathom_flag = 2; // fathom_flag set to fathom the Right Nodeand branch it in next while - iter
-						printf("\n\t parent branch val = %.4f < 1\n\n\t Have to fathom Right Node_%d",
-							parent_branch_val, new_right_node.index);
+				if (parent_branch_val <= 1) {  // 如果分支变量对应解的值小于1
+					{
+						Values.tree_search_flag = right_search_flag;  // 当前节点操作决策
+						if (Values.tree_search_flag != 1) {  // 继续分支子节点，而不去搜索其他节点
+							Values.node_fathom_flag = 2; // 子节点分支决策
+							printf("\n\t parent branch val = %.4f < 1\n\n\t Have to fathom Right Node_%d",parent_branch_val, new_right_node.index);
+						}
 					}
+					Values.tree_branch_status = 1;  // 左支子节点
 				}
-				Values.branch_status = 1;  // branch_status set to the Left Node in next while-iter
+			}
+
+			if (Values.tree_search_flag == 1) { //  剪掉当前节点，搜索其他节点
+				Values.tree_branch_status = 3; // 搜索其他节点
+				Values.node_fathom_flag = -1; // 不需要子节点分支决策，初始化
+				Values.tree_search_flag = 0; // 搜索其他节点，
+				printf("\n\t Solns of this Node are all INTEGERS!\n");
+				printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
+			}
+
+			if (Values.node_num > 30) {
+				printf("\n	//////////// PROCEDURE STOP 3 //////////////\n");
+				break;
 			}
 		}
 
-		if (Values.search_flag == 1) { // search_flag set to find a previously generated Node
-			Values.branch_status = 3; // branch_status set to find a previously generated unbranched unpruned Node in Tree
-			Values.fathom_flag = -1; // better deactivate fathom_flag
-			Values.search_flag = 0; // search_flag set to continue to the next while-iter
-			printf("\n\t Solns of this Node are all INTEGERS!\n");
-			printf("\n\t Current Optimal Lower Bound = %f\n", Values.tree_optimal_lower_bound);
-		}
-
-		if (Values.node_num > 30) {
-			printf("\n	//////////// PROCEDURE STOP 3 //////////////\n");
-			break;
-		}
-
-		// continue while-iter
+		return 0;
 	}
-
-	return 0;
-}

@@ -4,16 +4,16 @@
 using namespace std;
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
-	// Init CPLEX
-	IloEnv Env_MP; // Init environment
-	IloModel Model_MP(Env_MP); // Init model
-	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // Init obj
-	IloNumVarArray Vars_MP(Env_MP); // Init vars
-	IloRangeArray Cons_MP(Env_MP); // Init cons
+	// cplex 环境初始化
+	IloEnv Env_MP; // 环境
+	IloModel Model_MP(Env_MP); // 模型
+	IloObjective Obj_MP = IloAdd(Model_MP, IloMinimize(Env_MP)); // 目标函数
+	IloNumVarArray Vars_MP(Env_MP); // 决策变量表
+	IloRangeArray Cons_MP(Env_MP); // 约束表
 
 	Values.iter = 1;
 
-	// solve the first MP
+	// 求解初始主问题
 	int MP_flag = SolveFirstMasterProblem(
 		Values,
 		Lists,
@@ -23,18 +23,18 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 		Cons_MP,
 		Vars_MP);
 
-	int SP_flag = -1;
-	SP_flag = SolveSubProblem(Values, Lists); // solve the SP of the first MP
+	
 
-	// if the LB of the first MP >= 0, then the 1st MP has feasible solns.
-	if (MP_flag == 1) {
-		// Column Generation loop
-		while (1) {
-			Values.iter++; // CG loop iter idx++
+	if (MP_flag == 1) { // 如果初始主问题有可行解
 
-			// Case 1: Better reduced cost is get from SP
-			if (SP_flag == 0) {
-				// continue CG loop and update MP with the new col from SP
+		while (1) { // 列生成循环
+			Values.iter++; // 循环次数
+
+			int SP_flag = -1;
+			SP_flag = SolveSubProblem(Values, Lists); // 求解主问题的子问题
+
+			// Case 1:
+			if (SP_flag == 0) { //  子问题尚未求得最优削减费用
 				SolveUpdateMasterProblem(
 					Values,
 					Lists,
@@ -42,14 +42,12 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 					Model_MP,
 					Obj_MP,
 					Cons_MP,
-					Vars_MP);
+					Vars_MP);  // 子问题生成的新列加入主问题，求解更新主问题
 			}
-			// Case 2: No better reduced cost is get from SP anymore
-			if (SP_flag == 1) {
-				break; // break CG loop
+			// Case 2:
+			if (SP_flag == 1) { //  子问题求得最优削减费用
+				break;  // 列生成循环结束
 			}
-
-			SP_flag = SolveSubProblem(Values, Lists); // solve the SP of the updated MP
 		}
 	}
 

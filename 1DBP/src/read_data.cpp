@@ -108,9 +108,9 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 		SplitString(line, data_inline, "\t");
 		stock_length = atoi(data_inline[0].c_str()); // line 3 col 1
 
-		printf("\n\n	The number of stocks = %d\n", stocks_num);
-		printf("	The number of items = %d\n", items_num);
-		printf("	The item_type_length of stock = %d\n", stock_length);
+		printf("\n\n\t The number of stocks = %d\n", stocks_num);
+		printf("\t The number of items = %d\n", items_num);
+		printf("\t The item_type_length of stock = %d\n", stock_length);
 
 
 		int item_index = 1;
@@ -128,7 +128,6 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 			this_item.length = atoi(data_inline[0].c_str());
 			this_item.stock_index = -1;
 			this_item.occupied = 0;
-
 			Lists.all_items_list.push_back(this_item);
 			item_index++;
 		}
@@ -140,35 +139,29 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 
 		// Find all item_types from all items.
 		for (int k = 0; k < items_num; k++) {
-			// Items that have the same length belong to the same item_type
-			int this_item_length = Lists.all_items_list[k].length;
-
+			
+			int this_item_length = Lists.all_items_list[k].length; // Items that have the same length belong to the same item_type
 			if (find(temp_item_types_list.begin(), temp_item_types_list.end(), this_item_length)
-				== temp_item_types_list.end()) // if a new item_type is find
-			{
+				== temp_item_types_list.end()) {  // if a new item_type is find
 				temp_item_types_list.push_back(this_item_length);
 
 				Item_Type_Stc this_item_type; // Init this new item_type
 				this_item_type.item_type_length = Lists.all_items_list[k].length;
 				this_item_type.item_type_demand = 1;
 				this_item_type.item_type = item_type_index;
-
 				Lists.all_item_types_list.push_back(this_item_type); // store this new item_type
 
 				item_type_index++;
 			}
-			else // if this item_type has already been find
-			{
+			else { // if this item_type has already been find
 				iter = find(temp_item_types_list.begin(), temp_item_types_list.end(), this_item_length);
 				distance_index = distance(temp_item_types_list.begin(), iter);
-
 				Lists.all_item_types_list[distance_index].item_type_demand =
 					Lists.all_item_types_list[distance_index].item_type_demand + 1; // this item_type's demand+1
 			}
 		}
-
 		int item_types_num = Lists.all_item_types_list.size();
-		printf("	The number of item_type is %d\n", item_types_num);
+		printf("\t The number of item_type is %d\n", item_types_num);
 	}
 
 

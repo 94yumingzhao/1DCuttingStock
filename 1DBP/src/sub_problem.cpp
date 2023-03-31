@@ -27,18 +27,16 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	for (int k = 0; k < item_types_num; k++) {
 		obj_sum += this_node.dual_prices_list[k] * Vars_SP[k];
 	}
-
 	IloObjective Obj_SP = IloMaximize(Env_SP, obj_sum);
 	Model_SP.add(Obj_SP);
 
 	// Init and set the only one con of SP
-	IloExpr con_sum(Env_SP);
+	IloExpr con_sum(Env_SP); 
 	for (int k = 0; k < item_types_num; k++) {
 		con_sum += Lists.all_item_types_list[k].item_type_length * Vars_SP[k];
 	}
 	Model_SP.add(con_sum <= Values.stock_length);
 
-	// solve SP
 	printf("\n\n################ Node_%d SP-%d CPLEX SOLVING START ################\n\n", this_node.index, this_node.iter);
 	IloCplex Cplex_SP(Env_SP);
 	Cplex_SP.extract(Model_SP);
@@ -48,40 +46,35 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 
 	// print everything
 	if (SP_flag == 0) {
-		printf("\n	Node_%d MP-%d is NOT FEASIBLE\n", this_node.index, this_node.iter);
+		printf("\n\t Node_%d MP-%d is NOT FEASIBLE\n", this_node.index, this_node.iter);
 	}
 	else {
-		printf("\n	Node_%d SP-%d is FEASIBLE\n", this_node.index, this_node.iter);
-
-		printf("\n	OBJ of Node_%d MP-%d is %f\n\n", this_node.index, this_node.iter, Cplex_SP.getValue(Obj_SP));
-
+		printf("\n\t Node_%d SP-%d is FEASIBLE\n", this_node.index, this_node.iter);
+		printf("\n\t OBJ of Node_%d MP-%d is %f\n\n", this_node.index, this_node.iter, Cplex_SP.getValue(Obj_SP));
 		for (int k = 0; k < item_types_num; k++) {
 			IloNum soln_val = Cplex_SP.getValue(Vars_SP[k]);
-			printf("	var_y_%d = %f\n", k + 1, soln_val);
+			printf("\t var_y_%d = %f\n", k + 1, soln_val);
 		}
 
-
-		// Case 1:If the reduced cost is larger than 1, the optimal solns of this Node is not find, continue CG loop 
-		if (Cplex_SP.getValue(Obj_SP) > 1 + RC_EPS) {
-			printf("\n	We got a REDUCED COST = %f that LARGER than 1\n\n	A NEW COLUMN will be added to the MP\n", Cplex_SP.getValue(Obj_SP));
-
-			// set the new col for MP
-			this_node.new_col.clear();
+		// Case 1:
+		if (Cplex_SP.getValue(Obj_SP) > 1 + RC_EPS) { // If the reduced cost is larger than 1
+			// the optimal solns of this Node is not find, continue CG loop
+			this_node.new_col.clear(); 	// set the new col for MP
 			for (int k = 0; k < item_types_num; k++) {
 				double var_val = Cplex_SP.getValue(Vars_SP[k]);
 				this_node.new_col.push_back(var_val);
 			}
-
 			optimal_flag = 0;
+			printf("\n\t We got a REDUCED COST = %f that LARGER than 1\n", Cplex_SP.getValue(Obj_SP));
+			printf("\n\t A NEW COLUMN will be added to the MP\n");
 		}
 
-		// Case 2: If the reduced cost is smaller than 1, then the optimal solns of this Node is find, break CG loop
-		else {
-			printf("\n	We got a REDUCED COST = %f that NOT LARGER than 1\n\n	COLUMN GENERATION procedure stops here!\n",
-				Cplex_SP.getValue(Obj_SP));
-			printf("\n	Return to the last MP and get the FINAL INTEGER solutions\n");
-
-			optimal_flag = 1;
+		// Case 2: 
+		else { // If the reduced cost is smaller than 1	
+			optimal_flag = 1; // then the optimal solns of this Node is find, break CG loop
+			printf("\n\t We got a REDUCED COST = %f that NOT LARGER than 1\n", Cplex_SP.getValue(Obj_SP));
+			printf("\n\t COLUMN GENERATION procedure stops here!\n");
+			printf("\n\t Return to the last MP and get the FINAL INTEGER solutions\n");
 		}
 	}
 

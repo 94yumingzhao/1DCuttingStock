@@ -36,25 +36,20 @@ bool SolveRootNodeFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP,
 	Node& root_node) {
-	// set model cons
-	IloNumArray  con_min(Env_MP); // cons LB
-	IloNumArray  con_max(Env_MP); // cons UB
 
 	int item_types_num = Values.item_types_num;
 	int all_rows_num = item_types_num;
 	int all_cols_num = item_types_num;
 
+	IloNumArray  con_min(Env_MP); 
+	IloNumArray  con_max(Env_MP); 
 	for (int row = 0; row < all_rows_num; row++) {
-		// con >= item_type_demand
-		int item_type_demand = Lists.all_item_types_list[row].item_type_demand;
-
+		int item_type_demand = Lists.all_item_types_list[row].item_type_demand; // con >= item_type_demand
 		con_min.add(IloNum(item_type_demand)); // con LB
 		con_max.add(IloNum(IloInfinity));  // con UB
 	}
-
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);
 	Model_MP.add(Cons_MP);
-
 	con_min.end();
 	con_max.end();
 
@@ -62,21 +57,18 @@ bool SolveRootNodeFirstMasterProblem(
 	for (int col = 0; col < all_cols_num; col++) {
 		IloNum obj_para = 1;
 		IloNumColumn CplexCol = Obj_MP(obj_para);
-
 		for (int row = 0; row < all_rows_num; row++) {
 			IloNum row_para = root_node.model_matrix[row][col];
 			CplexCol += Cons_MP[row](row_para);
 		}
-
-		// var >= 0
+	
 		IloNum var_min = 0; // var LB
 		IloNum var_max = IloInfinity; // var UB
 		string X_name = "X_" + to_string(col + 1); // var name
+		IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str()); // var >= 0
+		Vars_MP.add(Var); 
 
-		IloNumVar Var(CplexCol, var_min, var_max, ILOFLOAT, X_name.c_str());
-		Vars_MP.add(Var);
-
-		CplexCol.end(); // end this IloNumColumn object
+		CplexCol.end(); // 
 	}
 
 	// solve model
@@ -102,8 +94,7 @@ bool SolveRootNodeFirstMasterProblem(
 
 		for (int col = 0; col < all_cols_num; col++) {
 			IloNum soln_val = MP_cplex.getValue(Vars_MP[col]);
-			if (soln_val > 0) // feasible soln > 0
-			{
+			if (soln_val > 0) { // feasible soln > 0
 				fsb_num++;
 				int soln_int_val = int(soln_val);
 				if (soln_int_val == soln_val) {

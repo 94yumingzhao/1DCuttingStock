@@ -8,16 +8,16 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 	int pos = -1;
 	int nodes_num = Lists.all_nodes_list.size();
 
-	if (Values.tree_branch_status == 3) {   // search for a previously generated unbranched unpruned Node
+	if (Values.tree_branch_status == 3) {  // search for a previously generated unbranched unpruned Node
 		for (int k = 0; k < nodes_num; k++) {
 			if (Lists.all_nodes_list[k].node_branched_flag != 1 &&
 				Lists.all_nodes_list[k].node_pruned_flag != 1) {  // unbranched unpruned
 				if (Lists.all_nodes_list[k].node_lower_bound < Values.tree_optimal_lower_bound) {
-					pos = k; // branch this previously generated Node_(k+1)
+					pos = k;  // branch this previously generated Node_(k+1)
 					cout << endl;
 				}
 				else {
-					Lists.all_nodes_list[k].node_pruned_flag = 1; // prune this previously generated Node
+					Lists.all_nodes_list[k].node_pruned_flag = 1;  // prune this previously generated Node
 					printf("\n\t Node_%d has to be pruned\n", Lists.all_nodes_list[k].index);
 				}
 			}

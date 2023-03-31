@@ -4,6 +4,7 @@ using namespace std;
 
 // judge the integerity of the Node, and find the branch var
 int FinishNode(All_Values& Values, All_Lists& Lists, Node& this_node) {
+
 	int node_int_flag = -1; // 0 -- some fsb-solns are not int; 1 -- all fsb-solns are int
 	int tree_search_flag = -1; // 0 -- continue to branch this Node; 1 -- search another generated Node
 
