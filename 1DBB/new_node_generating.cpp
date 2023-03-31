@@ -8,12 +8,10 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 	int pos = -1;
 	int nodes_num = Lists.all_nodes_list.size();
 
-	if (Values.tree_branch_status == 3) // search for a previously generated unbranched unpruned Node
-	{
+	if (Values.tree_branch_status == 3) {   // search for a previously generated unbranched unpruned Node
 		for (int k = 0; k < nodes_num; k++) {
 			if (Lists.all_nodes_list[k].node_branched_flag != 1 &&
-				Lists.all_nodes_list[k].node_pruned_flag != 1) // unbranched unpruned
-			{
+				Lists.all_nodes_list[k].node_pruned_flag != 1) {  // unbranched unpruned
 				if (Lists.all_nodes_list[k].node_lower_bound < Values.tree_optimal_lower_bound) {
 					pos = k; // branch this previously generated Node_(k+1)
 					cout << endl;
@@ -26,24 +24,18 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 		}
 	}
 
-	if (Values.tree_branch_status != 3) // continue to branch the Parent Node
-	{
-		if (Values.root_flag == 1) // the Parent Node is Root Node
-		{
-			if (Values.tree_branch_status == 1) // the the Left Node of Root Node
-			{
+	if (Values.tree_branch_status != 3) {  // continue to branch the Parent Node
+		if (Values.root_flag == 1) {   // the Parent Node is Root Node
+			if (Values.tree_branch_status == 1) {  // the the Left Node of Root Node
 				pos = nodes_num - 1; // sub left index = parent index + 1
 			}
-			if (Values.tree_branch_status == 2) // the the Right Node of Root Node
-			{
+			if (Values.tree_branch_status == 2) {   // the the Right Node of Root Node
 				pos = nodes_num - 2; // sub right index = parent index + 2
 			}
 		}
 
-		if (Values.root_flag != 1) // the Parent Node is not  Root Node
-		{
-			if (Values.node_fathom_flag == 1) // the Parent Node is a Left Node
-			{
+		if (Values.root_flag != 1) {   // the Parent Node is not Root Node
+			if (Values.node_fathom_flag == 1) {   // the Parent Node is a Left Node
 				if (Values.tree_branch_status == 1) {
 					pos = nodes_num - 2; // sub left index = parent index + 2
 				}
@@ -52,8 +44,7 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 				}
 			}
 
-			if (Values.node_fathom_flag == 2) // the Parent Node is a Right Node
-			{
+			if (Values.node_fathom_flag == 2) {  // the Parent Node is a Right Node
 				if (Values.tree_branch_status == 1) {
 					pos = nodes_num - 1; // sub left index = parent index + 1
 				}
@@ -66,15 +57,12 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 
 	if (pos == -1) {
 		parent_branch_flag = 0;
-
 		printf("\n\t No Node to branch! \n");
 	}
 	else {
 		parent_branch_flag = 1;
-
 		parent_node = Lists.all_nodes_list[pos];
 		parent_node.node_branched_flag = 1;
-
 		printf("\n\t The Node to branch is Node_%d\n", parent_node.index);
 	}
 
@@ -83,8 +71,8 @@ int ChooseNodeToBranch(All_Values& Values, All_Lists& Lists, Node& parent_node) 
 
 
 void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node& parent_node) {
-	int nodes_num = Lists.all_nodes_list.size();
 
+	int nodes_num = Lists.all_nodes_list.size();
 	new_node.index = nodes_num + 1;
 	new_node.node_lower_bound = -1;
 
@@ -122,7 +110,7 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 			double temp_val = parent_node.model_matrix[col][row];
 			temp_col.push_back(temp_val);
 		}
-		new_node.model_matrix.push_back(temp_col); //6
+		new_node.model_matrix.push_back(temp_col);
 	}
 
 	// Init branched-vars list and their col-index list of the Node-to-branch
@@ -140,10 +128,10 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	double final_int_val = new_node.var_to_branch_int_val_final;
 
-	if (branched_num <= 1) {// if new_node is the left or the Right Node of Root Node
+	if (branched_num <= 1) {  // if new_node is the left or the Right Node of Root Node
 		new_node.branched_vars_int_val_list.push_back(final_int_val);
 	}
-	if (branched_num > 1) {// other Nodes
+	if (branched_num > 1) {  // other Nodes
 		for (int col = 0; col < branched_num - 1; col++) {
 			double temp_val = parent_node.branched_vars_int_val_list[col];
 			new_node.branched_vars_int_val_list.push_back(temp_val);
@@ -153,15 +141,8 @@ void GenerateNewNode(All_Values& Values, All_Lists& Lists, Node& new_node, Node&
 
 	// Clear all other lists to init them
 	new_node.all_solns_val_list.clear();
-	//new_node.fsb_solns_val_list.clear();
-	//new_node.fsb_solns_idx_list.clear();
-	//new_node.int_solns_idx_list.clear();
-	//new_node.int_solns_val_list.clear();
-
 	new_node.dual_prices_list.clear();
 	new_node.new_col.clear();
-	//new_node.new_cols_list.clear();
-
 }
 
 
