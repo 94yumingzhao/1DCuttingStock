@@ -23,8 +23,6 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 		Cons_MP,
 		Vars_MP);
 
-	
-
 	if (MP_flag == 1) { // 如果初始主问题有可行解
 
 		while (1) { // 列生成循环
@@ -50,6 +48,18 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 			}
 		}
 	}
+	Model_MP.removeAllProperties();
+	Vars_MP.clear();
+	Cons_MP.clear();
+
+	SolveFinalMasterProblem(
+		Values,
+		Lists,
+		Env_MP,
+		Model_MP,
+		Obj_MP,
+		Cons_MP,
+		Vars_MP);
 
 	// clear all CPLEX objects to release memory. 
 	Obj_MP.removeAllProperties();

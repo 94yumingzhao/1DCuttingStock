@@ -136,7 +136,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="first_master_problem.cpp" />
     <ClCompile Include="primal_heuristic.cpp" />
-    <ClCompile Include="read_data.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="sub_problem.cpp" />
     <ClCompile Include="update_master_problem.cpp" />
   </ItemGroup>
@@ -147,9 +147,7 @@
     <Text Include="binpack2.txt" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FinalMasterProblem.lp" />
-    <None Include="initialMasterProblem.lp" />
-    <None Include="updateMasterProblem.lp" />
+    <None Include="First Master Problem.lp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

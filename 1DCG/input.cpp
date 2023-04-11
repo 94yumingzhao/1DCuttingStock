@@ -33,9 +33,9 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 	int stock_length = -1;
 	int item_types_num = -1;
 
-
+	/*
 	s_in.str("");
-	s_in << "C:/Users/YMZhao/Desktop/CSBP/CSBP/data/CSBB01.txt";
+	s_in << "C:/Users/YMZhao/Desktop/1DCSP/1DCG/CSBB01.txt";
 	in_str = s_in.str();
 	ifstream fin1(in_str);
 
@@ -78,12 +78,12 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 			Lists.all_item_types_list.push_back(this_item_type);
 		}
 	}
+	*/
 
 	// binpack.txt
 
-	/*
 	s_in.str("");
-	s_in << "C:/Users/YMZhao/Desktop/ColumnGeneration/ColumnGeneration/binpack2.txt";
+	s_in << "C:/Users/YMZhao/Desktop/1DCSP/1DCG/binpack2.txt";
 	in_str = s_in.str();
 	ifstream fin2(in_str);
 
@@ -160,7 +160,7 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 		int item_types_num = Lists.all_item_types_list.size();
 		printf("	The number of item_type is %d\n", item_types_num);
 	}
-	*/
+	
 
 	// Sort all items according to their length
 	Item_Stc  temp_item;

@@ -13,7 +13,7 @@ int main() {
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
 	Values.stock_length = get<2>(fileTxt); // length of a stock
 
-	InitModelMatrix(Values, Lists);
+	PrimalHeuristic(Values, Lists);
 	ColumnGeneration(Values, Lists);
 
 	int all_cols_num = Lists.model_matrix.size();

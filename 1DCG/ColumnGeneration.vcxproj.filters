@@ -30,7 +30,7 @@
     <ClCompile Include="column_generation.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
-    <ClCompile Include="read_data.cpp">
+    <ClCompile Include="input.cpp">
       <Filter>srcs</Filter>
     </ClCompile>
     <ClCompile Include="primal_heuristic.cpp">
@@ -51,13 +51,7 @@
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="initialMasterProblem.lp">
-      <Filter>models</Filter>
-    </None>
-    <None Include="FinalMasterProblem.lp">
-      <Filter>models</Filter>
-    </None>
-    <None Include="updateMasterProblem.lp">
+    <None Include="First Master Problem.lp">
       <Filter>models</Filter>
     </None>
   </ItemGroup>

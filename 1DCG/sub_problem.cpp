@@ -47,23 +47,23 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists) {
 
 	// print everything
 	if (SP_flag == 0) {
-		printf("\n	SP-%d is NOT FEASIBLE\n", Values.iter);
+		printf("\n\t SP-%d is NOT FEASIBLE\n", Values.iter);
 	}
 	else {
-		printf("\n	SP-%d is FEASIBLE\n", Values.iter);
+		printf("\n\t SP-%d is FEASIBLE\n", Values.iter);
 
-		printf("\n	OBJ of SP-%d is %f\n\n", Values.iter, Cplex_SP.getValue(Obj_SP));
+		printf("\n\t OBJ of SP-%d is %f\n\n", Values.iter, Cplex_SP.getValue(Obj_SP));
 
-		printf("\n	INT SOLNS of SP: \n\n");
+		printf("\n\t INT SOLNS of SP: \n\n");
 		for (int k = 0; k < item_types_num; k++) {
 			IloNum soln_val = Cplex_SP.getValue(Vars_SP[k]);
-			printf("	var_y_%d = %f\n", k + 1, soln_val);
+			printf("\t var_y_%d = %f\n", k + 1, soln_val);
 		}
 
 
 		// Case 1:If the reduced cost is larger than 1, the optimal solns are not find, continue CG loop 
 		if (Cplex_SP.getValue(Obj_SP) > 1 + RC_EPS) {
-			printf("\n	We got a REDUCED COST = %f that is LARGER than 1\n\n	INT SOLNS of SP will be added to the MP as a NEW COLUMN\n", Cplex_SP.getValue(Obj_SP));
+			printf("\n\t We got a REDUCED COST = %f that is LARGER than 1\n\n	INT SOLNS of SP will be added to the MP as a NEW COLUMN\n", Cplex_SP.getValue(Obj_SP));
 
 			// set the new col for MP
 			Lists.new_col.clear();
@@ -77,7 +77,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists) {
 
 		// Case 2: If the reduced cost is smaller than 1, then the optimal solns are find, break CG loop
 		else {
-			printf("\n	We got a REDUCED COST = %f that is NOT LARGER than 1\n\n	COLUMN GENERATION loop stops here!\n\n\n",
+			printf("\n\t We got a REDUCED COST = %f that is NOT LARGER than 1\n\n	COLUMN GENERATION loop stops here!\n\n\n",
 				Cplex_SP.getValue(Obj_SP));
 
 			optimal_flag = 1;

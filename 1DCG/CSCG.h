@@ -68,7 +68,7 @@ void SplitString(const string& s, vector<string>& v, const string& c);
 
 tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
 
-void InitModelMatrix(All_Values& Values, All_Lists& Lists);
+void PrimalHeuristic(All_Values& Values, All_Lists& Lists);
 
 void ColumnGeneration(All_Values& Values, All_Lists& Lists);
 
@@ -84,6 +84,15 @@ bool SolveFirstMasterProblem(
 bool SolveSubProblem(All_Values& Values, All_Lists& Lists);
 
 bool SolveUpdateMasterProblem(
+	All_Values& Values,
+	All_Lists& Lists,
+	IloEnv& Env_MP,
+	IloModel& Model_MP,
+	IloObjective& Obj_MP,
+	IloRangeArray& Cons_MP,
+	IloNumVarArray& Vars_MP);
+
+bool SolveFinalMasterProblem(
 	All_Values& Values,
 	All_Lists& Lists,
 	IloEnv& Env_MP,
