@@ -66,7 +66,7 @@ struct All_Lists {
 
 void SplitString(const string& s, vector<string>& v, const string& c);
 
-tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists);
+void ReadData(All_Values& Values, All_Lists& Lists);
 
 void PrimalHeuristic(All_Values& Values, All_Lists& Lists);
 

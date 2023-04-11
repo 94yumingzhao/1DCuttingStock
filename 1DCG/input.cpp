@@ -21,7 +21,7 @@ void SplitString(const string& line_string, vector<string>& string_list, const s
 	}
 }
 
-tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
+void ReadData(All_Values& Values, All_Lists& Lists) {
 	ostringstream s_in, s_out;
 	string in_str, out_str;
 	ofstream f_out;
@@ -174,7 +174,9 @@ tuple<int, int, int> ReadData(All_Values& Values, All_Lists& Lists) {
 		}
 	}
 
-	tuple<int, int, int> flag(stocks_num, items_num, stock_length);
-	return flag;
+	Values.stocks_num = stocks_num;
+	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
+	Values.stock_length = stock_length;
+
 }
 

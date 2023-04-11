@@ -23,7 +23,6 @@ bool SolveUpdateMasterProblem(
 	IloNumColumn CplexCol = Obj_MP(obj_para);
 
 	// add the new col ro the model of MP 
-
 	for (int row = 0; row < N_num; row++) {
 		IloNum row_para = Lists.new_col[row];
 		CplexCol += Cons_MP[row](row_para);

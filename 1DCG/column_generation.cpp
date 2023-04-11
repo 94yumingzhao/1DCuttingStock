@@ -48,6 +48,7 @@ void ColumnGeneration(All_Values& Values, All_Lists& Lists) {
 			}
 		}
 	}
+
 	Model_MP.removeAllProperties();
 	Vars_MP.clear();
 	Cons_MP.clear();
