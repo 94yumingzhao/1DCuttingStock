@@ -18,8 +18,8 @@ bool SolveRootNodeProblem(All_Values& Values, All_Lists& Lists, Node& root_node)
 	IloNumArray  con_min(Env_MP); // cons LB
 	IloNumArray  con_max(Env_MP); // cons UB
 	for (int row = 0; row < all_rows_num; row++) {
-		int item_type_demand = Lists.all_item_types_list[row].item_type_demand; // con >= item_type_demand
-		con_min.add(IloNum(item_type_demand)); // con LB
+		int demand = Lists.all_item_types_list[row].demand; // con >= demand
+		con_min.add(IloNum(demand)); // con LB
 		con_max.add(IloNum(IloInfinity));  // con UB
 	}
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);

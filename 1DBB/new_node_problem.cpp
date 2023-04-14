@@ -18,8 +18,8 @@ bool SolveNewNodeProblem(All_Values& Values, All_Lists& Lists, Node& this_node, 
 	int all_rows_num = item_types_num;
 
 	for (int k = 0; k < item_types_num; k++) {
-		int item_type_demand = Lists.all_item_types_list[k].item_type_demand; // cons > item_type_demand	
-		con_min.add(IloNum(item_type_demand)); // con LB
+		int demand = Lists.all_item_types_list[k].demand; // cons > demand	
+		con_min.add(IloNum(demand)); // con LB
 		con_max.add(IloNum(IloInfinity)); // con UB
 	}
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);

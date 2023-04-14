@@ -24,7 +24,7 @@ int main() {
 
 	Values.stocks_num = get<0>(fileTxt);// number of all stocks
 	Values.item_types_num = Lists.all_item_types_list.size(); // number of item types
-	Values.stock_length = get<2>(fileTxt); // item_type_length of a stock
+	Values.stock_length = get<2>(fileTxt); // length of a stock
 
 	// 生成并求解根节点
 	Node root_node; // Init Root Node

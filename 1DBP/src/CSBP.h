@@ -36,8 +36,8 @@ using namespace std;
 // item_type
 struct Item_Type_Stc {
 	int item_type = -1;
-	int item_type_length = -1;
-	int item_type_demand = -1;
+	int length = -1;
+	int demand = -1;
 };
 
 // stock type
@@ -49,7 +49,7 @@ struct Stock_Type_Stc {
 // item
 struct Item_Stc {
 	int item_type = -1;
-	int item_type_demand = -1;
+	int demand = -1;
 	int length = -1;
 	int index = -1;
 	int stock_index = -1;
@@ -63,7 +63,7 @@ struct Item_Stc {
 struct Stock_Stc {
 	int item_type = -1;
 	int pattern = -1;
-	int item_type_length = -1;
+	int length = -1;
 	int index = -1;
 
 	int cutting_distance = -1;

@@ -14,7 +14,7 @@ void InitModelMatrix(All_Values& Values, All_Lists& Lists, Node& root_node) {
 		for (int row = 0; row < all_rows_num; row++) {
 			if (row == col) {
 				double temp_val = 0;
-				temp_val = Values.stock_length / Lists.all_item_types_list[row].item_type_length;
+				temp_val = Values.stock_length / Lists.all_item_types_list[row].length;
 				temp_col.push_back(temp_val);
 			}
 			else {

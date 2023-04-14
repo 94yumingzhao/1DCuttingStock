@@ -72,8 +72,8 @@ void ReadData(All_Values& Values, All_Lists& Lists) {
 				item_index++;
 			}
 			Item_Type_Stc this_item_type;
-			this_item_type.item_type_length = atoi(data_inline[0].c_str());
-			this_item_type.item_type_demand = atoi(data_inline[1].c_str());
+			this_item_type.length = atoi(data_inline[0].c_str());
+			this_item_type.demand = atoi(data_inline[1].c_str());
 			this_item_type.item_type_idx = atoi(data_inline[2].c_str());
 			Lists.all_item_types_list.push_back(this_item_type);
 		}
@@ -139,8 +139,8 @@ void ReadData(All_Values& Values, All_Lists& Lists) {
 				temp_item_types_list.push_back(this_item_length);
 
 				Item_Type_Stc this_item_type; // Init this new item_type
-				this_item_type.item_type_length = Lists.all_items_list[k].length;
-				this_item_type.item_type_demand = 1;
+				this_item_type.length = Lists.all_items_list[k].length;
+				this_item_type.demand = 1;
 				this_item_type.item_type_idx = item_type_index;
 
 				Lists.all_item_types_list.push_back(this_item_type); // store this new item_type
@@ -152,8 +152,8 @@ void ReadData(All_Values& Values, All_Lists& Lists) {
 				iter = find(temp_item_types_list.begin(), temp_item_types_list.end(), this_item_length);
 				distance_index = distance(temp_item_types_list.begin(), iter);
 
-				Lists.all_item_types_list[distance_index].item_type_demand =
-					Lists.all_item_types_list[distance_index].item_type_demand + 1; // this item_type's demand+1
+				Lists.all_item_types_list[distance_index].demand =
+					Lists.all_item_types_list[distance_index].demand + 1; // this item_type's demand+1
 			}
 		}
 

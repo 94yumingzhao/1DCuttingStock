@@ -13,15 +13,17 @@ bool SolveFirstMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP) {
 
+	OutputMasterProblem(Values, Lists);
+	OutputDualMasterProblem(Values, Lists);
+
 	int N_num = Values.item_types_num;;
 	int J_num = N_num;
 
 	IloNumArray  con_min(Env_MP); 
 	IloNumArray  con_max(Env_MP);
 	for (int row = 0; row < N_num; row++) {	
-		int item_type_demand = 
-			Lists.all_item_types_list[row].item_type_demand; // con >= item_type_demand
-		con_min.add(IloNum(item_type_demand)); // con LB
+		int demand_val = Lists.all_item_types_list[row].demand; // con >= demand
+		con_min.add(IloNum(demand_val)); // con LB
 		con_max.add(IloNum(IloInfinity));  // con UB
 	}
 	Cons_MP = IloRangeArray(Env_MP, con_min, con_max);

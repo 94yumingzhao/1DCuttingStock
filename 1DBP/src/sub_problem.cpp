@@ -32,7 +32,7 @@ bool SolveSubProblem(All_Values& Values, All_Lists& Lists, Node& this_node) {
 	// Init and set the only one con of SP
 	IloExpr con_sum(Env_SP); 
 	for (int k = 0; k < item_types_num; k++) {
-		con_sum += Lists.all_item_types_list[k].item_type_length * Vars_SP[k];
+		con_sum += Lists.all_item_types_list[k].length * Vars_SP[k];
 	}
 	Model_SP.add(con_sum <= Values.stock_length);
 

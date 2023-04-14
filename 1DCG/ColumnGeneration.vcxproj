@@ -135,6 +135,7 @@
     <ClCompile Include="column_generation.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="first_master_problem.cpp" />
+    <ClCompile Include="output_models.cpp" />
     <ClCompile Include="primal_heuristic.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="sub_problem.cpp" />
@@ -145,6 +146,8 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="binpack2.txt" />
+    <Text Include="Dual Master Problem.txt" />
+    <Text Include="Master Problem.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="First Master Problem.lp" />

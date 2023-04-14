@@ -1,58 +1,67 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="headers">
+    <Filter Include="头文件">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="srcs">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="模型">
+      <UniqueIdentifier>{1fc72a36-5db0-4369-8073-91d8454b7493}</UniqueIdentifier>
     </Filter>
-    <Filter Include="datas">
+    <Filter Include="数据">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="models">
-      <UniqueIdentifier>{1fc72a36-5db0-4369-8073-91d8454b7493}</UniqueIdentifier>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>srcs</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="first_master_problem.cpp">
-      <Filter>srcs</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="sub_problem.cpp">
-      <Filter>srcs</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="column_generation.cpp">
-      <Filter>srcs</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="input.cpp">
-      <Filter>srcs</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="primal_heuristic.cpp">
-      <Filter>srcs</Filter>
+      <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="update_master_problem.cpp">
-      <Filter>srcs</Filter>
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="output_models.cpp">
+      <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CSCG.h">
-      <Filter>headers</Filter>
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="binpack2.txt">
-      <Filter>datas</Filter>
+      <Filter>数据</Filter>
+    </Text>
+    <Text Include="Dual Master Problem.txt">
+      <Filter>模型</Filter>
+    </Text>
+    <Text Include="Master Problem.txt">
+      <Filter>模型</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="First Master Problem.lp">
-      <Filter>models</Filter>
+      <Filter>模型</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -36,8 +36,8 @@ using namespace std;
 // item_type
 struct Item_Type_Stc {
 	int item_type_idx = -1;
-	int item_type_length = -1;
-	int item_type_demand = -1;
+	int length = -1;
+	int demand = -1;
 };
 
 // item
@@ -49,7 +49,7 @@ struct Item_Stc {
 struct All_Values {
 	int stocks_num = -1; // number of all available stocks
 	int item_types_num = -1; // number of all item_types demanded
-	int stock_length = -1; // item_type_length of a stock
+	int stock_length = -1; // length of a stock
 
 	int iter = -1;
 	double lower_bound = -1;
@@ -101,6 +101,9 @@ bool SolveFinalMasterProblem(
 	IloRangeArray& Cons_MP,
 	IloNumVarArray& Vars_MP);
 
+void OutputMasterProblem(All_Values& Values, All_Lists& Lists);
+
+void OutputDualMasterProblem(All_Values& Values, All_Lists& Lists);
 
 
 

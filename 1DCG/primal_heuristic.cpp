@@ -13,7 +13,7 @@ void PrimalHeuristic(All_Values& Values, All_Lists& Lists) {
 		for (int row = 0; row < N_num; row++) {
 			if (row == col) {
 				double temp_val = 0;
-				temp_val = Values.stock_length / Lists.all_item_types_list[row].item_type_length;
+				temp_val = Values.stock_length / Lists.all_item_types_list[row].length;
 				temp_col.push_back(temp_val);
 			}
 			else {
